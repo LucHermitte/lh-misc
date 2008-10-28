@@ -1,0 +1,887 @@
+*VS_help.txt*		Spell-checker plugin
+*lhVimSpell*		For Vim version 6+.	Last change: 26th Sep 2003
+
+		lhVimSpell Plugin MANUAL	by Luc Hermitte
+		       version 0.6b		<hermitte {at} free {dot} fr>
+
+
+------------------------------------------------------------------------------
+Presentation: ~
+
+lhVimSpell is a spell checker plugin for VIM. Actually it wraps external tools
+that use the |IA-spell| pipe protocol.
+
+Contents ~
+|VS-Features|	Features of lhVimSpell.
+|VS-Install|	Installation notes.
+|VS-Options|	Options to customize it.
+|VS-Future|	Known problems & TODO list.
+|VS-References|	References to related programs and plugins.
+|VS-Credits|	Credits
+
+------------------------------------------------------------------------------
+{{{1								*VS-Features*
+Plugin features:~
+
+As its name suggests, the main feature of this plugin is to add spell-checking
+functionalities to VIM. 
+
+lhVimSpell defines two operating modes ; each one being associated to a buffer.
+The first mode is associated to the buffer of the text spell-checked. The
+second one is a view that suggests alternatives to a misspelling. See for
+instance:
+    <http://hermitte.free.fr/vim/ressources/VS-capture.gif>
+
+
+{{{2 							*VS-main-buffer-mode*
+  Main-buffer Mode:~
+    From this mode we can:
+      |VS-Parse|        Parse the buffer for misspellings,
+      |VS-Highlight|    Highlight the misspellings,
+      |VS-Jump|         Jump from one misspelling to the next/previous,
+      |VS-Change|       Change the value of the current language,
+      |VS-Alternatives| Ask for alternatives.
+
+  Main-buffer and Corrector Modes ~
+    From both modes we can:
+      |VS-Exit|         Exit from the spell-checking mode,
+      |VS-Ignore|       Ignore the fact that the current word is misspelled,
+      |VS-Add|          Add the current word to the personal dictionary.
+
+{{{2 							*VS-corrector-mode*
+  Corrector Mode: ~
+    In this mode, a set of alternatives are suggested to replace the word
+    which is under the cursor in the parsed buffer. From this list, we can:
+      |VS-Choose|       Choose an alternative,
+      |VS-Correct|      Correct the misspelled word and replace it by the
+                        chosen alternative,
+      |VS-Replace-all|  Replace every occurrence of the misspelled word by
+                        the chosen alternative,
+      |VS-Replace-buf|  Replace every occurrence of the misspelled word in
+                        every opened buffer by the chosen alternative,
+      |VS-Undo/redo|    Undo or redo the last action,
+      |VS-Jump|         Jump from one misspelling to the next/previous,
+      |VS-Toggle_Help|  Toggle the help message of the Corrector mode.
+
+}}}2
+|VS-other-features|	Secondary features
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Details about the features:~
+{{{2
+{{{3*VS-Parse*				Available in the |VS-main-buffer-mode|
+    Parse the buffer for misspellings ~
+	Default key bindings: |VS_map_leader|r and <F4>
+
+      This action issues two calls to |IA-spell|. It first updates the list of
+      misspelled words within the edited document (or the visually-selected
+      area), and then |cache|s their possible alternatives. It also
+      |VS-Highlight|s the misspellings.
+  
+      This must be done at least once before using the other features of this
+      plugin. 
+      Note: Enter in the spell-checking mode, if not yet within.
+      Note: In visual-mode, it will parse the selected text only!
+
+
+{{{3*VS-Highlight*			Available in the |VS-main-buffer-mode|
+    Highlight the misspellings ~
+	Default key binding: |VS_map_leader|s
+	[not yet automatic]
+
+      Switches all the misspelled words into the Error-Syntax style.
+      Note: Enter in the spell-checking mode, if not yet within.
+
+
+{{{3*VS-Jump*			Av. |VS-main-buffer-mode| & |VS-corrector-mode|
+    Jump from one misspelling to the next/previous ~
+	Default key bindings: <M-n> / <M-p> , and
+	                      |VS_map_leader|n / |VS_map_leader|p
+
+      Puts the cursor under the next/previous misspelling.
+      In |VS-corrector-mode|, it also updates the alternatives proposed to
+      match the new current misspelling.
+
+
+{{{3*VS-Change*				Available in the |VS-main-buffer-mode|
+    Change the value of the current language ~
+	Default key binding: |VS_map_leader|L
+
+      Changes the value of the option |g:VS_language| in order to be turn
+      after turn: "American" or what is your default value for
+      |g:VS_language|.  
+      BTW, this feature REQUIRES you have installed my |triggering| plugin,
+      otherwise it won't be enabled.
+
+
+{{{3*VS-Alternatives*  			Available in the |VS-main-buffer-mode|
+    Ask for alternatives ~
+	Default key bindings: |VS_map_leader|a and |VS_map_leader|<tab>
+
+      Opens (if not yet opened) the corrector-window and lists suggested
+      alternatives to the current word (i.e. word under the cursor) if
+      misspelled.
+      This switches to the |VS-corrector-mode|.
+
+}}}3
+   - - - - - - - - - -
+{{{3*VS-Exit*			Av. |VS-main-buffer-mode| & |VS-corrector-mode|
+    End of Spell-checking ~
+	Default key binding: |VS_map_leader|E
+
+      Closes the corrector-window (if opened) and un-highlights the
+      misspellings.
+      Note: Exit from the spell-checking mode.
+
+
+{{{3*VS-Ignore*			Av. |VS-main-buffer-mode| & |VS-corrector-mode|
+    Ignore the fact that the word is misspelled ~
+	[dictionary management]
+	Default key bindings: mbm -> |VS_map_leader|i ; cm -> i
+
+      The word is added to the file ./.spell/ignore-list. If you want to
+      change some of the words, edit the file and remove the words you don't
+      want to be ignored anymore.
+
+
+{{{3*VS-Add*			Av. |VS-main-buffer-mode| & |VS-corrector-mode|
+    Add the word to the personal dictionary ~
+	[dictionary management]
+	Default key bindings: mbm -> |VS_map_leader|* or & ; cm -> * or &
+	
+
+      The word is added to the personal dictionary which is dependent of the
+      current language. Typing '&' adds the word in lower case.
+
+      This issues a call to |IA-spell|.
+
+      When using |Aspell|, if the word to add is accentuated (or contains non
+      alphanumeric characters), this function will propose to directly insert
+      the word into the dictionary as if |g:VS_aspell_add_directly_to_dict|
+      was set to true. Hence, all the corresponding warnings apply.
+      This way of proceeding comes from the fact I wasn't able to add
+      accentuated words to the personal dictionary through the pipe protocol
+      with |Aspell| .33.5 alpha compiled with MinGW and used under Windows NT.
+      Any hint/comment on this point is welcome.
+
+      Deleting a word from the dictionary is out of topic here but quite easy
+      indeed with |Aspell|. I have identified for instance with the version
+      .33.5 alpha the files fr.pws (for French) and english.pws. Deleting the
+      line of the word no longer desired and reducing the last number on the
+      first line should do the trick.
+  
+}}}3
+   - - - - - - - - - -
+{{{3*VS-Choose*	 			Available in the |VS-corrector-mode|
+    Choose an alternative ~
+	[correction]
+	Default key bindings: {any-vim-way-to-move}, <tab> and <s-tab>
+
+      An alternative is considered chosen if the cursor (in the corrector-
+      window) is on the line of the alternative.
+      <tab> and <s-tab> have also been mapped to jump from one alternative to
+      the next/previous.
+
+
+{{{3*VS-Correct*			Available in the |VS-corrector-mode|
+    Correct the misspelled word ~
+	[correction]
+	Default key bindings: <cr>, <2-click>, {number}
+
+      The current misspelled word is replaced by the chosen alternative.
+
+      The alternative can also be chosen by directly typing its {number}+<CR>.
+
+      If the current word within the main-buffer differs from the misspelling
+      considered within the corrector-buffer, nothing is done.
+
+      
+{{{3*VS-Replace-all* 			Available in the |VS-corrector-mode|
+    Repl. every occurrence of the misspelled word ~
+	[correction]
+	Default key binding: A
+
+      Every occurrence, in the main-buffer, of the misspelling is replaced by
+      the chosen alternative.
+
+
+{{{3*VS-Replace-buf* 			Available in the |VS-corrector-mode|
+    Repl. every occurrence of the misspelling in every buffer ~
+	[correction]
+	Default key binding: B
+
+      Every occurrence, in every opened buffer, of the misspelling is replaced
+      by the chosen alternative.
+
+
+{{{3*VS-Undo/redo*			Available in the |VS-corrector-mode|
+    Undo/redo the last action ~
+	[correction]
+	Default key bindings: u or <C-R>
+
+      Undo/redo the last action that has occurred in the main buffer. This is
+      helpful to undo a change without (because we haven't clicked on the
+      right line for instance) leaving the corrector window.
+  
+
+{{{3*VS-Toggle_Help*			Available in the |VS-corrector-mode|
+    Hide/Display help ~
+	Default key bindings: h and ?
+
+      Display or hide a several lines help message that sums up the different
+      key-bindings defined within the Corrector-Mode.
+
+}}}2
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+{{{2							*VS_filetypes*
+  Filetypes supported~
+
+lhVimSpell is on its way to support any filetype.
+
+|Aspell| is already aware of TeX syntax, html/sgml-like syntax and URLs.
+|Ispell| also supports groff.
+
+lhVimSpell is able to parse _only_ comments and strings from buffer of any
+filetype -- considered as programming languages & scripts .
+This functionality requires Vim 6.2+ and |searchInRuntime.vim|
+
+
+Regarding the highlighting, lhVimSpell can take advantage of various schemes
+of syntax:
+- (La)TeX, bibtex, 
+- if the VIM syntax file (|syn-files|) exports the "@Spell" |cluster| (Claudio
+  Fleiner's syntax files: cs, dtml, html, java, and m4) 
+  -> strings and comments
+- if there is a "@{ft}CommentGroup" |cluster| (amiga, b, C, C++, csc, csh,
+  dcl, fortran, jam, lisp, lpc, mapple, nqc, plsql, sh, vim) 
+  -> comments only
+- if there is a "@{ft}StringGroup" |cluster| 
+  -> strings (vim ... only)
+- otherwise, it sets *b:spell_options* to something like:
+         'containedin={&ft}String,{&ft}Comment'
+- if incorrectly highlighted, override |b:spell_options| definition into
+  VS_filetype::s:AdjustSyntax()
+  Or even better, use the "array" of options: *g:VS_so_contained_in_str_{ft}*
+
+Note: It tries to recognize the exact definitions like "cString,cCppString"
+even with C++.
+
+Note: it also supports "{ft}HereDoc" (csh, perl, php, plp, sh)
+    =>  cat<<END
+	bla
+	END
+
+TODO: Support "embedded" filetypes, like html, php, js, ... with php buffers ;
+or perl, ruby, python, ... with VimL buffers.
+
+Tested with: Vim, C, C++, sh files, doxygenated C & C++ files
+
+
+
+}}}2
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+{{{2							*VS-cache*
+  Internal considerations~
+As the calls to |Aspell| are quite slow -- on some computers --, I decided to
+cache all the calls to it.
+
+Though, a file named ./.spell/errors-list-{language} is maintained for every
+folder containing files checked with this plugin. Every time a file is parsed,
+all the new misspellings detected are added (at the end of the file) with the
+list of their suggested alternatives.
+
+Hence, all in all |IA-spell| is called only twice: a first time to detect new
+misspellings, and a second one to retrieve the suggested alternatives of all
+the new misspellings. Once the file is parsed, the improvement is noticeable:
+looking for the alternatives of a misspelling is an instantaneous operation.
+
+All the current misspellings are remembered. It may not be useful in the long
+run except for recurrent misspellings. But, the replacing feature will make
+this behavior useless and hence we will be able to delete the cache-file
+between two sessions. cf. |VS-todo-replace|
+
+Regarding the highlighting policy, every word is considered OK except those
+detected misspelled by the |IA-spell| tool. This is the opposite approach of
+the one taken in |engspchk|. If the cached file is localized (to folder) and
+often erased, this will enable to manage smaller lists of words.
+
+Note: I plan to add a "lazy evaluation" of alternatives for future versions.
+
+}}}2
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+{{{2							    *VS-other-features*
+Not very important features, but worth to mention ~
+* Tested on a MsWin XP box, from Ms-file-explorer using cmd.exe, and from
+  Cygwin using bash ;
+  Pathnames of the tested files did contain spaces.
+  Able to guess, and thus to automatically adjust itself to, the exact
+  environment (thanks to system_utils.vim) 
+* Low dependencies on other things: only |IA-spell| is required ; the
+  optional external tools serve the speed ; cf. |sort|
+* Can take advantage on plugins you don't need to install
+* It is able to guess which one of Ispell or Aspell is installed, or it can
+  rely on user's explicit configuration ; cf |g:VS_spell_prog|
+* Menus placement is configurable: cf. |g:VS_menu_priority| ;
+* Mappings can be overridden: cf. |VS_map_leader| for mappings ;
+* Highlighting schemes can be overridden, e.g.:
+      :highlight default SpellErrors ctermfg=Green guifg=Green 
+	  \ cterm=underline gui=underline term=reverse
+  Note: The default links `SpellErrors' to `Errors'.
+* Many errors and exceptional situations detected ; 
+* Several different syntax are recognized (ie works with tex, html, php, text
+  files, ...), some are automatically deduced (m4, cs, ...) ; 
+  will be improved in the future.
+* Automatic detection of the main language (this one was easy thanks to
+  v:lang): cf. |VS_language|
+* Support  |Ispell|'s guesses -- If you have inputs on this feature of Ispell,
+  let me know.
+* Promote the chosen alternative in its list (of proposed alternatives)
+  When an alternative is chosen, it becomes the first alternative that will be
+  proposed the next time the "associated" misspelling in encountered.
+  Note: This only works with the cached misspellings, it has no effect on
+  ia-spell.
+
+------------------------------------------------------------------------------
+{{{1								*VS-Install*
+Installation notes: ~
+
+  Files of the plugin: ~
+    The plugin is composed of several files:
+      - macros/lhVimSpell.vim : the main file that must be sourced ;
+      - plugin/a-old.vim : old version of the |alternate| plugin ;
+      - plugin/system_utils.vim : 
+      - doc/VS_help.txt : "Vim-help-doc" version this file ;
+      - doc/VS_help.html : HTML version of this file ;
+      - Changelog ...
+
+    They could be downloaded as a tarball archive at:
+	<http://hermitte.free.fr/vim/ressources/vim-spell.tar.gz>
+
+    Let's note {rtp} to represent $HOME/.vim/ (on *NIX systems) or
+    $HOME/vimfiles/ (on Ms-Windows systems) ; check ":help 'runtimepath'" for
+    other systems. Then, to install the plugin, you could for instance
+    execute:
+	cd {rtp}
+	gzip -cd path_to/vim-spell.tar.gz | tar xf -, 
+
+    To install this file (the documentation), go into {rtp}/doc/ and execute
+    (from VIM) ':helptags {rtp}/doc' once. You could also execute in your
+    shell:
+	cd doc/ ; gvim -c helptag\ .\ \|\ q
+    --> cf. |add-local-help|	Instructions on installing this file
+
+    If you want the plugin to be systematically run: move lhVimSpell.vim into
+    your {rtp}/plugin/ directory.
+    Or, if you want the plugin to be run only in specific situations: leave
+    it into your {rtp}/macros/ directory, and source it whenever you need to.
+    For instance, I execute ":runtime macros/lhVimSpell.vim" from my TeX and
+    mail ftplugins.
+
+
+    There are some useful and optional plugins that will enhance lhVimSpell:
+      - |searchInRuntime.vim| : used to autoconfigure lhVimSpell ;
+      - |let-modeline.vim| : to associate a language directly to a file.
+      - triggers.vim : my |triggering| plugin ;
+
+
+  Customizing the mappings:~
+  								*VS_map_leader*
+    All the |VS-main-buffer-mode| features are binded to keystrokes sequences
+    beginning by |g:VS_map_leader|.
+
+    Under Microsoft OSes, Motif, GTK+ and Photon GUI, when |winaltkeys| values
+    "no", |g:VS_map_leader| default value is "<M-s>", "<leader>s" otherwise.
+
+    I've decided to use "<M-s>" as a default value because:
+      - "s" is like "spell" ;
+      - <C-S> is already mapped (in my configuration) to ":w<cr>" for when I
+	come back from Ms-Windows products that I used over a long period ;
+      - 'ó' is not a letter I use in French, Ms-Windows Spanish users may
+	want to change it.
+    BTW, notice that "<M-s>" and "<M-S>" are two different key strokes.
+
+    If you want to change the default mappings, three approaches are possible:
+    - change the value of |g:VS_map_leader| ;
+    - edit the third and fourth parts of lhVimSpell.vim (lhVimSpell/corrected
+      buffer functions) and make your customizations -- not recommenced ;
+    - or you can change the mappings used by forcing them into your .vimrc
+      with for instance: >
+	nmap <F7>c <Plug>VS_check	" check file
+	nmap <F7>s <Plug>VS_showE	" show misspellings
+	nmap <F7>a <Plug>VS_alt		" propose alternatives
+	nmap <F7>E <Plug>VS_exit	" exit
+	nmap <F7>n <Plug>VS_nextE	" next misspelling
+	nmap <F7>p <Plug>VS_nextP	" previous misspelling
+<   If required, I'll try to improve the customization of mappings.
+
+    At this time, if you want to change the key-bindings used within the
+    |VS-corrector-mode|, you have no choice but to edit lhVimSpell.vim. If you
+    are interested in such a feature, let me know.
+
+
+  Last thing:~
+    I'm aware that this plugin is quite complex. It is the price to pay for
+    its features. It depends on external plugins and even external (but common
+    for VIM users I guess) tools. 
+    For maintenance aspects, it is developed as several inter-dependant files.
+    If you want to hack in the plugin, you can also look at the "developer(s)"
+    version:
+	<http://hermitte.free.fr/vim/ressources/vim-spell-dev.tar.gz>
+
+
+------------------------------------------------------------------------------
+{{{1								*VS-Options*
+Options: ~
+
+Most options are global -- making them buffer-relative caused me a lot of
+troubles when I wanted to spell-check several buffers.
+
+If you want to change their values, do it into your .vimrc or any other plugin
+loaded _before_ lhVimSpell.
+
+*VS_language*	string (...) ; default based on |v:lang|
+  This option defines the language/dictionary used. cf. the '--master' option
+  of |IA-spell|. If your configuration is not explicitly supported, you may
+  have to extend the functions s:Default_language() and s:Personal_dict() ;
+  let me know about it.
+
+  Actually, lhVimSpell tries to use (in that order):
+      1- *w:VS_language* or else *b:VS_language*
+      2- *g:VS_language_when_filetype_is_{&ft}*
+	"Array" of variables like for instance:
+	    g:VS_language_when_filetype_is_mail,
+	    g:VS_language_when_filetype_is_help, ...
+      3- *g:VS_language_for_programming* [default: |g:language_english| ]
+	 only when 'filetype' <=> programming language
+      4- *g:VS_language* [default based on |v:lang|]
+  Notes: *g:VS_language_when_filetype_is_help* defaults to |g:language_english|
+	 *g:language_english* defaults to "american"
+
+  Using |let-modeline.vim| is a nice way to automatically set the language
+  used with your files.
+
+*g:VS_spell_prog* string ("ispell"/"aspell") ; default "aspell"
+  This option must be used to know which |IA-spell| tool is used: |Ispell| or
+  |Aspell| -- or any upcoming clone.
+  If available and installed, |which| or |searchInRuntime| (cf.
+  |lhVimSpell-and-searchInRuntime|) will be used to determine which one of
+  |Aspell| or |Ispell| is installed and will be used.
+  If neither Aspell nor Ispell are in your $PATH, set |g:VS_spell_prog| with
+  the full absolute path to the program to use.
+
+*g:VS_strip_accents* boolean (0/1) ; default 0
+  Directly passed to |IA-spell| if defined.
+
+*g:VS_aspell_add_directly_to_dict* boolean (0/1) ; default 0
+  This trick enables to quicken the insertion of words into the personal
+  dictionary. I guess it will work only with |Aspell|. I've tested this
+  approach with Aspell .33.5 alpha ; I can't guarantee that it will always
+  work with future versions of Aspell. By default, this option is set to false
+  (ie. 0).
+  If you want to use it, please check:
+  - You are using Aspell or at least the format of your personal dictionary
+    looks like: "xxxx <number_of_entries>" on the first line, while the
+    following lines are made of «personal» words.
+  - The personal dictionary names are correctly set within s:Personal_dict()
+    regarding your |VS_language|.
+  Any feedback is welcome regarding this option (and the rest as well):
+  format of personal dictionaries and its everlastingness, their names
+  regarding the language used, etc.
+
+*g:VS_display_long_help* boolean (0/1) ; default 0
+  Tells, next time the corrector window is opened, if the help will be
+  displayed in its totality or not.
+
+*g:VS_jump_to_next_error_after_validation* boolean (0/1) ; default 1
+  When true, some operations (|VS-Correct|, |VS-Add| word to dictionary,
+  |VS-Ignore| word) from the corrector window will move the cursor to the next
+  misspelling.
+  Note: This option used to be *g:VS_jump_next_error_after*
+
+*g:VS_map_leader* string (...) ; default <M-S> or <Leader>s
+  Defines the leader used for lhVimSpell mappings.
+  Cf. |VS_map_leader| for more precise information.
+
+*g:VS_menu_priority* number/string ; default "55"
+*g:VS_menu_name* string(...) ; default "Spell &check"
+  These two options enable lhVimSpell's menu to be placed wherever we wish it
+  to be. For instance: >
+       let g:VS_menu_priority = '40.600'
+       let g:VS_menu_name     = '&Tools.Spell &check'
+
+|g:unix_layer_installed| boolean (0/1) ; default 0
+  This option actually belongs to |system_utils.vim|. It indicates (when we
+  are under a Microsoft OS -- only) whether tools emulating unices tools are
+  installed or not. 
+  In lhVimSpell's case, it indicates whether GNU-|sort| have been installed on
+  a MsWindows box.
+  This option must be set into .vimrc. If not set (while |sort| is available),
+  we may observe a slow down of the processing ; a VimL emulation of `sort'
+  being run.
+  Under a *nix box, don't bother with this option.
+  Under a MacIntosh or any other box, I have no idea of what must be done. So
+  let me know about the situation in order I figure out something.
+
+
+------------------------------------------------------------------------------
+{{{1								*VS-Future*
+Known problems & TODO List: ~
+
+|VS-known-problems|		Known problems
+    |VS-pb-startup|		Known issues at startup
+    |VS-on-windows-boxes|	Known issues on MsWindows
+    |:VSVerbose|		Debugging facility
+|VS-TODO|			Todo list
+
+{{{2							*VS-known-problems*
+  Known problems:~
+    Setting the file-type will cancel the highlighting of misspellings ; So,
+    try to avoid to reset it every time the buffer is reloaded -- this could
+    be observed with the affectation of 'filetype' within modelines like with
+    this file.
+
+    When we hit '*' in the Corrector mode, a space may be needed to be hit  in
+    order to activate the associated mapping.
+
+    There is an annoying issue with 'iskeyword'. For instance, if 'isk'
+    contains ":", then "dowload:" will not get highlighted.
+    Unfortunately, the pattern highlighted must be '\<'.misspelling.'\>'
+    Which means, highlighting "\<dowload\>" will have no effect because of the
+    ":", highlighting "dowload" non automatisable as it can not be
+    distinguished from the case where "wnload" (and not "\<wnload\>") is a
+    misspelling.
+
+
+{{{2							*VS-pb-startup*
+    Problems when starting up the plugin~
+
+    Q: Is the script correctly loaded ?
+    A: try: >
+	  :echo g:loaded_lhVimSpell_vim
+<      If vim answer anything other than 1, it means the script has not been
+       properly loaded. Check again |VS-Install|.
+
+    Q: Why <M-s>r or <leader>sr does not produce anything ?
+    A: Are you sure it is the right keybindings for your system ?
+       Check them with: >
+          :VSEcho map_leader
+<      Then, use this result with "r" for instance. If it still doesn't
+       produce anything, try to change into your .vimrc, the |VS_map_leader|
+       used by lhVimSpell.
+    
+
+{{{2							*VS-on-windows-boxes*
+    You are under windows~
+    You may want to install |sort|, or already have it. 
+    To use it, be sure it is visible from your $PATH. Update your $PATH until
+    you can execute: >
+	:!sort --version
+<   And then set |g:unix_layer_installed| to 1 in order to tell lhVimSpell to
+    use `sort' instead of its VimL emulation.
+
+    Now, let's try to identify your problem.
+    * When you execute Aspell from VIM: (use ispell instead or aspell if you
+      have Ispell of course...) >
+	:!aspell
+<     a- You don't get any error message .... fine!
+      b- You get an error message looking like: 
+	   "Name of the program or file incorrect..."
+	 Then, check your 'shell' option. It should points to bash.exe (under
+	 Cygwin), sh.exe (with UnixUtils) or $COMSPEC (MsWindows's shell). 
+      c- You get an error message looking like: 
+	   "`aspell' is not recognized as an internal or external command, an
+	   executable program or a batch file" [$COMSPEC variant]
+	 Then, you must update your $PATH so Aspell will be visible from VIM.
+	 Another solution is to set |g:VS_spell_prog| to
+	 "the/exact/path/to/aspell".
+      d- The error message is: 
+	   "/usr/bin/bash: line1: aspell: command not found" [Cygwin variant]
+	 This is the same situation as c-'s one ; but with Cygwin. The same
+	 solution apply.
+    
+    * This time, try to run from VIM: >
+	:echo system('aspell -l < '.FixPathName(expand('%')))
+<     a- You get a list of all the misspellings ; then everything works fine
+      b- Otherwise, your problem may lie with the values of the 'shellredir',
+         'shellquote' or 'shellxquote' options.
+	 Let me know if you have such trouble as |systems_utils.vim| is
+	 supposed to take care of them.
+
+{{{2							*:VSVerbose*
+    Debugging facility~
+    I define the command >
+	:VSVerbose {level}
+<   that helps me follow what is happening at some crucial steps.
+      Level 0~
+	- Nothing is displayed.
+      Level 1~
+	- Displays the exact command executed time something is piped to
+	  iapell
+	- Displays the exact command executed to get the list of misspellings.
+	- Displays the list of misspellings found.
+	- Reminds which word is added to the personal dictionary.
+      Level 2~
+        - Displays the text piped to iaspell in order to add a new word to the
+	  personal dictionary.
+	- Traces information used to build, from syntax definition, the regex
+	  used to match strings.
+      Level 3~
+        - Displays the syntax files searched for strings definition.
+	- Sets g:re as the regex used to keep the text to parse only.
+      Level 4~
+        - Displays the list of words that should be spellchecked, but does not
+	  spell-check them ; only with non 100% textual documents.
+
+{{{2							*:VSEcho*
+    Debugging facility (bis)~
+    The command >
+	:VSEcho {script-variable}
+	:VSEcho {script-function()}
+<   can be used to display the (returned) value of variables and functions
+    from lhVimSpell.
+
+  
+{{{2							*VS-TODO*
+  TODO list:~
+    * Manage replacement list ;				*VS-todo-replace*
+      i.e. list of words to be systematically replaced by a predefined word.
+      Aspell seems to use *.prepl files for this purpose. But how to manage
+      them through pipes (-a option) ?
+      Two possible ways (option ?) to execute the replacements:
+      - can be executed on user's request,
+      - can be executed automatically => map every characters -- possibility
+	to study ; cf. Word_in_ment() in fr-abbrs.vim
+    * Ignore some contextual word like "\oe uvre" -- with TeX
+      and other expressions like for instance the labels of figures, the
+      parameters to \rnode{}{}{}, and so on.
+    * Cache the dictionary management requests ; delay and merge the calls to
+      |IA-spell| that add words to the dictionary as long as possible.
+    * Secondary dictionary.
+    * Delete words from the dictionary ; Aspell does not seem to permit it
+      through a piped call, while it is quite easy to perform. But is it safe
+      in regard of its future versions ? Will be supported if the option
+      |g:VS_aspell_add_directly_to_dict| is set to true.
+    * Dedicate a sub-menu for the different options.
+    * Propose a way (option) to highlight misspellings on the fly. As the calls
+      to |IA-spell| can be very slow, I'm not sure this a very useful feature.
+    * Check if errors-list (/ignore-list) exists before opening any window...
+    * Option that decides whether we spell-check strings or not (for
+      programming languages only)
+
+    * Extension to other file types: extend the file-type2mode recognition
+      function ; only TeX, ML-like and None/url are recognized for now.
+      Actually, I do support only the formats supported by Aspell.
+      Hint: grep for comments and string based on syntax highlight
+
+    * Permit to toggle the highlighting of misspellings within TeXgroups
+    * Ask for the language (always or never or use another language -- opt)
+      when spell-checking a visual selection.
+    * Being able to ask for alternatives on the fly ; i.e. not only for
+      cached misspellings.
+    * Fix the issue with 'isk' ; e.g. if 'isk' contains ':', then 'dowload:'
+      will not get highlighted.
+      The only fix I see is to use complex pattern where s:letter is function
+      of the current |VS_language|, and a word limits will be defined by
+      '[^'.s:letter.']\zs'.word.'\ze[^'.s:letter.']'.
+      What will be wonderful is to define s:letter as a function of
+      |VS_language|. At this time, I can only do it for French, English and
+      Spanish... :-(
+      Bad &isk for vim files ; e.g.: with "'tex\|vim'", "'tex" should be
+      extracted instead of "tex".
+      Support for L_isk_{lang} -> set of characters accepted to delimit words.
+    * Hooks to define the language to use ; could be useful with e-mails.
+    * Do some tests in UTF-8 and other non-latin1 encodings.
+    * Wrap other functions exclusives to Aspell (e.g. sounds-like words and
+      lists of words, phonemes, score between words).
+    * Support the latest version of |Aspell|, ie: GNU-Aspell.
+    * Support two characters also returned by Ispell : + and -
+    * Option: display Ispell's guesses as errors.
+
+    * Better handling of the split window for a more ergonomic plugin.
+    * Option for vertical splitting of window ; could be nicest.
+    * Option for displaying suggested alternatives in a popup-menu ; why not.
+    * Problem: goto-next-mispelling does not enter within folds.
+    * Delete unneeded code.
+    * Overriding of syntax highlighting for messages echoed.
+    * Improve the customization possibilities of the mappings.
+    * Fix the regexs to work whatever the value of 'magic' is.
+
+
+------------------------------------------------------------------------------
+{{{1								*VS-References*
+References:~
+
+  Links to external programs ~
+
+    The VIM editor
+     Do I really need to present you this wonderful text editor ?
+     Just in case, the plugin presented here has been written for VIM --
+     <http://vim.sourceforge.net/>
+    
+    [IA]spell						*IA-spell*
+     I use [IA]spell to refer to either |Ispell| or |Aspell|. Indeed, these
+     tools accept a same and important set of parameters. Therefore, this
+     plugin rely on this common set and can be used with either spell-checker
+     ; see |g:VS_spell_prog|. Of course one or the other is needed by the
+     plugin.
+    
+    Ispell						*Ispell*
+     Ispell is the widely distributed spell-checker I use as reference for
+     this plugin. 
+     Ispell hasn't been tested but should be OK with this plugin.
+     <http://fmg-www.cs.ucla.edu/geoff/ispell.html>
+    
+    Aspell						*Aspell*
+     "Aspell is an Open Source spell-checker designed to eventually replace
+     Ispell. Its main feature is that it does a much better job of coming up
+     with possible suggestions than Ispell does. In fact recent tests shows
+     that it even does better than Microsoft Word 97's spell checker in some
+     cases."
+    				 © Kevin Atkinson, from Aspell's introduction.
+     It takes into account the sonority of words and keyboard-layouts.
+     <http://aspell.sourceforge.net/>
+    
+    Text Utils: sort						 *sort*
+     The Text Utils are no more required on your system. 
+     Neither is `sort' nor `uniq'.  However, having the GNU version of `sort'
+     will greatly speedup the processing of misspellings. Note that
+     Microsoft's SORT.EXE will be of no use and must be avoided ; it is not
+     case sensitive (since MsDos 3.0) and it doesn't support the '-u' option
+     equivalent to `uniq' -- lhVimSpell needs case sensitivity and `uniq'.
+
+     For MsWindows systems, you will found `sort' shipped with Cygwin or
+     UnixUtils. If you install either one of them, it is VERY IMPORTANT to
+     update your $PATH in order that the directory where GNU-sort is installed
+     appear BEFORE "%SYSTEMROOT%\system32\".
+     Then, if you plan to launch VIM from the file-explorer (instead of an
+     advanced shell), don't forget to set |g:unix_layer_installed| to 1 into
+     your .vimrc.
+     <http://sources.redhat.com/cygwin/>
+     <http://unxutils.sf.net/>
+
+   Which						*which*
+    If you haven't set |g:VS_spell_prog| in your .vimrc, if you haven't
+    installed |searchInRuntime| and if your shell is an UNIX shell (like bash,
+    zsh, sh, etc.) then, `which' will be used to determine which of |Ispell|
+    or |Aspell| is installed on your system. 
+    Of course, it requires any one of these spell-checkers to be visible from
+    $PATH.
+    
+
+  Dependencies ~
+   This plugin relies on some other plugins like:
+    
+   a.vim						*alternate*
+    Defines some functions to go to specific windows/buffers.
+    This script is CRITICAL and REQUIRED.
+    As this plugin has changed since its first version, I join an usable (with
+    lhVimSpell) version renamed a-old.vim in the archive.
+    <http://vim.sf.net/scripts/script.php?script_id=31>
+    
+   Triggers.vim						*triggering*
+    Big piece of script. It permits to execute one action or an other on a
+    trigger -- extension of the VIM toggling feature. 
+    This script is FACULTATIVE. If installed, the language |VS-Change|-ing
+    feature will be automatically enabled.
+    <http://hermitte.free.fr/vim/general.php#Triggers_vim>
+
+   let-modeline.vim 					*let-modeline.vim*
+    As |VS_language| can be a buffer-relative option, it could be very
+    interesting to set it within a |modeline|. But modelines are restricted
+    to some Vim |options| only, they can't be used with Vim |variables|.
+    However, some plugins like let-modeline.vim propose a way around this
+    limitation.
+    Hence the two last lines of this help file ; lhVimSpell considers this
+    particular file to be written in American-English and all my other files
+    are considered to be written in French as |v:lang| told it.
+    <http://hermitte.free.fr/vim/general.php#let-modeline_vim>
+    <http://vim.sf.net/scripts/script.php?script_id=83>
+
+   searchInRuntime.vim			*lhVimSpell-and-searchInRuntime*
+    This is another plugin I wrote. It searches for files within lists of
+    directories, and applies an Ex command on the file(s) found.
+    Somehow, it is a kind of hybrid command between |:runtime| and: >
+	$> find {path} -name {pattern} -exec {command}
+<   but for Vim.
+    lhVimSpell uses |searchInRuntime| to to determine which of |Ispell|
+    or |Aspell| is installed on your system. If installed, searchInRuntime.vim
+    have the priority over |which|. Moreover, unlike |which|,
+    searchInRuntime.vim works on any system where Vim runs.
+    <http://hermitte.free.fr/vim/general.php#searchInRuntime_vim>
+    <http://vim.sf.net/scripts/script.php?script_id=229>
+
+  
+  Other related VIM's plugins ~
+
+   Text Processing With Integrated Spell Checking	
+    Presents different stuffs and another simple way to call |Aspell| from
+    VIM: <http://www.highley-recommended.com/text-processing.html>
+   
+   Claudio Fleiner's vimspell.vim. 			*CF-vimspell*
+    This plugins is the one that inspired me at first. It generates the list
+    of misspelled words through a call to |IA-spell|, then highlights them in
+    the Error syntax style. It permits to: - jump from a misspelled word to
+    the next one, - add them to the |IA-spell|'s dictionary, - ignore them, 
+    - and see a list of alternative words.
+    <http://www.fleiner.com/vim/spell.html>
+    BTW, it seems that Claudio Fleiner has written most of his syntax files
+    with spell-checking concerns in mind. Thanks to him, having a correct
+    highlighting policy for these types of files is a piece of cake. :-))
+    
+   Dr. Charles E. Campbell, Jr.'s engspchk.vim.		*engspchk*
+    A really big piece of plugin! It needs no external tool. It highlights
+    misspelled words, enables to jump from one to another, and manages the
+    dictionary. With VIM v6.0+, it can compute alternative words ;
+    unfortunately, as it is a pure Vim solution, the heuristic used (to
+    propose alternatives) will not be as outstanding as the one from |Aspell|.
+    I've stolen my jumping functions, and my initial TeX highlighting rules
+    from this plugin.
+    <http://www.erols.com/astronaut/vim/index.html#Spelling>
+    <http://vim.sf.net/scripts/script.php?script_id=195>
+
+   Ajit Thakkar's spell-checker				*AT-spellchecker*
+    Plugin inspired by Dr. Charles E. Campbell's |engspchk|.
+    <http://vim.sourceforge.net/script.php?script_id=499>
+     
+   Matthias Veit's spellcheck.vim for VIM 6 (only ?)	*MV-spellcheck*
+    Requires |Aspell| and ruby => I haven't tested it. It seems that I permit
+    much more things.
+    <http://vim.sf.net/scripts/script.php?script_id=131>
+
+   Mathieu Clabaut's vimspell				*MC-vimspell*
+    Plugin based on Claudio Fleiner's |CF-vimspell| and using some ideas from
+    Mathieu Veit. It also wraps |IA-spell|
+    <http://vim.sf.net/scripts/script.php?script_id=465>
+
+   Johannes Zellner's Aspell.vim for VIM 6.0		*JZ-aspell*
+    Another spell-checking plugin wrapping |Aspell|.
+    <http://www.zellner.org/vim/autoload/Aspell.vim>
+
+   Yegappan Lakshmanan's spell.vim			*YL-spell*
+    Plugin that wraps calls to the UNIX spell-checker: `spell'. It can also
+    parses selected text, and not only files. But no alternatives proposed.
+    <http://vim.sf.net/scripts/script.php?script_id=232>
+
+
+------------------------------------------------------------------------------
+{{{1								*VS-Credits*
+Credits ~
+
+I must thank:
+- all the people I've stolen code from: Claudio Fleiner, Dr. Charles E.
+  Campbell, ... ;
+- the people I've stolen ideas from: Matthias Veit, Mathieu Clabaut, ... ;
+- Michael Sharpe for his |alternate| plugin ;
+- Jérôme Guigue and Mykhailo Fomyts'kyi for their patience and perseverance
+  that helped me debug lhVimSpell ;
+- Pierre Gambarotto for his feedback ;
+- Preben 'Peppe' Guldberg for his help on patterns negation ;
+- and of course: all the people that have developed and continue to maintain
+  Vim, Aspell, dictionaries, ...
+
+
+------------------------------------------------------------------------------
+ © Luc Hermitte, 2001-2003 <http://hermitte.free.fr/vim/>
+ VIM: let b:VS_language = 'american' 
+ vim:ts=8:sw=4:tw=78:fo=tcq2:isk=!-~,^*,^\|,^\":ft=help:
+ vim600: set fdm=marker:

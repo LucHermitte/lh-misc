@@ -1,0 +1,10 @@
+" Vim syntax support file
+" Maintainer:	Bram Moolenaar <Bram@vim.org>
+" Last change:	1998 Feb 12
+
+" This is the startup file for syntax highlighting.
+" 1. Set the default highlight groups.
+" 2. Install autocommands for all the available syntax files.
+" 3. Install the Syntax menu.
+
+" vim: ts=8
