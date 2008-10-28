@@ -1,0 +1,62 @@
+"===================================================================
+" Core rules for vimrc under Ms-Windows systems
+"
+" File		: _vimrc_win
+" Maintainer	: Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
+" 		  <URL:http://hermitte.free.fr/vim/index.php>
+" Last update	: 13th Dec 2007
+" ======================================================================
+" Font {{{
+" set gfn=Andale_Mono:h10
+set gfn=Andale_Mono:h8
+" Font }}}
+
+" I don't have TCL installed, and as has('tcl') freeze my win32-vim + cygwin, I
+" deactivate it with:
+let g:vimembedscript = 1
+
+" Why do we need to bother with '\' ?
+set shellslash
+" ======================================================================
+" Running IE {{{
+" Note: These mappings require the tool cygstart that works under Cygwin.
+" Related information:
+" http://vim.sourceforge.net/tips/tip.php?tip_id=628
+" http://vim.sourceforge.net/tips/tip.php?tip_id=394
+
+nnoremap <silent> <C-L>e 
+      \ :exe ':!start cygstart '.
+      \    matchstr(escape(expand('<cWORD>'), '#'), 
+      \    '\%(.\{-}\zs\%(news:\\|mailto:\\|ftp://\\|https\=://\)\)\=[^:;,<>]\+'
+      \ )<CR>
+
+" Problem with urls ending in .html
+" nnoremap <silent> <C-L>m 
+      " \ :exe ':!start rundll32 url.dll,FileProtocolHandler '.
+      " \    matchstr(expand('<cWORD>'), 
+      " \    '\%(.\{-}\zs\%(news:\\|mailto:\\|ftp://\\|https\=://\)\)\=[^:;,<>]\+'
+      " \ )<CR>
+
+vnoremap <silent> <C-L>e 
+      \ <C-\><C-N>:let w:a_save=@a<cr>gv"ay
+      \ :exe ':!start cygstart '.@a<CR>:let @a=w:a_save<cr>:unlet w:a_save<cr>
+
+" Running IE }}}
+" ======================================================================
+if !has('gui_running')
+  " mappings for vim (not gvim)
+  map Œ÷ <M-Insert>
+  map! Œ÷ <M-Insert>
+
+  map ŒŸ <M-del>
+  map! ŒŸ <M-del>
+
+  map Œb <C-F5>
+  map! Œb <C-F5>
+
+  map Œn <M-F7>
+  map! Œn <M-F7>
+
+endif
+" ======================================================================
+" vim600: set foldmethod=marker:

@@ -1,0 +1,53 @@
+"=============================================================================
+" File:		_gvimrc
+" Author:	Luc Hermitte <EMAIL:hermitte at free.fr>
+"		<URL:http://hermitte.free.fr/vim>
+" Version:	0.2d
+" Created:	23rd jul 2002
+" Last Update:	16th Apr 2008
+"------------------------------------------------------------------------
+" Description:	GUI initializations.
+" 
+"------------------------------------------------------------------------
+" Installation:	Drop it near the .vimrc
+" History:	{{{
+" 	Version 0.1:	Mappings to maximize/restore VIM's windows size under
+" 			Ms-Windows OSes.
+" }}}
+" TODO:		«missing features»
+"=============================================================================
+"
+let s:cpo_save=&cpo
+set cpo&vim
+
+" Maximizes the current VIM window {{{
+if has('win32')
+  if v:lang =~? 'Fr' || $LANG =~? "fr"
+    runtime plugin/Triggers.vim
+    :VimrcHelp "
+    :VimrcHelp "
+    :VimrcHelp " <M-*>   : Maximize/restore VIM's window
+    " call Trigger_DoSwitch('<M-CR>' , 'simalt ~n', 'simalt ~r', 0)
+    " call Trigger_DoSwitch('<M-*>' , 'simalt ~a', 'simalt ~s', 0)
+    call Trigger_DoSwitch('<M-*>' , 'simalt ~n', 'simalt ~r', 0)
+      " ~n <=> Agra&ndir  on a WinNT laptop
+      " ~r <=> &Restorer
+      " ~a <=> &Agrandir  on a WinMe PC
+      " ~s <=> Re&storation
+    " DoSwitch is equivalent to :
+      "     nmap <M-*> ]!Maximizes!
+      " nnoremap ]!Maximize! :nmap <M-*> ]!Restore!<cr>:simalt ~n<cr>
+      " nnoremap ]!Restore!  :nmap <M-*> ]!Maximize!<cr>:simalt ~r<cr>
+    " Unfortunately, we can't map things like '<m-cr>', '<c-cr>', '<c-a>',
+    " etc.
+    nnoremap <M--> :simalt ~d<cr>
+    " ~d <=> Re&duction
+  endif
+endif
+" }}}
+
+
+"------------------------------------------------------------------------
+let &cpo=s:cpo_save
+"=============================================================================
+" vim600: set fdm=marker:
