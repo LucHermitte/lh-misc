@@ -1,15 +1,17 @@
 "=============================================================================
-" File:		MoveToCol.vim                                           {{{1
+" $Id$
+" File:		plugin/MoveToCol.vim                                           {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://hermitte.free.fr/vim/>
-" Version:	«version»
+" Version:	2.0.0
 " Created:	02nd Mar 2005
-" Last Update:	25th Jun 2007
+" Last Update:	$Date$
 "------------------------------------------------------------------------
-" Description:	«description»
+" Description:	Helper to align text
 " 
 "------------------------------------------------------------------------
-" Installation:	«install details»
+" Installation:	
+" Drop the file into {rtp}/plugin
 " History:	«history»
 " TODO:		«missing features»
 " }}}1
@@ -18,10 +20,10 @@
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-if exists("g:loaded_MoveToCol_vim") && !exists('g:force_reload_MoveToCol_vim')
+if exists("g:loaded_MoveToCol") && !exists('g:force_reload_MoveToCol')
   finish 
 endif
-let g:loaded_MoveToCol_vim = 1
+let g:loaded_MoveToCol = 1
 let s:cpo_save=&cpo
 set cpo&vim
 " Avoid global reinclusion }}}1
@@ -79,7 +81,9 @@ function! s:Align(pattern) range
 
   " 2- Align !
   exe a:firstline.','.a:lastline.'s/'.r_pattern.'/\=CompleteWithUpToCol(" ", max)/'
-  echo a:firstline.','.a:lastline.'s/'.r_pattern.'/\=CompleteWithUpToCol(" ", max)/'
+  if &verbose > 0
+    echomsg a:firstline.','.a:lastline.'s/'.r_pattern.'/\=CompleteWithUpToCol(" ", max)/'
+  endif
 endfunction
 
 
