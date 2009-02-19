@@ -480,8 +480,10 @@ endif
 	 \ :echo synIDattr(synID(line("."), col("."), 1), "name")<cr>
 " }}}
 " -------------------------------------------------------------------
-" Make p in Visual mode replace the selected text with the @" register.
-" vnoremap p <Esc>:let current_reg = @"<CR>gvdi<C-R>=current_reg<CR><Esc>
+" Make p in Visual mode replace the selected text with the specified register,
+" if any
+runtime macros/repl-visual-no-reg-overwrite.vim
+
 " -------------------------------------------------------------------
 " Tags Browsing macros {{{
 :VimrcHelp " <M-Left> & <M-Right> works like in internet browers, but for tags [N]
