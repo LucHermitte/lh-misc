@@ -3,12 +3,17 @@
 "
 " File		: _vimrc_win
 " Maintainer	: Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-" 		  <URL:http://hermitte.free.fr/vim/index.php>
-" Last update	: 13th Dec 2007
+" 		  <URL:http://code.google.com/p/lh-vim/>
+" Last update	: $Date$ (08th May 2010)
 " ======================================================================
 " Font {{{
-" set gfn=Andale_Mono:h10
-set gfn=Andale_Mono:h8
+try
+  " set gfn=Andale_Mono:h10
+  " set gfn=Andale_Mono:h8
+  set gfn=Lucida_Console:h8
+catch /E596/
+  call confirm("Can't load the font Lucida_Console", '&Ok', 1)
+endtry
 " Font }}}
 
 " I don't have TCL installed, and as has('tcl') freeze my win32-vim + cygwin, I
@@ -24,8 +29,14 @@ set shellslash
 " http://vim.sourceforge.net/tips/tip.php?tip_id=628
 " http://vim.sourceforge.net/tips/tip.php?tip_id=394
 
+let s:browser = executable('cygstart') ? 'cygstart' : ''
+
+function! s:Browser()
+  return lh#option#get('browser', s:browser, '[bg]') . ' '
+endfunction
+
 nnoremap <silent> <C-L>e 
-      \ :exe ':!start cygstart '.
+      \ :silent exe ':! start '.<sid>Browser().
       \    matchstr(escape(expand('<cWORD>'), '#'), 
       \    '\%(.\{-}\zs\%(news:\\|mailto:\\|ftp://\\|https\=://\)\)\=[^:;,<>]\+'
       \ )<CR>
@@ -39,7 +50,7 @@ nnoremap <silent> <C-L>e
 
 vnoremap <silent> <C-L>e 
       \ <C-\><C-N>:let w:a_save=@a<cr>gv"ay
-      \ :exe ':!start cygstart '.@a<CR>:let @a=w:a_save<cr>:unlet w:a_save<cr>
+      \ :silent exe ':!start '.<sid>Browser().@a<CR>:let @a=w:a_save<cr>:unlet w:a_save<cr>
 
 " Running IE }}}
 " ======================================================================
