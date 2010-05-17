@@ -1,11 +1,12 @@
 " -*- vim -*-
+" $Id$
 " ===================================================================
 " Core rules for vimrc
 "
 " File		: vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer	: Luc Hermitte
-" Last update	: 16th Apr 2007
+" Last update	: 21st Jan 2009 ($Date$)
 " ===================================================================
 
 " ===================================================================
@@ -48,6 +49,7 @@ endif
   set autowrite
   set nobackup		" do not keep a backup file, use versions instead
 
+  set cmdheight=2
   set comments=b:#,:%,fb:-,n:>,n:)
                          "cmts df: sr:/*,mb:*,el:*/,://,b:#,:%,:XCOMM,n:>,fb:-
 " set dictionary=/usr/dict/words,/local/lib/german.words
@@ -62,7 +64,8 @@ endif
   set formatoptions=cqrt
                         " Options for the "txt format" cmd ("gq")
                         " I need all those options (but 'o')!
-  set isfname+={,}      " In order to use <c-w>f on ${FOO}/path
+  set isfname+={        " In order to use <c-w>f on ${FOO}/path
+  set isfname+=}        " In order to use <c-w>f on ${FOO}/path
   set helpheight=0      " zero disables this.
 " set helpfile=c:\\vim-4.6\\docs\\help.txt
                         " filename of the helpfile
@@ -150,7 +153,7 @@ endif
   set whichwrap=<,>     " 
   set wildchar=<TAB>    " the char used for "expansion" on the command line
                         " default value is "<C-E>" but I prefer the tab key:
-  set wildignore=*.bak,*.swp,*.o,*~,*.class,*.exe,*.obj,*.a
+  set wildignore=*.bak,*.swp,*.o,*~,*.class,*.exe,*.obj,*.a,/CVS/,/.svn/,*.so,*.a
   set wildmenu          " Completion on th command line shows a menu
   set winminheight=0	" Minimum height of VIM's windows opened
   set wrapmargin=1    
@@ -276,9 +279,9 @@ endif "}}}
 " Diff mode {{{
 " always
   set diffopt=filler,context:3,iwhite
-  if $OSTYPE != 'solaris' " some flavour of diff do not support -x flag
-    let g:DirDiffExcludes='CVS,*.o,*.so,*.a,svn,.*.swp'
-  endif
+  " if $OSTYPE != 'solaris' " some flavour of diff do not support -x flag
+    " let g:DirDiffExcludes='CVS,*.o,*.so,*.a,svn,.*.swp'
+  " endif
 " if &diff " if started in diff mode
 " endif
 " }}}
@@ -522,6 +525,7 @@ endfunction
 command! -nargs=* -complete=file Make	cd %:p:h | make <args>
 command! -nargs=* -complete=file MAKE	cd %:p:h | make <args>
 command! -nargs=0 		 CD	cd %:p:h
+command! -nargs=0 		 LCD	lcd %:p:h
 " }}}
 " -------------------------------------------------------------------
 " }}}
@@ -798,21 +802,6 @@ endif
 if version < 600
   Runtime! ../plugin/*.vim
 " else automatic ...
-endif
-" }}}
-
-" Loads FirstModeLine() {{{
-if !exists('*FirstModeLine')
-  runtime plugin/let-modeline.vim
-endif
-if exists('*FirstModeLine')
-  augroup ALL
-    au!
-    " To not interfer with Templates loaders
-    au BufNewFile * :let b:this_is_new_buffer=1
-    " Modeline interpretation
-    au BufEnter   * :call FirstModeLine()
-  augroup END
 endif
 " }}}
 
