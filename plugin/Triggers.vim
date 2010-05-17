@@ -16,7 +16,7 @@
 "
 " File:		Triggers.vim -- v1.14
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-" 		<URL:http://hermitte.free.fr/vim/>
+"		<URL:http://code.google.com/p/lh-vim/>
 " Last Update:	14th Jan 2006
 "
 " Purpose:	Help to map a sequence of keys to activate and desactivate
@@ -394,13 +394,15 @@ endfunction
 function! Trigger_FileName(funcname)
   " call confirm('RT ='.$VIMRUNTIME, 'ok')
   if (version >= 600) " {{{
-    let path = matchstr(
-	  \      FixPathName(&runtimepath,1),
-	  \      substitute(FixPathName(expand('$HOME'),1), '\\', '.', 'g')
-	  \         .'.\(vimfiles\|\.vim\)',
-	  \    ) . '/.triggers/'
+    " let path = matchstr(
+	  " \      FixPathName(&runtimepath,1),
+	  " \      substitute(FixPathName(expand('$HOME'),1), '\\', '.', 'g')
+	  " \         .'.\(vimfiles\|\.vim\)',
+	  " \    ) . '/.triggers/'
+    let where =  lh#path#to_regex($HOME.'/').'\(vimfiles\|.vim\)'
+    let path = lh#path#find(&rtp, where). '/.triggers/'
     " call confirm('pathv6 = '.path, 'ok')
-    call EnsurePath(path)
+    call EnsurePath(FixPathName(path, 1))
     " }}}
   else " VIM 5.x {{{
     let path = expand("$VIMRUNTIME") . "/.triggers/"
@@ -420,7 +422,7 @@ function! Trigger_FileName(funcname)
     endif
     " }}}
   endif
-  let path = path . a:funcname . '.switch'
+  let path .= '/' . a:funcname . '.switch'
   return path
 endfunction
 " }}}
@@ -516,10 +518,12 @@ function! Trigger_Function(...)
     echohl None
     return
   endif
-  "1- Checks wheither the function has allready been computed to its opposite
+  "1- Checks wheither the function has already been computed to its opposite
   "or not.
   let filename = Trigger_FileName(a:2)
   ""if !filereadable( filename )
+  " let g:p1 = a:3
+  " let g:p2 = filename
   if !IsFileUpToDate( a:3, filename )
     " Then build it !
     if Trigger_RebuildFile( a:2, a:3 ) != ""
