@@ -2,7 +2,8 @@
 " File:         $VIM/_vimrc_nix
 " Purpose:      Setup file for the editor Vim (Vi IMproved) under *NIX  systems
 " Author:       Luc Hermitte <hermitte at free.fr>
-" Last update:  19th Jun 2006
+"		<URL:http://code.google.com/p/lh-vim/>
+" Last update:  17th May 2010 ($Date)
 " ===================================================================
 "
 " ===================================================================
@@ -257,6 +258,31 @@ if
   let g:BTW_key_config = '<C-F7>'
 
   " -- 
+endif
+
+if has('mac')
+   map <D-cr>		<Plug>MarkersJumpF
+  imap <D-cr>		<Plug>MarkersJumpF
+   map <D-S-cr>		<Plug>MarkersJumpB
+  imap <D-S-cr>		<Plug>MarkersJumpB
+
+  if !exists('g:cb_want_mode') || g:cb_want_mode
+    noremap <silent> ÃŸ	:call BracketsManipMode("ÃŸ")<cr>
+    noremap <silent> ß	:call BracketsManipMode("ß")<cr>
+  else
+    map <C-L>bx	<Plug>DeleteBrackets
+    map <C-L>b(	<Plug>ChangeToRoundBrackets
+    map <C-L>b[	<Plug>ChangeToSquareBrackets
+    map <C-L>b{	<Plug>ChangeToCurlyBrackets
+    map <C-L>b\	<Plug>ToggleBackslash
+  endif
+
+  " -- Enhance Commentify
+  map ¿ <M-x>
+  map © <M-c>
+  map â‰ˆ <M-x>
+  map Â© <M-c>
+
 endif
 "  Some Remappings for inaccessible keys (meta chars) }}}
 " -------------------------------------------------------------------
