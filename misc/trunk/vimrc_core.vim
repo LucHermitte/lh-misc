@@ -192,8 +192,10 @@ let g:marker_center                = 0
 
 " -- Gegerly Kontra's MuTemplate <http://vim.sf.net/>
 " To override in some ftplugins if required.
-let g:author_short="Luc Hermitte"
-let g:author      ="Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>" 
+let g:url         = 'http://code.google.com/p/lh-vim/'
+let g:author_short= "Luc Hermitte"
+let g:author_email= "hermitte {at} free {dot} fr"
+let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">" 
     " let g:author_short="Luc Hermitte <hermitte at free.fr>"
     " let g:author	    ="Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>\<c-m>" .
 	  " \ '"'. "\<tab>\<tab><URL:http://hermitte.free.fr/vim>"
@@ -235,7 +237,7 @@ hi User3 ctermfg=yellow ctermbg=black guifg=lightyellow guibg=black
 
 " -- Dr Chip Campbell's hiLink
 " don't map <S-F10>'
-map <unique> <Leader>hlt <Plug>HiLinkTrace
+map <Leader>hlt <Plug>HiLinkTrace
 
 " -- William Lee's DirDiff
 let g:DirDiffExcludes = '*.vba,*.rss,CVS,SunWS_cache,ir.out,.*.state,exe,bin,obj,tags,lib,.svn,'.&wildignore
