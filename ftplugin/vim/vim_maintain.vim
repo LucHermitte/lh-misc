@@ -2,8 +2,8 @@
 " $Id$
 " File:         ftplugin/vim/vim_maintain.vim                     {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"		<URL:http://code.google.com/p/lh-vim/>
-" Version:      0.0.1
+"               <URL:http://code.google.com/p/lh-vim/>
+" Version:      0.0.2
 " Created:      07th May 2010
 " Last Update:  $Date$
 "------------------------------------------------------------------------
@@ -16,13 +16,15 @@
 "       Requires Vim7+
 "       Designed for lh-vim-lib v2.2.1 (v2.2.1 #verbose policy)
 " History:      
-" 	v0.0.1 :Verbose, :Reload, n_K
+"       v0.0.1 :Verbose, :Reload, n_K
+"       v0.0.2 K keeps the opening bracket if any in order to correctly open
+"              function help
 " TODO:         
-" 	Refactoring feature: move s:functions to autoload plugins
+"       Refactoring feature: move s:functions to autoload plugins
 " }}}1
 "=============================================================================
 
-let s:k_version = 001
+let s:k_version = 002
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
 if &cp || (exists("b:loaded_ftplug_vim_maintain")
@@ -38,7 +40,7 @@ set cpo&vim
 "------------------------------------------------------------------------
 " Local mappings {{{2
 
-nnoremap <buffer> K :help <c-r><c-w><cr>
+nnoremap <buffer> K :help <c-r>=<sid>CurrentHelpWord()<cr><cr>
 vnoremap <buffer> K <c-\><c-n>:help <c-r>=lh#visual#selection()<cr><cr>
 
 "------------------------------------------------------------------------
@@ -121,6 +123,23 @@ function! s:CurrentScript()
   let crt = expand('%:p')
   let crt = lh#path#strip_start(crt, &rtp)
   return crt
+endfunction
+
+function! s:CurrentHelpWord()
+  try 
+    let isk = &isk
+    set isk+=(,:,#,&
+    let w = expand('<cword>')
+  finally
+    let &isk = isk
+  endtry
+  let w = matchstr(w, '^[:&]\=\k\+(\=')
+  if w[-1:] == '('
+    let w .= ')'
+  elseif w[0] == '&'
+    let w = "'".w[1:]."'"
+  endif
+  return w
 endfunction
 " Functions }}}2
 "------------------------------------------------------------------------
