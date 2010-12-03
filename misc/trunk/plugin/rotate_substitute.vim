@@ -28,10 +28,35 @@ set cpo&vim
 " Avoid global reinclusion }}}1
 "------------------------------------------------------------------------
 " Commands and Mappings {{{1
+:command! -bang -nargs=1 -range CycleSubstitute <line1>,<line2>call s:CycleSubstitute("<bang>", <f-args>)
 :command! -bang -nargs=1 -range RotateSubstitute <line1>,<line2>call s:RotateSubstitute("<bang>", <f-args>)
 " Commands and Mappings }}}1
 "------------------------------------------------------------------------
 " Functions {{{1
+
+" ~ swap, see togle stuff
+" no back ref supported; makes no sense
+function! s:CycleSubstitute(bang, repl_arg) range
+  let do_loop = a:bang != "!"
+  let sep = a:repl_arg[0]
+  let fields = split(a:repl_arg, sep)
+  " build the action to execute
+  let action = '\=s:DoCycleSubst('.do_loop.',' . string(fields) . ', submatch(0))'
+  " prepare the :substitute command
+  let args = [join(fields, '\|'), action ]
+  let cmd = a:firstline . ',' . a:lastline . 's'
+	\. sep . join(fields, '\|')
+	\. sep . action
+	\. sep . 'g'
+  " echom cmd
+  " and run it
+  exe cmd
+endfunction
+
+function! s:DoCycleSubst(do_loop, fields, what)
+  let idx = (match(a:fields, a:what) + 1) % len(a:fields)
+  return a:fields[idx]
+endfunction
 
 function! s:RotateSubstitute(bang, repl_arg) range
   let do_loop = a:bang != "!"
@@ -104,6 +129,15 @@ endfunction
 " BfooE
 " CfooR
 " DfooT
+
+
+
+" %CycleSubstitute/A/B/C
+" ABC
+" BCA
+" CAB
+
+
 
 " Functions }}}1
 "------------------------------------------------------------------------
