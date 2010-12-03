@@ -1,7 +1,11 @@
+"log: fixed exchanges with the first word of the line
+
+" $Id$
+" author: Luc Hermitte
 let s:k_version = 200
 if &cp || (exists('g:loaded_swap_words') 
       \ && (g:loaded_swap_words >= s:k_version)
-      \ && !exists('g:force_reload_swap_words'))
+      \ && !exists('g:force_reload_vim_tip_swap_word'))
   finish 
 endif
 let g:swap_word_loaded = 1
@@ -50,6 +54,7 @@ nnoremap <silent> gc    xph
 " ======================================================================
 " Tip #470 : Piet Delport & Anthony (ad_scriven)
 vnoremap <silent> g" <esc>:call <sid>SwapVisualWithCut()<cr>
+vnoremap <silent> g' <esc>:call <sid>SwapVisualWithCut2()<cr>
 
 function! s:SwapVisualWithCut()
   normal! `.``
@@ -62,6 +67,60 @@ function! s:SwapVisualWithCut()
     normal! P
   else
     normal! gvp``P
+  endif
+endfunction
+
+function! s:SwapVisualWithCut2()
+  let v_s = col("'<")
+  let v_e = col("'>")
+  if line("'<")==line("'.") && v_s < col("'.")
+    let l = line("'.")
+    let c = col("'.") - 1
+    let deleted = @"
+    let line = getline(l)
+
+    let line_2 = (v_s > 1 ? line[ : v_s-1] : '')
+	  \. deleted 
+	  \. line[v_e : c-1]
+	  \. line[v_s : v_e-1]
+	  \. line[c : ]
+    normal! u
+    call setline(l, line_2)
+    echomsg "spe"
+  else
+    normal! `.``
+    normal! `.``gvp``P
+    echomsg "default"
+  endif
+endfunction
+
+function! s:SwapVisualWithCut3()
+  let deleted = @"
+
+  let v_s = getpos("'<")
+  let v_e = getpos("'>")
+  let d_s = getpos("'.")
+
+  if d_s[1] == v_s[1] " same line
+    let line = getline(d_s[1])
+    let c = d_s[2] - 1
+  endif
+  if line("'<")==line("'.") && v_s < col("'.")
+    let l = line("'.")
+    let c = col("'.") - 1
+
+    let line_2 = (v_s > 1 ? line[ : v_s[2]-1] : '')
+	  \. deleted 
+	  \. line[v_e[2] : c-1]
+	  \. line[v_s[2] : v_e[2]-1]
+	  \. line[c : ]
+    normal! u
+    call setline(d_s[1], line_2)
+    echomsg "same line"
+  else
+    normal! `.``
+    normal! `.``gvp``P
+    echomsg "default"
   endif
 endfunction
 
@@ -114,7 +173,7 @@ function! s:SwapWithNext(cursor_pos, type)
 
   " echo  '['.crt_word_start.','.crt_word_end.']='.crt_word 
   " \   .'### ['.next_word_start.','.next_word_end.']='.next_word
-  let s2 = s[:crt_word_start-1]
+  let s2 = (crt_word_start>0 ? s[:crt_word_start-1] : '')
         \ . next_word
         \ . s[crt_word_end+1 : next_word_start-1]
         \ . crt_word 
@@ -160,7 +219,7 @@ function! s:SwapWithPrev(cursor_pos, type)
 
   " echo  '['.crt_word_start.','.crt_word_end.']='.crt_word 
   " \   .'### ['.prev_word_start.','.prev_word_end.']='.prev_word
-  let s2 = s[:prev_word_start-1]
+  let s2 = (prev_word_start>0 ? s[:prev_word_start-1] : '')
         \ . crt_word 
         \ . s[prev_word_end+1 : crt_word_start-1]
         \ . prev_word
