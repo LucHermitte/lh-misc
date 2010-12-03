@@ -79,7 +79,7 @@ function! s:Reload()
     " b- For plugins and ftplugins, search for a force_reload variable
     " NB: the pattern used matches the one automatocally set by mu-template vim
     " templates
-    let re_reload = '\<force_reload\i*'.expand('%:t:r').'\>'
+    let re_reload = '\<force_reload\i*'.substitute(expand('%:t:r'), '\(\W\|_\)\+', '_', 'g').'\>'
     let l = search(re_reload, 'n')
     if l > 0
       let ll = getline(l)
