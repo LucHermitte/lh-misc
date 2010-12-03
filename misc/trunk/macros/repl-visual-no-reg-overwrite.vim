@@ -32,7 +32,7 @@ endfunction
 
 " This supports "rp that permits to replace the visual selection with the
 " contents of @r
-vnoremap <silent> <expr> p <sid>Repl()
+xnoremap <silent> <expr> p <sid>Repl()
 
 "------------------------------------------------------------------------
 let &cpo=s:cpo_save
