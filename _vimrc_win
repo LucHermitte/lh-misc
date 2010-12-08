@@ -35,11 +35,20 @@ function! s:Browser()
   return lh#option#get('browser', s:browser, '[bg]') . ' '
 endfunction
 
+function! s:RunBrowser(url)
+  let url = escape(a:url, '%')
+  if SystemDetected() == 'unix'
+    silent exe ':! '.<sid>Browser().url
+  else
+    silent exe ':! start '.<sid>Browser().url
+  endif
+endfunction
+
 nnoremap <silent> <C-L>e 
-      \ :silent exe ':! start '.<sid>Browser().
+      \ :call <sid>RunBrowser(
       \    matchstr(escape(expand('<cWORD>'), '#'), 
       \    '\%(.\{-}\zs\%(news:\\|mailto:\\|ftp://\\|https\=://\)\)\=[^:;,<>]\+'
-      \ )<CR>
+      \ ))<CR>
 
 " Problem with urls ending in .html
 " nnoremap <silent> <C-L>m 
@@ -49,8 +58,7 @@ nnoremap <silent> <C-L>e
       " \ )<CR>
 
 vnoremap <silent> <C-L>e 
-      \ <C-\><C-N>:let w:a_save=@a<cr>gv"ay
-      \ :silent exe ':!start '.<sid>Browser().@a<CR>:let @a=w:a_save<cr>:unlet w:a_save<cr>
+      \ :call <sid>RunBrowser(lh#visual#selection())<cr>
 
 " Running IE }}}
 " ======================================================================
