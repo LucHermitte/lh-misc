@@ -296,5 +296,33 @@ if $MACHTYPE == "sparc-sun-solaris"
   let g:manpageview_bookflag = "-s"
 endif
   
+" -- Open link in browser
+let s:browser = executable('firefox') ? 'firefox' : ''
+function! s:Browser()
+  return lh#option#get('browser', s:browser, '[bg]') . ' '
+endfunction
+
+function! s:RunBrowser(url)
+  let url = escape(a:url, '%')
+  silent exe ':!'.<sid>Browser().url.'&'
+endfunction
+
+nnoremap <silent> <C-L>e 
+      \ :call <sid>RunBrowser(
+      \    matchstr(escape(expand('<cWORD>'), '#'), 
+      \    '\%(.\{-}\zs\%(news:\\|mailto:\\|ftp://\\|https\=://\)\)\=[^:;,<>]\+'
+      \ ))<CR>
+
+" Problem with urls ending in .html
+" nnoremap <silent> <C-L>m 
+      " \ :exe ':!start rundll32 url.dll,FileProtocolHandler '.
+      " \    matchstr(expand('<cWORD>'), 
+      " \    '\%(.\{-}\zs\%(news:\\|mailto:\\|ftp://\\|https\=://\)\)\=[^:;,<>]\+'
+      " \ )<CR>
+
+vnoremap <silent> <C-L>e 
+      \ :call <sid>RunBrowser(lh#visual#selection())<cr>
+
+
 " ===================================================================
 " vim600: set fdm=marker:
