@@ -246,6 +246,15 @@ let g:DirDiffAddArgs  = "-b"
 
 " -- VCS commands.vim
 let VCSCommandDisableMappings = 1
+augroup VCSCommand
+  au User VCSBufferCreated silent! nmap <unique> <buffer> q :bwipeout<cr>
+augroup END
+
+" -- clang_complete
+let g:clang_complete_auto = 1
+set completeopt-=menu,preview
+set completeopt+=menuone
+
 " }}}
 
 " Multi-byte support {{{
