@@ -9,14 +9,14 @@
 " ===================================================================
 " SETtings {{{
 " ===================================================================
-  if has("unix")
-    let shell='tcsh'
-  endif
-  if has('gui_gtk')
-    set gfn=Luxi\ Mono\ 9
-  else
-    set gfn=-*-Fixed-medium-r-semiCondensed-*-13-120-*-*-C-*-iso8859-1
-  endif
+if has("unix")
+  let shell='tcsh'
+endif
+if has('gui_gtk')
+  set gfn=Luxi\ Mono\ 9
+else
+  set gfn=-*-Fixed-medium-r-semiCondensed-*-13-120-*-*-C-*-iso8859-1
+endif
 " }}}
 " ===================================================================
 " Keyboard customization {{{
@@ -24,113 +24,115 @@
 " Keyboard mapping for cursor keys {{{
 " [works for SUNs in Solarium (room 030) - 970815]
 "
-   map <ESC>OA <Up>
-   map <ESC>OB <Down>
-   map <ESC>OC <Right>
-   map <ESC>OD <Left>
+if !has('gui_running')
+  map <ESC>OA <Up>
+  map <ESC>OB <Down>
+  map <ESC>OC <Right>
+  map <ESC>OD <Left>
   imap <ESC>OA <Up>
   imap <ESC>OB <Down>
   imap <ESC>OC <Right>
   imap <ESC>OD <Left>
-"
-" Keyboard mapping for cursor keys
-" [works for XTerminals - 970818]
-   map <ESC>[A <Up>
-   map <ESC>[B <Down>
-   map <ESC>[C <Right>
-   map <ESC>[D <Left>
+  "
+  " Keyboard mapping for cursor keys
+  " [works for XTerminals - 970818]
+  map <ESC>[A <Up>
+  map <ESC>[B <Down>
+  map <ESC>[C <Right>
+  map <ESC>[D <Left>
   imap <ESC>[A <Up>
   imap <ESC>[B <Down>
   imap <ESC>[C <Right>
   imap <ESC>[D <Left>
+endif
 " }}}
 " -------------------------------------------------------------------
 " vt100/teraterm {{{
 if &term =~ 'vt100\|teraterm' " with putty
-" permettre le pave numerique.... sur la vt100 {{{
-   noremap  Op 0
-   noremap! Op 0
-   noremap  Oq 1
-   noremap! Oq 1
-   noremap  Or 2
-   noremap! Or 2
-   noremap  Os 3
-   noremap! Os 3
-   noremap  Ot 4
-   noremap! Ot 4
-   noremap  Ou 5
-   noremap! Ou 5
-   noremap  Ov 6
-   noremap! Ov 6
-   noremap  Ow 7
-   noremap! Ow 7
-   noremap  Ox 8
-   noremap! Ox 8
-   noremap  Oy 9
-   noremap! Oy 9
-   noremap  OM 
-   noremap! OM 
-"
-" remappe <del>
-   map [3~ <del>
-   map! [3~ <del>
-   map   <del>
-   map!  <del>
-   map   X
-"
-" touche insert pour basculer de mode
-   map  [2~ <insert>
-   map! [2~ <insert>
-"
-"HINT:! ^F   - Page Down
-   map  [6~ <PageDown>
-   map! [6~ <PageDown>
-"
-"HINT:! ^B   - Page Up
-   map  [5~ <PageUp>
-   map! [5~ <PageUp>
-"
-" <home>
-   map  [1~ <home>
-   map! [1~ <home>
+  " permettre le pave numerique.... sur la vt100 {{{
+  noremap  Op 0
+  noremap! Op 0
+  noremap  Oq 1
+  noremap! Oq 1
+  noremap  Or 2
+  noremap! Or 2
+  noremap  Os 3
+  noremap! Os 3
+  noremap  Ot 4
+  noremap! Ot 4
+  noremap  Ou 5
+  noremap! Ou 5
+  noremap  Ov 6
+  noremap! Ov 6
+  noremap  Ow 7
+  noremap! Ow 7
+  noremap  Ox 8
+  noremap! Ox 8
+  noremap  Oy 9
+  noremap! Oy 9
+  noremap  OM 
+  noremap! OM 
+  "
+  " remappe <del>
+  map [3~ <del>
+  map! [3~ <del>
+  map   <del>
+  map!  <del>
+  map   X
+  "
+  " touche insert pour basculer de mode
+  map  [2~ <insert>
+  map! [2~ <insert>
+  "
+  "HINT:! ^F   - Page Down
+  map  [6~ <PageDown>
+  map! [6~ <PageDown>
+  "
+  "HINT:! ^B   - Page Up
+  map  [5~ <PageUp>
+  map! [5~ <PageUp>
+  "
+  " <home>
+  map  [1~ <home>
+  map! [1~ <home>
 
-   "map  O~ <home>
-   "map! O~ <home>
-"
-" <end>
-   map  [4~ <end>
-   map! [4~ <end>
-   "map  O~ <end>
-   "map! O~ <end>
-"
-"HINT:  ^$   - fin de ligne (mode ins+norm)
-   map   <end>
-   map!  <end>
-" }}}
-" -------------------------------------------------------------------
-" Touches de fonctions programmees {{{
-" -------------------------------------------------------------------
-"HINT:  F1   - status du fichier
-" pour vt100 : PF1 = OP
+  "map  O~ <home>
+  "map! O~ <home>
+  "
+  " <end>
+  map  [4~ <end>
+  map! [4~ <end>
+  "map  O~ <end>
+  "map! O~ <end>
+  "
+  "HINT:  ^$   - fin de ligne (mode ins+norm)
+  map   <end>
+  map!  <end>
+  " }}}
+  " -------------------------------------------------------------------
+  " Touches de fonctions programmees {{{
+  " -------------------------------------------------------------------
+  "HINT:  F1   - status du fichier
+  " pour vt100 : PF1 = OP
   map  OP <F1>
   map! OP <F1>
   map  [23~ <S-F1>
   map! [23~ <S-F1>
-" pour gvim
+  " pour gvim
   map! [11~ <F1>
   map! [11~ <F1>
-"
-"HINT:  F2   - sauvegarde du fichier
-" pour vt100 : PF2 = OQ
+  "
+  "HINT:  F2   - sauvegarde du fichier
+  " pour vt100 : PF2 = OQ
   map  OQ <F2>
   map! OQ <F2>
   map  [24~ <S-F2>
   map! [24~ <S-F2>
-" pour gvim
+  " pour gvim
   map  [12~ <F2>
   map! [12~ <F2>
-"
-" fonctions libres de F3 a F4
+  "
+  " fonctions libres de F3 a F4
   map  OR   <F3>
   map! OR   <F3>
   map  [25~ <S-F3>
@@ -140,84 +142,84 @@ if &term =~ 'vt100\|teraterm' " with putty
   map! OS   <F4>
   map  [26~ <S-F4>
   map! [26~ <S-F4>
-"INCLUDE: fns
-"
-"HINT:  F5
-   map  [15~ <F5>
-   map! [15~ <F5>
-   map  [28~ <S-F5>
-   map! [28~ <S-F5>
-   "map  [12~ <F5>
-   "map! [12~ <F5>
-"
-"HINT:  F6
-   map  [17~ <F6>
-   map! [17~ <F6>
-   map  [29~ <S-F6>
-   map! [29~ <S-F6>
-"
-"HINT:  F7
-   map  [18~ <F7>
-   map! [18~ <F7>
-   map  [31~ <S-F7>
-   map! [31~ <S-F7>
-"
-"HINT:  F8
-   map  [19~ <F8>
-   map! [19~ <F8>
-   map  [32~ <S-F8>
-   map! [32~ <S-F8>
-"
-"HINT:  F9
-   map  [20~ <F9>
-   map! [20~ <F9>
-   map  [33~ <S-F9>
-   map! [33~ <S-F9>
-"   
-"HINT:  F10
-   map  [10~ <F10>
-   map! [10~ <F10>
-   map  [34~ <S-F10>
-   map! [34~ <S-F10>
-"   
-"HINT:  F11
-   "map  [23~ <F11>
-   "map! [23~ <F11>
-   "map  [23~ <S-F11>
-   "map! [23~ <S-F11>
-"   
-"HINT:  F12
-   "map  [24~ <F12>
-   "map! [24~ <F12>
-   "map  [24~ <S-F12>
-   "map! [24~ <S-F12>
-" }}}
-" -------------------------------------------------------------------
+  "INCLUDE: fns
+  "
+  "HINT:  F5
+  map  [15~ <F5>
+  map! [15~ <F5>
+  map  [28~ <S-F5>
+  map! [28~ <S-F5>
+  "map  [12~ <F5>
+  "map! [12~ <F5>
+  "
+  "HINT:  F6
+  map  [17~ <F6>
+  map! [17~ <F6>
+  map  [29~ <S-F6>
+  map! [29~ <S-F6>
+  "
+  "HINT:  F7
+  map  [18~ <F7>
+  map! [18~ <F7>
+  map  [31~ <S-F7>
+  map! [31~ <S-F7>
+  "
+  "HINT:  F8
+  map  [19~ <F8>
+  map! [19~ <F8>
+  map  [32~ <S-F8>
+  map! [32~ <S-F8>
+  "
+  "HINT:  F9
+  map  [20~ <F9>
+  map! [20~ <F9>
+  map  [33~ <S-F9>
+  map! [33~ <S-F9>
+  "   
+  "HINT:  F10
+  map  [10~ <F10>
+  map! [10~ <F10>
+  map  [34~ <S-F10>
+  map! [34~ <S-F10>
+  "   
+  "HINT:  F11
+  "map  [23~ <F11>
+  "map! [23~ <F11>
+  "map  [23~ <S-F11>
+  "map! [23~ <S-F11>
+  "   
+  "HINT:  F12
+  "map  [24~ <F12>
+  "map! [24~ <F12>
+  "map  [24~ <S-F12>
+  "map! [24~ <S-F12>
+  " }}}
+  " -------------------------------------------------------------------
 endif " }}}
 " -------------------------------------------------------------------
 " terminal setup {{{
 " from Johannes Zellner .vimrc
 if "screen" == &term || "rxvt" == &term || "linux" == &term
-    set t_kb=
-    set t_kD=[3~
-"    " fixdel
-    " I used the following lines to map the upper 8 colors
-    " (color 9 - 16) to 1 - 8.
-    "set t_Co=16
-    "set t_AF=[3%?%p1%{8}%>%t%p1%{8}%-%e%p1%;%dm
-    "set t_AB=[4%?%p1%{8}%>%t%p1%{8}%-%e%p1%;%dm
+  set t_kb=
+  set t_kD=[3~
+  "    " fixdel
+  " I used the following lines to map the upper 8 colors
+  " (color 9 - 16) to 1 - 8.
+  "set t_Co=16
+  "set t_AF=[3%?%p1%{8}%>%t%p1%{8}%-%e%p1%;%dm
+  "set t_AB=[4%?%p1%{8}%>%t%p1%{8}%-%e%p1%;%dm
 else
-    let rgb_file = "/usr/X11R6/lib/X11/rgb.txt"
-    if &t_Co <= 8 && ! exists('$BW') && &term != "xterm-color"
-	set t_Co=16
-    endif
-    if has("terminfo")
-	set t_AB=[%?%p1%{8}%<%t%p1%{40}%+%e%p1%{92}%+%;%dm
-	set t_AF=[%?%p1%{8}%<%t%p1%{30}%+%e%p1%{82}%+%;%dm
-    else
-	set t_Sf=[3%dm
-	set t_Sb=[4%dm
-    endif
+  let rgb_file = "/usr/X11R6/lib/X11/rgb.txt"
+  if &t_Co <= 8 && ! exists('$BW') && &term != "xterm-color"
+    set t_Co=16
+  endif
+  if has("terminfo")
+    set t_AB=[%?%p1%{8}%<%t%p1%{40}%+%e%p1%{92}%+%;%dm
+    set t_AF=[%?%p1%{8}%<%t%p1%{30}%+%e%p1%{82}%+%;%dm
+  else
+    set t_Sf=[3%dm
+    set t_Sb=[4%dm
+  endif
 endif
 " }}}
 " -------------------------------------------------------------------
@@ -225,19 +227,19 @@ endif
 if 
       \ (version >= 600) &&
       \ (!has('gui_running') || ($HOST != $REMOTEHOST))
-      " \ (!has('gui_running') || ($HOST != $REMOTEHOST) || ($TERM !~ '^xterm\|^rxvt'))
+  " \ (!has('gui_running') || ($HOST != $REMOTEHOST) || ($TERM !~ '^xterm\|^rxvt'))
   " Forced here, to support when exceed does not let us give <ALT-> to the
   " remote X server.
-  
+
   " -- Common brackets
-   map <C-J>		<Plug>MarkersJumpF
+  map <C-J>		<Plug>MarkersJumpF
   imap <C-J>		<Plug>MarkersJumpF
 
-   map <C-L><Ins>	<Plug>MarkersMark
+  map <C-L><Ins>	<Plug>MarkersMark
   imap <C-L><Ins>	<Plug>MarkersMark
-   map <C-L><Del>	<Plug>MarkersJumpF
+  map <C-L><Del>	<Plug>MarkersJumpF
   imap <C-L><Del>	<Plug>MarkersJumpF
-   map <C-L><S-Del>	<Plug>MarkersJumpB
+  map <C-L><S-Del>	<Plug>MarkersJumpB
   imap <C-L><S-Del>	<Plug>MarkersJumpB
 
   if !exists('g:cb_want_mode') || g:cb_want_mode
@@ -261,9 +263,9 @@ if
 endif
 
 if has('mac')
-   map <D-cr>		<Plug>MarkersJumpF
+  map <D-cr>		<Plug>MarkersJumpF
   imap <D-cr>		<Plug>MarkersJumpF
-   map <D-S-cr>		<Plug>MarkersJumpB
+  map <D-S-cr>		<Plug>MarkersJumpB
   imap <D-S-cr>		<Plug>MarkersJumpB
 
   if !exists('g:cb_want_mode') || g:cb_want_mode
@@ -295,7 +297,7 @@ let g:loaded_lhVimSpell_vim = executable('ispell') || executable('aspell')
 if $MACHTYPE == "sparc-sun-solaris"
   let g:manpageview_bookflag = "-s"
 endif
-  
+
 " -- Open link in browser
 let s:browser = executable('firefox') ? 'firefox' : ''
 function! s:Browser()
@@ -315,10 +317,10 @@ nnoremap <silent> <C-L>e
 
 " Problem with urls ending in .html
 " nnoremap <silent> <C-L>m 
-      " \ :exe ':!start rundll32 url.dll,FileProtocolHandler '.
-      " \    matchstr(expand('<cWORD>'), 
-      " \    '\%(.\{-}\zs\%(news:\\|mailto:\\|ftp://\\|https\=://\)\)\=[^:;,<>]\+'
-      " \ )<CR>
+" \ :exe ':!start rundll32 url.dll,FileProtocolHandler '.
+" \    matchstr(expand('<cWORD>'), 
+" \    '\%(.\{-}\zs\%(news:\\|mailto:\\|ftp://\\|https\=://\)\)\=[^:;,<>]\+'
+" \ )<CR>
 
 vnoremap <silent> <C-L>e 
       \ :call <sid>RunBrowser(lh#visual#selection())<cr>
