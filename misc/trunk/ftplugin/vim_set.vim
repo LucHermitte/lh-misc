@@ -162,8 +162,8 @@ vnoremap <buffer> <silent> <localleader>wh
       \ 1, 1, '', 1, 'wh ')<cr>
 
 " vmap  <buffer> <silent> <M-f> <localleader>for
-inoreab  <buffer> <silent> forin
-      \ <C-R>=InsertSeq('forin', 'for!cursorhere! in!mark!\nendfor!mark!')<CR>
+inoreab  <buffer> <silent> for
+      \ <C-R>=InsertSeq('for', 'for!cursorhere! in!mark!\nendfor!mark!')<CR>
 vnoremap <buffer> <silent> <localleader>for 
       \ <c-\><c-n>@=Surround('for !cursorhere! in !mark!', 'endfor!mark!',
       \ 1, 1, '', 1, 'for ')<cr>
