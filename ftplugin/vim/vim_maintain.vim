@@ -3,7 +3,7 @@
 " File:         ftplugin/vim/vim_maintain.vim                     {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://code.google.com/p/lh-vim/>
-" Version:      0.0.2
+" Version:      0.0.3
 " Created:      07th May 2010
 " Last Update:  $Date$
 "------------------------------------------------------------------------
@@ -19,6 +19,8 @@
 "       v0.0.1 :Verbose, :Reload, n_K
 "       v0.0.2 K keeps the opening bracket if any in order to correctly open
 "              function help
+"       v0.0.3 :Reload accept arguments (the same as :runtime), and argument
+"              completion
 " TODO:         
 "       Refactoring feature: move s:functions to autoload plugins
 " }}}1
@@ -46,7 +48,7 @@ vnoremap <buffer> K <c-\><c-n>:help <c-r>=lh#visual#selection()<cr><cr>
 "------------------------------------------------------------------------
 " Local commands {{{2
 
-command! -b -nargs=0 Reload  call s:Reload()
+command! -b -nargs=* -complete=custom,ReloadComplete Reload  call s:Reload(<f-args>)
 command! -b -nargs=? Verbose call s:Verbose(<f-args>)
 
 " move function to autoload plugin
@@ -70,27 +72,94 @@ let g:loaded_ftplug_vim_maintain = s:k_version
 " loaded, like functions that help building a vim-menu for this
 " ftplugin.
 
-function! s:Reload()
-  let crt = expand('%:p')
-  if crt =~ '\<autoload\>'
+function! s:ReloadOneScript(crt)
+  if a:crt =~ '\<autoload\>'
     " a- For plugins and ftplugins, search for a force_reload variable
-    exe 'so '.crt
+    echomsg "Reloading ".a:crt
+    exe 'so '.a:crt
   else
     " b- For plugins and ftplugins, search for a force_reload variable
     " NB: the pattern used matches the one automatocally set by mu-template vim
     " templates
-    let re_reload = '\<force_reload\i*'.substitute(expand('%:t:r'), '\(\W\|_\)\+', '_', 'g').'\>'
-    let l = search(re_reload, 'n')
+    let re_reload = '\<force_reload\i*'.substitute(fnamemodify(a:crt, ':t:r'), '\(\W\|_\)\+', '_', 'g').'\>'
+    let lines = readfile(a:crt)
+    let l = match(lines, re_reload)
+    " let l = search(re_reload, 'n')
     if l > 0
-      let ll = getline(l)
+      " let ll = getline(l)
+      let ll = lines[l]
       let reload = matchstr(ll, re_reload)
       let g:{reload} = 1
-      exe 'so '.crt
+      echomsg "Reloading ".a:crt." (with ".reload."=1)"
+      exe 'so '.a:crt
     else
       throw "Sorry, there is no ".re_reload.' variable to set in order to reload this plugin'
       " todo: find the other pattern like did_ftplugin, etc
     endif
   endif
+endfunction
+
+function! s:Reload(...)
+  if a:0 == 0
+    call s:ReloadOneScript(expand('%:p'))
+  else
+    for file_pat in a:000
+      let files = lh#path#glob_as_list(&rtp, file_pat)
+      for file in  files
+	call s:ReloadOneScript(file)
+      endfor
+    endfor
+  endif
+endfunction
+
+let s:commands='^Rel\%[oad]'
+function! ReloadComplete(ArgLead, CmdLine, CursorPos)
+  let cmd = matchstr(a:CmdLine, s:commands)
+  let cmdpat = '^'.cmd
+
+  let tmp = substitute(a:CmdLine, '\s*\S\+', 'Z', 'g')
+  let pos = strlen(tmp)
+  let lCmdLine = strlen(a:CmdLine)
+  let fromLast = strlen(a:ArgLead) + a:CursorPos - lCmdLine 
+  " The argument to expand, but cut where the cursor is
+  let ArgLead = strpart(a:ArgLead, 0, fromLast )
+  return s:FindMatchingFiles(&rtp, ArgLead)
+endfunction
+
+" s:FindMatchingFiles(path,ArgLead)                        {{{3
+" function from SearchInRuntime
+function! s:FindMatchingFiles(pathsList, ArgLead)
+  " Convert the paths list to be compatible with globpath()
+  let ArgLead = a:ArgLead
+  " If there is no '*' in the ArgLead, append it
+  if -1 == stridx(ArgLead, '*')
+    let ArgLead .=  '*'
+  endif
+  " Get the matching paths
+  let paths = globpath(a:pathsList, ArgLead)
+
+  " Build the result list of matching paths
+  let result = ''
+  while strlen(paths)
+    let p     = matchstr(paths, "[^\n]*")
+    let paths = matchstr(paths, "[^\n]*\n\\zs.*")
+    let sl = isdirectory(p) ? '/' : '' " use shellslash
+    let p     = fnamemodify(p, ':t') . sl
+    if strlen(p) && (!strlen(result) || (result !~ '.*'.p.'.*'))
+      " Append the matching path is not already in the result list
+      let result .=  (strlen(result) ? "\n" : '') . p
+    endif
+  endwhile
+
+  " Add the leading path as it has been stripped by fnamemodify
+  let lead = fnamemodify(ArgLead, ':h') . '/'
+  let lead = substitute(lead, '^.[/\\]', '', '') " fnamemodify may returns '.' on windows ...
+  if strlen(lead) > 1
+    let result = substitute(result, '\(^\|\n\)', '\1'.lead, 'g')
+  endif
+
+  " Return the list of paths matching a:ArgLead
+  return result
 endfunction
 
 function! s:Verbose(...)
