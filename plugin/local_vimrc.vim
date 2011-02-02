@@ -25,7 +25,8 @@
 " Installation:	{{{2
 " 	0- Set g:local_vimrc in your .vimrc if you wish to use filenames other
 " 	   than '_vimrc_local.vim'
-" 	a- Drop this plugin into a {rtp}/plugin/ directory
+" 	a- Drop this plugin into a {rtp}/plugin/ directory, and install
+" 	   lh-vim-lib.
 " 	b- Define _vimrc_local.vim files into your directories
 "
 " 	   Ideally, each foo/bar/_vimrc_local.vim should be defined the same
@@ -71,18 +72,19 @@
 " TODO:		{{{2
 " 	(*) Add option to stop looking at $HOME or elsewhere
 " 	    ([bg]:lv_stop_at : string, default $HOME) 
+" See also: alternative scripts: #441, #3393, #1860, ...
 " }}}1
 "=============================================================================
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 108
+let s:k_version = 109
 if exists("g:loaded_local_vimrc") 
       \ && (g:loaded_local_vimrc >= s:k_version)
       \ && !exists('g:force_reload_local_vimrc')
   finish 
 endif
-let g:loaded_local_vimrc_vim = '109'
+let g:loaded_local_vimrc_vim = s:k_version
 let s:cpo_save=&cpo
 set cpo&vim
 " Avoid global reinclusion }}}1
