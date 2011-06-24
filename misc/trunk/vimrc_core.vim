@@ -54,6 +54,7 @@ endif
                          "cmts df: sr:/*,mb:*,el:*/,://,b:#,:%,:XCOMM,n:>,fb:-
 " set dictionary=/usr/dict/words,/local/lib/german.words
                         " english words first
+  set expandtab
   set nodigraph         " use i_CTRL-K instead!
   set noequalalways     " don't resize windows after splitting or closing a window
   set noerrorbells      " damn this beep!  ;-)
@@ -153,7 +154,7 @@ endif
   set whichwrap=<,>     " 
   set wildchar=<TAB>    " the char used for "expansion" on the command line
                         " default value is "<C-E>" but I prefer the tab key:
-  set wildignore=*.bak,*.swp,*.o,*~,*.class,*.exe,*.obj,*.a,/CVS/,/.svn/,*.so,*.a
+  set wildignore=*.bak,*.swp,*.o,*~,*.class,*.exe,*.obj,/CVS/,/.svn/,/.git/,*.so,*.a,*.lo,*.la,*.Plo,*.Po
   set wildmenu          " Completion on th command line shows a menu
   set winminheight=0	" Minimum height of VIM's windows opened
   set wrapmargin=1    
@@ -190,15 +191,17 @@ let g:want_buffermenu_for_tex    = 2 " 0 : no, 1 : yes, 2 : global disable
 let g:marker_select_empty_marks    = 1
 let g:marker_center                = 0
 
-" -- Gegerly Kontra's MuTemplate <http://vim.sf.net/>
+" -- muTemplate
 " To override in some ftplugins if required.
 let g:url         = 'http://code.google.com/p/lh-vim/'
 let g:author_short= "Luc Hermitte"
 let g:author_email= "hermitte {at} free {dot} fr"
 let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">" 
-    " let g:author_short="Luc Hermitte <hermitte at free.fr>"
-    " let g:author	    ="Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>\<c-m>" .
-	  " \ '"'. "\<tab>\<tab><URL:http://hermitte.free.fr/vim>"
+" let g:author_short="Luc Hermitte <hermitte at free.fr>"
+" let g:author	    ="Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>\<c-m>" .
+" \ '"'. "\<tab>\<tab><URL:http://hermitte.free.fr/vim>"
+imap <unique> <c-space>	<Plug>MuT_cWORD
+vmap <unique> <c-space>	<Plug>MuT_Surround
 
 " -- lhVimSpell <http://vim.sf.net/> <http://hermitte.free.fr/vim/>
 let g:VS_aspell_add_directly_to_dict = 1
@@ -251,9 +254,47 @@ augroup VCSCommand
 augroup END
 
 " -- clang_complete
-let g:clang_complete_auto = 1
+let g:clang_complete_auto = 0
 set completeopt-=menu,preview
 set completeopt+=menuone
+
+" -- vim addons manager
+function! s:ActivateAddons()
+  let vimfiles = lh#path#vimfiles()
+  exe 'set rtp+='.vimfiles.'/addons/vim-addon-manager'
+  try
+    " script #3361
+    call scriptmanager#Activate(['indent_guides'])
+  catch /.*/
+    echoe v:exception
+  endtry
+endfunction
+augroup VAM
+  au!
+  au VimEnter * call <sid>ActivateAddons()
+augroup END
+
+" -- no mark ring/preview word
+let g:loaded_markring = 1000
+imap <unique> <m-p> <Plug>PreviewWord
+nmap <unique> <m-p> <Plug>PreviewWord
+
+" -- VAM
+fun! s:SetupVAM()
+  set runtimepath+=~/vim-addons/vim-addon-manager
+  " commenting try .. endtry because trace is lost if you use it.
+  " There should be no exception anyway
+  " try
+  call vam#ActivateAddons(['UT', 'mu-template'], {'auto_install' : 0})
+  " pluginA could be github:YourName see vam#install#RewriteName()
+  " catch /.*/
+  " echoe v:exception
+  " endtry
+endf
+call s:SetupVAM()
+"" Optionally generate helptags:
+" UpdateAddon vim-addon-manager
+
 
 " }}}
 
@@ -533,8 +574,10 @@ endfunction
 " }}}
 " -------------------------------------------------------------------
 " Commands: {{{
-command! -nargs=* -complete=file Make	cd %:p:h | make <args>
-command! -nargs=* -complete=file MAKE	cd %:p:h | make <args>
+if ! exists(':Make')
+  command! -nargs=* -complete=file Make	cd %:p:h | make <args>
+  command! -nargs=* -complete=file MAKE	cd %:p:h | make <args>
+endif
 command! -nargs=0 		 CD	cd %:p:h
 command! -nargs=0 		 LCD	lcd %:p:h
 " }}}
