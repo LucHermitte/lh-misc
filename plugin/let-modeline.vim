@@ -5,8 +5,8 @@
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://hermitte.free.fr/vim/>
 " URL: http://code.google.com/p/lh-vim/source/browse/misc/trunk/plugin/let-modeline.vim
-" Version:      1.8
-" Last Update:  09th Nov 2009 ($Date$)
+" Version:      1.9
+" Last Update:  21st Apr 2011 ($Date$)
 "
 " Purpose:                        {{{2
 "       Defines the function : FirstModeLine() that extends the VIM modeline
@@ -75,6 +75,7 @@
 "           uppercase letters
 "
 " Changes:                        {{{2
+"       v1.9:   @/ is preserved
 "       v1.8:   autocommands moved to the plugin
 "       v1.7:   Optimizations
 "       v1.6:   Support for environment variables.
@@ -96,7 +97,7 @@
 " }}}1
 " ===========================================================================
 " Definitions: {{{1
-if exists("g:loaded_let_modeline") | finish | endif
+if exists("g:loaded_let_modeline") && ! exists('g:force_reload_let_modeline') | finish | endif
 let g:loaded_let_modeline = 1
 
 " Internal function dedicated to the recognition of function calls {{{2
@@ -158,12 +159,14 @@ function! s:Do_it_on_range(first, last)
   set nofoldenable
   if exists(':try')
     try
+      let s = @/
       silent execute a:first.','.a:last. 'g/'.s:modeline_pat.
             \ '/:call FML_parse_line(matchstr(getline("."),"'.
             \ escape(s:modeline_pat, '\\') .'"))'
       " Purge the history for the search pattern just used.
       call histdel('search', -1)
     finally
+      let @/ = s
       let &foldenable = s:save_fold_enable
     endtry
   else " Older versions of Vim
