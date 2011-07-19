@@ -53,10 +53,10 @@
 "
 "------------------------------------------------------------------------
 " Avoid reinclusion
-if exists("g:loaded_lhVimSpell_vim") && ! exists('g:force_load_lhVimSpell')
+if exists("g:loaded_lhVimSpell") && ! exists('g:force_reload_lhVimSpell')
   finish
 endif
-let g:loaded_lhVimSpell_vim = 1
+let g:loaded_lhVimSpell = 1
 
 "=============================================================================
 " Part:		lhVimSpell/dependencies {{{
