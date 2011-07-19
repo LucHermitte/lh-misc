@@ -3,7 +3,7 @@
 " File:         ftplugin/vim/vim_maintain.vim                     {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://code.google.com/p/lh-vim/>
-" Version:      0.0.3
+" Version:      0.0.4
 " Created:      07th May 2010
 " Last Update:  $Date$
 "------------------------------------------------------------------------
@@ -21,12 +21,13 @@
 "              function help
 "       v0.0.3 :Reload accept arguments (the same as :runtime), and argument
 "              completion
+"       v0.0.4: Reload works when the &isk contains ' or "
 " TODO:         
 "       Refactoring feature: move s:functions to autoload plugins
 " }}}1
 "=============================================================================
 
-let s:k_version = 002
+let s:k_version = 004
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
 if &cp || (exists("b:loaded_ftplug_vim_maintain")
@@ -81,21 +82,27 @@ function! s:ReloadOneScript(crt)
     " b- For plugins and ftplugins, search for a force_reload variable
     " NB: the pattern used matches the one automatocally set by mu-template vim
     " templates
-    let re_reload = '\<force_reload\i*'.substitute(fnamemodify(a:crt, ':t:r'), '\(\W\|_\)\+', '_', 'g').'\>'
-    let lines = readfile(a:crt)
-    let l = match(lines, re_reload)
-    " let l = search(re_reload, 'n')
-    if l > 0
-      " let ll = getline(l)
-      let ll = lines[l]
-      let reload = matchstr(ll, re_reload)
-      let g:{reload} = 1
-      echomsg "Reloading ".a:crt." (with ".reload."=1)"
-      exe 'so '.a:crt
-    else
-      throw "Sorry, there is no ".re_reload.' variable to set in order to reload this plugin'
-      " todo: find the other pattern like did_ftplugin, etc
-    endif
+    try
+      let isk_save = &isk
+      set isk-='"
+      let re_reload = '\<force_reload\i*'.substitute(fnamemodify(a:crt, ':t:r'), '\(\W\|_\)\+', '_', 'g').'\>'
+      let lines = readfile(a:crt)
+      let l = match(lines, re_reload)
+      " let l = search(re_reload, 'n')
+      if l > 0
+        " let ll = getline(l)
+        let ll = lines[l]
+        let reload = matchstr(ll, re_reload)
+        let g:{reload} = 1
+        echomsg "Reloading ".a:crt." (with ".reload."=1)"
+        exe 'so '.a:crt
+      else
+        throw "Sorry, there is no ".re_reload.' variable to set in order to reload this plugin'
+        " todo: find the other pattern like did_ftplugin, etc
+      endif
+    finally
+      let &isk = isk_save
+    endtry
   endif
 endfunction
 

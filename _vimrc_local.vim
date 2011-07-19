@@ -42,6 +42,8 @@ else
   let b:tags_options = ' --exclude="*.vim"'
 endif
 
+call lh#option#add('l:tags', b:tags_dirname . '/tags')
+
 
 "=============================================================================
 " Global Definitions {{{1
