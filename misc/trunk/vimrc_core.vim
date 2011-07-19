@@ -259,41 +259,79 @@ set completeopt-=menu,preview
 set completeopt+=menuone
 
 " -- vim addons manager
+let s:my_plugins = [
+      \ 'lh-vim-lib'         ,
+      \ 'lh-brackets'        ,
+      \ 'build-tools-wrapper',
+      \ 'lh-tags'            ,
+      \ 'lh-dev'             ,
+      \ 'mu-template'        ,
+      \ 'lh-cpp'             ,
+      \ 'lh-refactor'        ,
+      \ 'search-in-runtime'  ,
+      \ 'system-tools'       ,
+      \ 'UT'                 ,
+      \ 'lh-misc'
+      \]
+let g:vim_addon_manager = {}
+let g:vim_addon_manager['plugin_sources'] = {}
+let g:vim_addon_manager['plugin_sources']['lh-misc'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/misc/trunk' }
+
+fun X(plugin_sources, www_vim_org, scm_plugin_sources)
+  " run default:
+  call vam_known_repositories#MergeSources(a:plugin_sources, a:www_vim_org, a:scm_plugin_sources)
+
+  " patch sources the way you like:
+  " let pwd = 'to_be_defined'
+  let pwd = inputsecret("pwd: ")
+  for k in s:my_plugins
+    let a:plugin_sources[k]['username'] = join(['luc.hermitte','gmail.com'], '@')
+    let a:plugin_sources[k]['password'] = pwd
+    let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], '^http\>', 'https', '')
+  endfor
+  for k in keys(a:plugin_sources)
+    " Convert git protocol to SSH protocol for github access
+    if get(a:plugin_sources[k],'type','') == 'git'
+      let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'git@\1:\2', '')
+    endif
+  endfor
+endf
+
 function! s:ActivateAddons()
+  runtime addons/lh-vim-lib/autoload/lh/path.vim
+  runtime addons/lh-vim-lib/autoload/lh/option.vim
   let vimfiles = lh#path#vimfiles()
   exe 'set rtp+='.vimfiles.'/addons/vim-addon-manager'
-  try
-    " script #3361
-    call scriptmanager#Activate(['indent_guides'])
-  catch /.*/
-    echoe v:exception
-  endtry
+  " tell VAM to use your MergeSources function:
+  let g:vim_addon_manager['MergeSources'] = function('X')
+  " There should be no exception anyway
+  " try
+  " latex-suite stuff, only in run for latex
+  if match(argv(), 'tex$') >= 0
+    call vam#ActivateAddons(['vim-latex'])
+  endif
+  call vam#ActivateAddons(['stakeholders'])
+  " script #3361
+  call vam#ActivateAddons(['indent_guides'])
+  call vam#ActivateAddons(s:my_plugins, {'auto_install' : 0})
+  " pluginA could be github:YourName see vam#install#RewriteName()
+  " catch /.*/
+  " echoe v:exception
+  " endtry
 endfunction
-augroup VAM
-  au!
-  au VimEnter * call <sid>ActivateAddons()
-augroup END
+" augroup VAM
+  " au!
+  " au VimEnter * call <sid>ActivateAddons()
+" augroup END
+call s:ActivateAddons()
+
+"" Optionally generate helptags:
+" UpdateAddon vim-addon-manager
 
 " -- no mark ring/preview word
 let g:loaded_markring = 1000
 imap <unique> <m-p> <Plug>PreviewWord
 nmap <unique> <m-p> <Plug>PreviewWord
-
-" -- VAM
-fun! s:SetupVAM()
-  set runtimepath+=~/vim-addons/vim-addon-manager
-  " commenting try .. endtry because trace is lost if you use it.
-  " There should be no exception anyway
-  " try
-  call vam#ActivateAddons(['UT', 'mu-template'], {'auto_install' : 0})
-  " pluginA could be github:YourName see vam#install#RewriteName()
-  " catch /.*/
-  " echoe v:exception
-  " endtry
-endf
-call s:SetupVAM()
-"" Optionally generate helptags:
-" UpdateAddon vim-addon-manager
 
 
 " }}}
@@ -880,6 +918,10 @@ endif
 " }}}
 
 " }}}
+
+" Prédac
+vnoremap <silent> µ <esc>:echo strftime('%c', lh#visual#selection())<cr>
+nnoremap <silent> µ :echo strftime('%c', matchstr(getline('.'), 'FRAME \zs\d\+\ze\d\{3}'))<cr>
 " ===================================================================
 " Last but not least... {{{
 " ===================================================================
