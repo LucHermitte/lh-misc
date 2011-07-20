@@ -3,7 +3,7 @@
 " File:		plugin/rotate_substitute.vim                      {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:	1.0.0
+" Version:	1.0.1
 " Created:	27th Nov 2009
 " Last Update:	$Date$
 "------------------------------------------------------------------------
@@ -83,7 +83,7 @@ function! s:RotateSubstitute(bang, repl_arg) range
       endif
     endfor
   endfor
-  " echo "max back-ref=".max_back_ref
+  echo "max back-ref=".max_back_ref
   let sm = ''
   for i in range(0, max_back_ref)
     let sm .= ','. 'submatch('.i.')' 
@@ -114,6 +114,10 @@ function! s:DoRotateSubst(do_loop, list, replaced, ...)
     let res = ''
     while strlen(res0)
       let ml = matchlist(res0, '\(.\{-}\)\(\\\d\+\)\(.*\)')
+      if empty(ml)
+        let res.=res0
+        break
+      endif
       let res .= ml[1]
       let ref = eval(substitute(ml[2], '\\\(\d\+\)', 'a:\1', ''))
       let res .= ref
