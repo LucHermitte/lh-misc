@@ -83,7 +83,7 @@ function! s:RotateSubstitute(bang, repl_arg) range
       endif
     endfor
   endfor
-  echo "max back-ref=".max_back_ref
+  " echo "max back-ref=".max_back_ref
   let sm = ''
   for i in range(0, max_back_ref)
     let sm .= ','. 'submatch('.i.')' 
