@@ -243,7 +243,7 @@ hi User3 ctermfg=yellow ctermbg=black guifg=lightyellow guibg=black
 map <Leader>hlt <Plug>HiLinkTrace
 
 " -- William Lee's DirDiff
-let g:DirDiffExcludes = '*.vba,*.rss,CVS,SunWS_cache,ir.out,.*.state,exe,bin,obj,tags,lib,.svn,'.&wildignore
+let g:DirDiffExcludes = '*.vba,*.rss,CVS,SunWS_cache,ir.out,.*.state,exe,bin,obj,*.o,*.os,tags,lib,.svn,html,*.a,*.so'.&wildignore
 let g:DirDiffIgnore   = '$Id,$Date'
 let g:DirDiffAddArgs  = "-b"
 
