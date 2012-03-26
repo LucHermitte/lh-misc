@@ -265,36 +265,46 @@ let s:my_plugins = [
       \ 'build-tools-wrapper',
       \ 'lh-tags'            ,
       \ 'lh-dev'             ,
-      \ 'mu-template'        ,
+      \ 'mu-template.lh'     ,
       \ 'lh-cpp'             ,
       \ 'lh-refactor'        ,
       \ 'search-in-runtime'  ,
       \ 'system-tools'       ,
       \ 'UT'                 ,
-      \ 'lh-misc'
+      \ 'misc'
       \]
 let g:vim_addon_manager = {}
 let g:vim_addon_manager['plugin_sources'] = {}
-let g:vim_addon_manager['plugin_sources']['lh-misc'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/misc/trunk' }
+let g:vim_addon_manager['plugin_sources']['misc'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/misc/trunk' }
 
-fun X(plugin_sources, www_vim_org, scm_plugin_sources)
+" fun X(plugin_sources, www_vim_org, scm_plugin_sources)
+fun X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_name)
   " run default:
-  call vam_known_repositories#MergeSources(a:plugin_sources, a:www_vim_org, a:scm_plugin_sources)
+  call vam_known_repositories#MergeSources(a:plugin_sources, a:www_vim_org, a:scm_plugin_sources, a:patch_function, a:snr_to_name)
 
   " patch sources the way you like:
   " let pwd = 'to_be_defined'
-  let pwd = inputsecret("pwd: ")
+  if !exists('s:pwd')
+    runtime addons/vim-pwds.vim
+    let s:pwd = GetPwd('googlecode')
+  endif
   for k in s:my_plugins
     let a:plugin_sources[k]['username'] = join(['luc.hermitte','gmail.com'], '@')
-    let a:plugin_sources[k]['password'] = pwd
-    let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], '^http\>', 'https', '')
-  endfor
-  for k in keys(a:plugin_sources)
-    " Convert git protocol to SSH protocol for github access
-    if get(a:plugin_sources[k],'type','') == 'git'
-      let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'git@\1:\2', '')
+    let a:plugin_sources[k]['password'] = s:pwd
+    echomsg a:plugin_sources[k]['url']
+    if a:plugin_sources[k]['url'] =~ 'svn'
+      let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], '^http\>', 'https', '')
     endif
   endfor
+  " TODO: identify work place and not home place
+  if $USERDOMAIN != 'TOPAZE'
+    for k in keys(a:plugin_sources)
+      " Convert git protocol to SSH protocol for github access
+      if get(a:plugin_sources[k],'type','') == 'git'
+        let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'git@\1:\2', '')
+      endif
+    endfor
+  endif
 endf
 
 function! s:ActivateAddons()
@@ -310,9 +320,9 @@ function! s:ActivateAddons()
   if match(argv(), 'tex$') >= 0
     call vam#ActivateAddons(['vim-latex'])
   endif
-  call vam#ActivateAddons(['stakeholders'])
   " script #3361
-  call vam#ActivateAddons(['indent_guides'])
+  call vam#ActivateAddons(['Indent_Guides'])
+  call vam#ActivateAddons(['stakeholders'])
   call vam#ActivateAddons(s:my_plugins, {'auto_install' : 0})
   " pluginA could be github:YourName see vam#install#RewriteName()
   " catch /.*/
