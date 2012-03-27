@@ -30,7 +30,6 @@ set cpo&vim
 " Avoid global reinclusion }}}1
 "------------------------------------------------------------------------
 " Commands and Mappings {{{1
-" ~~~~
 
 vnoremap <silent> * <c-\><c-n>/<c-r>=escape(lh#visual#selection(), '/\^$*.[~')<cr><cr>
 vnoremap <silent> # <c-\><c-n>?<c-r>=escape(lh#visual#selection(), '?\^$*.[~')<cr><cr>
