@@ -32,3 +32,6 @@ au BufNewFile,BufRead *.ums setf umlspeed
 
 " ATV's fcf files
 au BufNewFile,BufRead *.fcf set ft=dosini
+
+" QPEC extensions:
+au BufNewFile,BufRead *.ce,*.cty,*.cct set ft=c

@@ -265,7 +265,7 @@ let s:my_plugins = [
       \ 'build-tools-wrapper',
       \ 'lh-tags'            ,
       \ 'lh-dev'             ,
-      \ 'mu-template.lh'     ,
+      \ 'mu-template@lh'     ,
       \ 'lh-cpp'             ,
       \ 'lh-refactor'        ,
       \ 'search-in-runtime'  ,
