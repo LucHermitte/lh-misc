@@ -33,7 +33,7 @@ set cpo&vim
 function! RestoreRegister()
   if &clipboard == 'unnamed'
     let @* = s:restore_reg
-  elseif &clipboardplus == 'unnamed'
+  elseif &clipboard == 'unnamedplus'
     let @+ = s:restore_reg
   else
     let @" = s:restore_reg
