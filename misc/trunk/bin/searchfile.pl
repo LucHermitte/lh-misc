@@ -189,13 +189,15 @@ sub search
     my (@cmd) = ('find', $opt_path,
         '\(', 
         '-name', 'CVS', '-o',
+        '-name', '.svn', '-o',
+        '-name', '.git', '-o',
         '-name', 'Generated', '-o',
         # '-name', 'tu', '-o',
         # '-name', 'tv', '-o',
         '-name', 'SunWS_cache', '-o',
-        '-name', 'obj', '-o',
+        '-name', 'obj', # '-o',
         # '-name', 'bin', '-o',
-        '-name', 'lib',
+        # '-name', 'lib',
         '\)', '-prune', '-o',
         @find_params, '-print', @grep_cmd);
 
@@ -278,16 +280,21 @@ See regex(5).
 
 =over 8
 
-=item B<--path> F<search-path>
+=item B<--path|-p> F<search-path>
 
 (String) A path name of a starting point in the directory hierarchy. Default:
 current directory.
 
-=item B<--filename|--nofilename>
+=item B<--exclude|-x> F<exclude-pattern>
+
+(Regex) Pattern used to exclude lines matching the search PATTERN. This option can be used several
+times.
+
+=item B<--filename|--nofilename|-f>
 
 (Boolean) Display the filename matching the regex. Default: true
 
-=item B<--insensitive|--noinsensitive>
+=item B<--insensitive|--noinsensitive|-i>
 
 (Boolean) Do a case insensitive search. Default: false
 
@@ -299,7 +306,7 @@ current directory.
 
 (Boolean) Display the line numbers matching the regex. Default: false
 
-=item B<--colorize|--nocolorize>
+=item B<--colorize|--nocolorize|-c>
 
 (Boolean) Colorize the filesnames in which the pattern has been matched, and
 the characters matching the pattern. Default: false
@@ -311,7 +318,9 @@ colors)
 
 No execution mode. Prints system calls, but does not execute them.
 
-=item B<--verbose> F<verbose-level>
+=item B<--verbose|-v> F<verbose-level>
+
+=item B<--quiet|-q>
 
 =over 8
 
@@ -354,7 +363,7 @@ Luc Hermitte <luc.hermitte {at} free.fr>
 
 =head1 VERSION
 
-0.1.7
+0.1.8
 
 =cut
 
