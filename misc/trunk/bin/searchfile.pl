@@ -99,6 +99,12 @@ sub check_options
         -message => "Specify a root directory")
     if ($opt_path =~ /^$/) ;
 
+    pod2usage(
+        -verbose => 1,
+        -exitstatus => 2,
+        -message => "--nofilename and --nolines cannot be used together")
+    if (!$opt_filename && !$opt_lines) ;
+
     @opt_extensions  = flatten_list(@opt_extensions) ;
     @opt_exclude_pat = flatten_list(@opt_exclude_pat) ;
 
@@ -154,9 +160,11 @@ sub ext2find
 sub what_to_display
 {
     my ($disp_filenames, $disp_matches, $disp_lineno) = @_ ;
-    my $opt1 = ($disp_filenames && ! $disp_matches)
-    ? '-l'
-    : ( ($disp_lineno) ? '-n' : '' ) ;
+    my $opt1
+    = ($disp_filenames && ! $disp_matches) ? '-l'
+    : (!$disp_filenames) ? '-h'
+    :  $disp_lineno ? '-n'
+    : ''  ;
     my $opt2 = ($disp_filenames && $disp_matches) ? '-print' : '' ;
     printf "grep+find parameters: {$opt1 -- =$opt2}\n" if ($verbose >= 4);
     return ($opt1, $opt2) ;
@@ -363,7 +371,7 @@ Luc Hermitte <luc.hermitte {at} free.fr>
 
 =head1 VERSION
 
-0.1.8
+0.2.0
 
 =cut
 
