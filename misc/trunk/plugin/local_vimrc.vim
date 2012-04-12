@@ -1,11 +1,12 @@
 "=============================================================================
 " $Id$
-" File:		local_vimrc.vim                                           {{{1
+" File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:	1.9
+" Version:	1.10
 " Created:	09th Apr 2003
-" Last Update:	21st Apr 2010 ($Date)
+" Last Update:	10th Apr 2012
+" License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
 "	Search for a _vimrc_local.vim file in the parents directories and
@@ -52,6 +53,8 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"	v1.10   s:k_version in local_vimrc files is automatically incremented
+"	        on saving
 "	v1.9    New command :SourceLocalVimrc in order to explicitly load the
 "	        local-vimrc file before creating new files from a template (We
 "	        can't just rely on BufNewFile as there is no guaranty
@@ -160,11 +163,21 @@ function! s:Main(path)
   endif
 endfunction
 
+" Update s:k_version in local_vimrc files                             {{{2
+function! s:IncrementVersionOnSave()
+  let l = search('let s:k_version', 'n')
+  if l > 0
+    let nl = substitute(getline(l), '\(let\s\+s:k_version\s*=\s*\)\(\d\+\)\s*$', '\=submatch(1).(1+submatch(2))', '')
+    call setline(l, nl)
+  endif
+endfunction
+
 " Auto-command                                                        {{{2
 " => automate the loading of local-vimrc's every time we change buffers 
 aug LocalVimrc
   au!
   au BufEnter * :call s:Main(expand('<afile>:p:h'))
+  exe 'au BufWritePre '.s:local_vimrc . ' call s:IncrementVersionOnSave()'
 aug END
 
 " Functions }}}1
