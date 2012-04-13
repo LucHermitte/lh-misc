@@ -20,6 +20,10 @@ endtry
 " deactivate it with:
 let g:vimembedscript = 1
 
+" Selection -> clipboard
+set guioptions+=a
+set clipboard+=autoselect
+
 " Why do we need to bother with '\' ?
 set shellslash
 " ======================================================================
