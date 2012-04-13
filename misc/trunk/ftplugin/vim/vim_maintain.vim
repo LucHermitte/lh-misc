@@ -107,16 +107,22 @@ function! s:ReloadOneScript(crt)
 endfunction
 
 function! s:Reload(...)
-  if a:0 == 0
-    call s:ReloadOneScript(expand('%:p'))
-  else
-    for file_pat in a:000
-      let files = lh#path#glob_as_list(&rtp, file_pat)
-      for file in  files
-	call s:ReloadOneScript(file)
+  try 
+    let s_isk = &isk
+    set isk&vim
+    if a:0 == 0
+      call s:ReloadOneScript(expand('%:p'))
+    else
+      for file_pat in a:000
+        let files = lh#path#glob_as_list(&rtp, file_pat)
+        for file in  files
+          call s:ReloadOneScript(file)
+        endfor
       endfor
-    endfor
-  endif
+    endif
+  finally
+    let &isk = s_isk
+  endtry
 endfunction
 
 let s:commands='^Rel\%[oad]'
