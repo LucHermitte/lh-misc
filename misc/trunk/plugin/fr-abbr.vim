@@ -220,18 +220,18 @@ endfunction
 
 "===========================================================================
   if exists('*Trigger_Function')
-    call Trigger_Function('<F3>', 'FRabbrInit', expand('<sfile>:p'), 0, 0 ) 
+    call Trigger_Function('<leader>a', 'FRabbrInit', expand('<sfile>:p'), 0, 0 ) 
     if &cmdheight < 2
       " because of the echo... Don't show it
-      imap <F3> <SPACE><ESC><F3>a<BS>
+      imap <F3> <SPACE><ESC><leader>aa<BS>
     else
       " Have the room the show the echo
-      imap <F3> <C-O><F3>
+      imap <F3> <C-O><leader>a
     endif
 
     " <C-F3> reload the abbreviations
-    nnoremap <C-F3> :call FRupdate()<CR>
-    exe "nnoremap <S-F3> :sp ".expand("<sfile>:p")."\<CR>"
+    " nnoremap <C-F3> :call FRupdate()<CR>
+    " exe "nnoremap <S-F3> :sp ".expand("<sfile>:p")."\<CR>"
   endif
   
 endif
