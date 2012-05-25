@@ -3,7 +3,7 @@
 " File:         ftplugin/vim/vim_refactor.vim                     {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:      0.0.1
+" Version:      0.0.2
 " Created:      11th May 2010
 " Last Update:  $Date$
 "------------------------------------------------------------------------
@@ -16,6 +16,8 @@
 "       Requires Vim7+
 "       «install details»
 " History:      
+" 	v0.0.2
+" 	        Some more work done, stil unfinished.
 " 	v0.0.1
 " 		Move To autoload
 " TODO:         «missing features»
@@ -37,8 +39,6 @@ set cpo&vim
 
 "------------------------------------------------------------------------
 " Local mappings {{{2
-
-inoremap <buffer> «keybinding» «action»
 
 "------------------------------------------------------------------------
 " Local commands {{{2
@@ -67,6 +67,7 @@ let g:loaded_ftplug_vim_refactor = s:k_version
 " Move function(s) to autoload {{{3
 let s:k_re_function    = '^\s*:\=fu\%[nction]\>'
 let s:k_re_endfunction = '^\s*:\=endf\%[unction]\>'
+let s:k_re_comment = '^\("[^"]*"\)*"[^"]*$'
 
 " s:BuildDependenciesTree {{{4
 function! s:BuildDependenciesTree()
@@ -86,12 +87,14 @@ function! s:BuildDependenciesTree()
       let crt_function = {'begin':i, 'kind': 'function', 'callers': [], 'callees': []}
       let crt_function.name = matchstr(line, s:k_re_function.'\s*!\=\s\+\zs\S\{-}\ze(')
       call add(deps, crt_function)
+      " echo "new function: " . string(crt_function)
     
     elseif line =~ s:k_re_endfunction
       if ! exists('crt_function') 
 	throw 'Line '.i. ': outside of any function context' . (!empty(deps) ? ', last function was '.(deps[-1].name) : ', no function started yet')
       endif
       let crt_function.end = i
+      " echo "end function: " . string(crt_function)
       unlet crt_function
     endif
 
@@ -124,12 +127,12 @@ function! s:BuildDependenciesTree()
 
     " now i is no more the index in the lines list, but a line number
     " (and also iterated for the next element in the list)
-    let i += 1
+    let i += 1 | let j += 1
     let c = lh#list#find_if(callers, 'v:1_.line =='.i )
     if c == -1
       " echo "new caller: ".i
       let caller = { 'line': i, 'callees': [] }
-      else
+    else
       " echo "caller reused: ".i
     endif
 
@@ -152,17 +155,22 @@ function! s:BuildDependenciesTree()
       " Definition => ignore
       " echo i." function definition"
       continue
+    elseif line0 =~ s:k_re_comment
+      " Comment => ignore
+      " echo i." function comment: " . line0
+      " May need to update function definition range...
+      continue
     else " within a function
       for fn in deps
 	if fn.begin < i && i < fn.end 
-	  " echo i." within a function --> " . string(fn)
+          " echo i." within a function --> " . string(fn)
 	  let caller = fn
 	  break 
 	endif
       endfor
       if ! has_key(caller, 'kind')
 	let caller.kind = 'script' " find a better name
-	" echo i." ouside any function> "
+        " echo i." ouside any function> "
       endif
     endif
 
@@ -198,11 +206,94 @@ function! s:BuildDependenciesTree()
   return deps
 endfunction
 
-" s:DisplayDependenciesTree {{{4
+" Function: s:Name(function) {{{4
+function! s:Name(function)
+  let name = a:function.kind == 'function'
+        \ ? (a:function.name)
+        \ : (a:function.kind) . (a:function.line)
+  return name
+endfunction
+
+" Function: s:GetCalleeInfo(callee_name, deps) {{{3
+function! s:GetCalleeInfo(callee_name, deps)
+  let callee = filter(copy(a:deps), 'has_key(v:val, "name") && v:val["name"] == '.string(a:callee_name))
+  return callee
+endfunction
+
+" Function: s:DisplayCalleesOf(deps, function, indent) {{{4
+function! s:DisplayCalleesOf(deps, function, indent)
+  let name = s:Name(a:function)
+  echo repeat(' ', a:indent*&sw) . '+ '. name
+  for fn in a:function.callees
+    if name == fn
+      " Special case for recurvise functions
+      echo repeat(' ', (a:indent+1)*&sw) . '+ '. fn . '...'
+    else
+      let fn_data = s:GetCalleeInfo(a:deps, fn)
+      " if empty => error
+      call s:DisplayCalleesOf(a:deps, fn_data[0], a:indent+1)
+    endif
+  endfor
+endfunction
+
+" Function: s:IsCalledFrom(fn_data, line) {{{4
+function! s:IsCalledFrom(fn_data, line)
+  let res = (has_key(a:fn_data, 'line') && a:fn_data.line == a:line)
+        \ || ( has_key(a:fn_data, 'begin') && a:fn_data.begin <= a:line && a:line <= a:fn_data.end)
+  " echo "check: if " . a:line . " is within ". string(a:fn_data) . " -> " . res
+  return res
+endfunction
+
+" Function: s:DisplayCallersOf(deps, function, indent) {{{4
+function! s:DisplayCallersOf(deps, function, indent)
+  let name = s:Name(a:function)
+  echo repeat(' ', a:indent*&sw) . '+ '. name
+  if !has_key(a:function, 'callers') | return | endif
+  for line in a:function.callers
+    let fn_data = filter(copy(a:deps), 's:IsCalledFrom(v:val,'. line.')')
+    if !empty(fn_data)
+      if s:Name(fn_data[0]) == name
+        " Special case for recurvise functions
+        echo repeat(' ', (a:indent+1)*&sw) . '+ '. name . '...'
+      else
+        call s:DisplayCallersOf(a:deps, fn_data[0], a:indent+1)
+      endif
+    endif
+  endfor
+endfunction
+
+" Functions: s:DisplayDependenciesTree {{{4
 function! s:DisplayDependenciesTree(deps)
   " 1- callers -> callees
+  echo "####callers -> callees####"
+  for fct in a:deps
+    call s:DisplayCalleesOf(a:deps, fct, 0)
+  endfor
 
   " 2- callees -> callers
+  echo "####callees -> callers####"
+  for fct in a:deps
+    call s:DisplayCallersOf(a:deps, fct, 0)
+  endfor
+endfunction
+
+" Function: s:TagExposedFunctions(deps) {{{3
+function! s:TagExposedFunctions(deps, prefix)
+  for caller in filter(copy(a:deps), 'v:val.kind =~ "map\\|abbr\\|menu\\|command\\|script"')
+    for callee_name in caller.callees
+      let callee = s:GetCalleeInfo(callee_name, a:deps)[0]
+      " if empty => error
+      " echo string(callee)
+      if !has_key(callee, 'name')
+        echo "ignoring ".s:Name(callee)
+      else
+        if !has_key(callee, 'new_name')
+          let callee.new_name = a:prefix.'#'.lh#dev#naming#to_underscore(substitute(callee.name, '^s:', '_', ''))
+          echo callee.name . ' -> ' . callee.new_name
+        endif
+      endif
+    endfor
+  endfor
 endfunction
 
 " s:MoveToAutoload {{{4
@@ -220,19 +311,35 @@ function! s:MoveToAutoload(...)
   " Dependencies may be missed in case of a "exe 'map'...", or other commands
   " like "IAbbr"
   let deps = s:BuildDependenciesTree()
-  echo join(deps, "\n")
+  call lh#common#echomsg_multilines(join(deps, "\n"))
 
-  call s:DisplayDependenciesTree(deps)
+  " call s:DisplayDependenciesTree(deps)
 
   " 1- determine the functions to move
   " 1.1- shall be able to work on a selected range, a function name, or all
   " functions from a script (plugin, ftplugin)
+  " Let's say that default = every function from the script
+  " 1.2- determine the exposed functions to move, and their new name
+  " Check maps, commands, script variables, abbrs, and menus for functions that
+  " need to be exposed.
+  call s:TagExposedFunctions(deps, prefix)
+  " 1.3- determine the dependant functions (just in case ?)
   "
-  " 2- where they are use: change their reference name
+  " 2- where they are used: change their reference name
   " 2.1- determine the name of the autoload plugin
-  " 2.2- determine the new name of the function (see lh#dev 2camelcase, etc)
+  let fname = a:0 > 0 ? (a:1) : ''
+  if empty(fname)
+    let fname = expand('%:p')
+    let ft = matchstr(fname, 'ftplugin/\zs[^/.]*')
+    let fname = substitute(fname, 'ftplugin/.*\<'.ft.'\(\>\|_\)\ze.*\.vim', 'autoload/lh/'.ft.'/', '')
+  endif
+  let prefix = substitute(fname, '.*/autoload/\(.*\)\.vim$', '\1', '')
+  let prefix = substitute(prefix, '/', '#', 'g')
+  echomsg "go into ".fname . "  (".prefix.")"
+
   " 2.5- check everything is consistant: i.e. a function moved, but that stays
   " internal shall not be referenced anymore.
+  " 2.?- what about comments ?
   "
   " 3- move the funtions
 endfunction
