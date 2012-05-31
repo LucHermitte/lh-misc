@@ -199,7 +199,7 @@ let g:author_email= "hermitte {at} free {dot} fr"
 let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">" 
 " let g:author_short="Luc Hermitte <hermitte at free.fr>"
 " let g:author	    ="Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>\<c-m>" .
-" \ '"'. "\<tab>\<tab><URL:http://hermitte.free.fr/vim>"
+" \ '"'. "\<tab>\<tab><URL:http://code.google.com/p/lh-vim/>"
 imap <unique> <c-space>	<Plug>MuT_cWORD
 vmap <unique> <c-space>	<Plug>MuT_Surround
 
@@ -243,7 +243,7 @@ hi User3 ctermfg=yellow ctermbg=black guifg=lightyellow guibg=black
 map <Leader>hlt <Plug>HiLinkTrace
 
 " -- William Lee's DirDiff
-let g:DirDiffExcludes = '*.vba,*.rss,CVS,SunWS_cache,ir.out,.*.state,exe,bin,obj,*.o,*.os,tags,lib,.svn,html,*.a,*.so'.&wildignore
+let g:DirDiffExcludes = '*.vba,*.rss,CVS,SunWS_cache,ir.out,.*.state,exe,bin,obj,*.o,*.os,tags,lib,.svn,.git,html,*.a,*.so'.&wildignore
 let g:DirDiffIgnore   = '$Id,$Date'
 let g:DirDiffAddArgs  = "-b"
 
@@ -271,6 +271,7 @@ let s:my_plugins = [
       \ 'search-in-runtime'  ,
       \ 'system-tools'       ,
       \ 'UT'                 ,
+      \ 'lh-compil-hints'    ,
       \ 'misc'
       \]
 let g:vim_addon_manager = {}
@@ -283,7 +284,7 @@ fun X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_na
   call vam_known_repositories#MergeSources(a:plugin_sources, a:www_vim_org, a:scm_plugin_sources, a:patch_function, a:snr_to_name)
 
   " patch sources the way you like:
-  " let pwd = 'to_be_defined'
+  let s:pwd = 'to_be_defined'
   if !exists('s:pwd')
     runtime addons/vim-pwds.vim
     let s:pwd = GetPwd('googlecode')
@@ -294,6 +295,7 @@ fun X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_na
     echomsg a:plugin_sources[k]['url']
     if a:plugin_sources[k]['url'] =~ 'svn'
       let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], '^http\>', 'https', '')
+      let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(repo.or.cz\)/\(.*\)', 'LucHermitte@\1:srv/git/\2', '')
     endif
   endfor
   " TODO: identify work place and not home place
@@ -323,6 +325,8 @@ function! s:ActivateAddons()
   " script #3361
   call vam#ActivateAddons(['Indent_Guides'])
   call vam#ActivateAddons(['stakeholders'])
+  call vam#ActivateAddons(['vcscommand'])
+  " call vam#ActivateAddons(['Syntastic'])
   call vam#ActivateAddons(s:my_plugins, {'auto_install' : 0})
   " pluginA could be github:YourName see vam#install#RewriteName()
   " catch /.*/
@@ -898,6 +902,8 @@ endif " has("autocmd")
 
 if version < 600 " {{{
   source $VIMRUNTIME/macros/matchit.vim
+else
+  runtime macros/matchit.vim
 endif
 
 " Plugins
