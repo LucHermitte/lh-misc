@@ -277,6 +277,7 @@ let s:my_plugins = [
 let g:vim_addon_manager = {}
 let g:vim_addon_manager['plugin_sources'] = {}
 let g:vim_addon_manager['plugin_sources']['misc'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/misc/trunk' }
+let g:vim_addon_manager['plugin_sources']['lh-compil-hints'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/compil-hints/trunk' }
 
 " fun X(plugin_sources, www_vim_org, scm_plugin_sources)
 fun X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_name)
