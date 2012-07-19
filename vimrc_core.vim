@@ -65,8 +65,6 @@ endif
   set formatoptions=cqrt
                         " Options for the "txt format" cmd ("gq")
                         " I need all those options (but 'o')!
-  set isfname+={        " In order to use <c-w>f on ${FOO}/path
-  set isfname+=}        " In order to use <c-w>f on ${FOO}/path
   set helpheight=0      " zero disables this.
 " set helpfile=c:\\vim-4.6\\docs\\help.txt
                         " filename of the helpfile
@@ -84,6 +82,8 @@ endif
 " set iconstring        " set iconstring file of icon (Sven doesn't use an icon)
   set noignorecase      " ignore the case in search patterns?  NO!
   set noinsertmode      " start in insert mode?  Naah.
+  set isfname+={        " In order to use <c-w>f on ${FOO}/path
+  set isfname+=}        " In order to use <c-w>f on ${FOO}/path
   "set iskeyword=@,48-57,_,192-255,-,.
   set iskeyword+=-
                         " Add the dash ('-') and the dot ('.')
@@ -457,7 +457,8 @@ imap <S-home> <c-\><c-n>vo<home>
 vmap <S-home> <home>
 
 nmap <S-end> v<end>
-imap <S-end> <c-\><c-n>v<end>
+" imap <S-end> <c-\><c-n>v<end>
+imap <S-end> <c-o>v<end>
 vmap <S-end> <end>
 
 " }}}
