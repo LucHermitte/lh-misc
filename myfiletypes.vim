@@ -35,3 +35,6 @@ au BufNewFile,BufRead *.fcf set ft=dosini
 
 " QPEC extensions:
 au BufNewFile,BufRead *.ce,*.cty,*.cct set ft=c
+
+" OTB C++ file extensions:
+au BufNewFile,BufRead *.cxx,*.txx,*.hxx set ft=cpp
