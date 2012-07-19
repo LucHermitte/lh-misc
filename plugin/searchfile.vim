@@ -2,7 +2,7 @@
 " File:		searchfile.vim                                           {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:	0.0.6
+" Version:	0.0.7
 " Created:	01st Feb 2006
 " Last Update:	12th Dec 2007
 "------------------------------------------------------------------------
@@ -16,15 +16,13 @@
 " - perl, xargs, find, grep, egrep, printf, sed
 " Optional Dependencies:
 " - BuildToolsWrapper (for a better :Copen)
-" History:	«history»
-" TODO:		«missing features»
 " }}}1
 "=============================================================================
 
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 006
+let s:k_version = 007
 if exists("g:loaded_searchfile") 
       \ && (g:loaded_searchfile >= s:k_version)
       \ && !exists('g:force_reload_searchfile')
@@ -38,8 +36,8 @@ set cpo&vim
 
 command! -nargs=+ Searchfile :call s:Search(<f-args>)
 
-nnoremap <expr> <silent> <F3>	(&diff ? "]c:call \<sid>NextDiff()\<cr>" : ":cn\<cr>")
-nnoremap <expr> <silent> <S-F3>	(&diff ? "[c" : ":cN\<cr>")
+nnoremap <unique> <expr> <silent> <F3>	(&diff ? "]c:call \<sid>NextDiff()\<cr>" : ":cn\<cr>")
+nnoremap <unique><expr> <silent> <S-F3>	(&diff ? "[c" : ":cN\<cr>")
 nnoremap <C-F3> :call <sid>Search(<sid>Extension(), escape(expand('<cword>'), '%#'))<cr>
 vnoremap <C-F3> :call <sid>Search(<sid>Extension(), escape(lh#visual#selection(), '%#'))<cr>
 nnoremap <C-S-F3> :call <sid>Search(<c-r>=string(<sid>Extension())<cr>, escape(<c-r>=string(expand('<cword>'))<cr>, '%#'))
@@ -69,7 +67,7 @@ function! s:NextDiff()
     set nofoldenable
 
     let w_l = winline() " problematic with enabled lines (from diff...)
-    " echomsg w_l.'|'.line('.').'|'.getline('.')
+    echomsg w_l.'|'.line('.').'|'.getline('.')
 
     let lines = {}
     windo if &diff | call <sid>GotoWinline(w_l) | let lines[winnr()]={'text':getline('.'), 'number':line('.')} | endif
@@ -77,7 +75,7 @@ function! s:NextDiff()
     let &foldenable = foldenable
   endtry
 
-  " echomsg string(lines)
+  echomsg string(lines)
   if len(lines) < 2 | return | endif
 
   let indices = repeat([0], len(lines))
@@ -132,12 +130,12 @@ function! s:NextDiff()
   " Assert len(windows) == len(indices)
   let w = 0
   while w != len(windows)
-    " echomsg 'W#'.windows[w].' -> :'(tLines[w].number).'normal! '.(indices[w]+1).'|'
+    echomsg 'W#'.windows[w].' -> :'(tLines[w].number).'normal! '.(indices[w]+1).'|'
     exe windows[w].'wincmd w'
     silent! exe (tLines[w].number).'normal! 0'.(indices[w]).'l'
     let w += 1
   endwhile
-  " echomsg string(indices)
+  echomsg string(indices)
 endfunction
 
 
