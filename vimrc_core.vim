@@ -9,6 +9,18 @@
 " Last update	: 21st Jan 2009 ($Date$)
 " ===================================================================
 
+let paths = split(&rtp, ',')
+call map(paths, 'stridx(v:val, $LUCHOME)>=0 ? (v:val) : substitute(v:val, $HOME, $LUCHOME, "g")')
+"let res = []
+"for p in paths
+"  let p2 = stridx(p, $LUCHOME)>=0 ? (p) : substitute(p, $HOME, $LUCHOME, "g")
+"  echomsg p ' -> ' p2 ' -- stridx('$LUCHOME')=' stridx(p, $LUCHOME)
+"  let res += [p2]
+"endfor
+"let &rtp = join(res, ',')
+let &rtp = join(paths, ',')
+"finish
+
 " ===================================================================
 " Runtime {{{
 if version >= 600
@@ -314,6 +326,7 @@ function! s:ActivateAddons()
   runtime addons/lh-vim-lib/autoload/lh/path.vim
   runtime addons/lh-vim-lib/autoload/lh/option.vim
   let vimfiles = lh#path#vimfiles()
+  "echomsg "vimfiles: ".string(vimfiles)
   exe 'set rtp+='.vimfiles.'/addons/vim-addon-manager'
   " tell VAM to use your MergeSources function:
   let g:vim_addon_manager['MergeSources'] = function('X')
