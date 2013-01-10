@@ -1,6 +1,6 @@
 " Buffer Menus - Add menus to the current buffer only.
 " Author: Michael Geddes <michaelrgeddes@optushome.com.au>
-" Version: 1.9
+" Version: 1.9.1
 " URL: http://vim.sourceforge.net/scripts/script.php?script_id=246
 "
 " Contributions by Luc Hermitte
@@ -13,7 +13,7 @@
 " fix. In case you see them, drop me a word.
 " --Luc Hermitte
 
-if !has('gui_running') || ! &compatible
+if !has('gui_running') || &compatible
 	finish
 endif
 
@@ -274,7 +274,7 @@ function! s:UnsetMenu(menu)
         if s:IsTextVisible(a:menu)
 			if s:IsCurrent(a:menu)
 				let cmd = a:menu.mode . 'unmenu ' 
-							\ . substitute(a:menu.name, '\&', '', 'g') 
+							\ . substitute(a:menu.name, '&', '', 'g') 
 				let res = s:Exec(cmd)
 			else
 				return s:DisableMenu(a:menu)
@@ -295,7 +295,8 @@ endfunction
 " Function: SetMenu() : enables the menu-entry
 " @post menu.state == "set"
 function! s:EnableMenu(menu)
-    let cmd = a:menu.mode . 'menu enable' . ' ' . a:menu.name
+    let cmd = a:menu.mode . 'menu enable' . ' '
+				\ . substitute(a:menu.name, '&', '', 'g') 
     let res = s:Exec(cmd)
     let a:menu.state    = 'set'
     return res
@@ -304,7 +305,8 @@ endfunction
 " Function: SetMenu() : disables the menu-entry
 " @post menu.state == "disabled"
 function! s:DisableMenu(menu)
-    let cmd = a:menu.mode . 'menu disable' . ' ' . a:menu.name
+    let cmd = a:menu.mode . 'menu disable' . ' '
+				\ . substitute(a:menu.name, '&', '', 'g') 
     let res = s:Exec(cmd)
     let a:menu.state    = 'disabled'
     return res
