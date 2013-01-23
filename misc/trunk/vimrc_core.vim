@@ -22,7 +22,7 @@ let &rtp = join(paths, ',')
 "finish
 
 " ===================================================================
-" Runtime {{{
+" Runtime {{{1
 if version >= 600
   "set runtimepath+=$VIMRUNTIME (<=> $VIM/vim60)
   set runtimepath+=$VIM
@@ -30,9 +30,9 @@ if version >= 600
 else
   let g:RT_runtimepath = expand("$VIM")
 endif
-" }}}
+" }}}1
 " ===================================================================
-" Help {{{
+" Help {{{1
   runtime plugin/help.vim
   if exists("*BuildHelp")
     command! -nargs=1 VimrcHelp :call BuildHelp("vimrc", <q-args>)
@@ -49,11 +49,11 @@ endif
 :VimrcHelp "
 :VimrcHelp "
 :VimrcHelp "
-" }}}
+" }}}1
 " ===================================================================
-" SETtings: {{{
+" SETtings: {{{1
 " ===================================================================
-" Vim Options: {{{
+" Vim Options: {{{2
   set nocompatible
 
   set bs=2		" allow backspacing over everything in insert mode
@@ -166,7 +166,7 @@ endif
   set whichwrap=<,>     " 
   set wildchar=<TAB>    " the char used for "expansion" on the command line
                         " default value is "<C-E>" but I prefer the tab key:
-  set wildignore=*.bak,*.swp,*.o,*~,*.class,*.exe,*.obj,/CVS/,/.svn/,/.git/,*.so,*.a,*.lo,*.la,*.Plo,*.Po
+  set wildignore=*.bak,*.swp,*.o,*~,*.class,*.exe,*.obj,/CVS/,/.svn/,/.git/,*.so,*.a,*.lo,*.la,*.Plo,*.Po,*.gcno,*.gcda
   set wildmenu          " Completion on th command line shows a menu
   set winminheight=0	" Minimum height of VIM's windows opened
   set wrapmargin=1    
@@ -181,29 +181,28 @@ if filereadable("tags")
     " $PWD => problem is there are spaces within the path name
     exec "set tags+=" . escape(expand('%:p:h'),' ') . "/tags"
 endif
-" }}}
 
-" Options for differents plugins. {{{
+" Options for differents plugins. {{{2
 let g:tex_flavor = 'tex'
-" -- Mail_Re_set
+" -- Mail_Re_set {{{3
 let g:mail_tag_placement = "tag_second"
-" -- EnhCommentify
+" -- EnhCommentify {{{3
 let g:EnhCommentifyUseAltKeys    = "yes"
 let g:EnhCommentifyRespectIndent = "yes"
 "let g:EnhCommentifyFirstLineMode = "yes"
 let g:EnhCommentifyPretty        = "yes"
 let g:EnhCommentifyUseSyntax	 = 'yes'
 
-" -- Michael Geddes's Buffer Menu <http://vim.sf.net/> 
+" -- Michael Geddes's Buffer Menu <http://vim.sf.net/>  {{{3
 let g:buffermenu_use_disable     = 1
 let g:want_buffermenu_for_tex    = 2 " 0 : no, 1 : yes, 2 : global disable
                                      " cf. tex-maps.vim & texmenus.vim
 
-" -- bracketing.base.vim <http://hermitte.free.fr/vim/>
+" -- lhBrackets {{{3
 let g:marker_select_empty_marks    = 1
 let g:marker_center                = 0
 
-" -- muTemplate
+" -- muTemplate {{{3
 " To override in some ftplugins if required.
 let g:url         = 'http://code.google.com/p/lh-vim/'
 let g:author_short= "Luc Hermitte"
@@ -212,23 +211,23 @@ let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">"
 " let g:author_short="Luc Hermitte <hermitte at free.fr>"
 " let g:author	    ="Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>\<c-m>" .
 " \ '"'. "\<tab>\<tab><URL:http://code.google.com/p/lh-vim/>"
-imap <unique> <c-space>	<Plug>MuT_cWORD
-vmap <unique> <c-space>	<Plug>MuT_Surround
+imap <c-space>	<Plug>MuT_cWORD
+vmap <c-space>	<Plug>MuT_Surround
 
-" -- lhVimSpell <http://vim.sf.net/> <http://hermitte.free.fr/vim/>
+" -- lhVimSpell {{{3
 let g:VS_aspell_add_directly_to_dict = 1
 
-" -- BTW
+" -- BTW {{{3
 let g:BTW_qf_position = 'bot'
 
-" -- SearchInRuntime
+" -- SearchInRuntime {{{3
 let g:sir_goto_hsplit = "Hsplit"
 let g:sir_goto_vsplit = "Vsplit"
 
-" -- Johannes Zellner's Man <http://www.zellner.org/>
+" -- Johannes Zellner's Man <http://www.zellner.org/> {{{3
 let g:man_vim_only = 1
 
-" -- Yegappan Lakshmanan's grep.vim <http://vim.sf.net/> 
+" -- Yegappan Lakshmanan's grep.vim <http://vim.sf.net/>  {{{3
 let Grep_key = '<F4>'
 if has('win32')
   " let       Grep_Path = 'd:/users/hermitte/bin/usr/local/wbin/grep'
@@ -239,44 +238,79 @@ if has('win32')
   " let Grep_Xargs_Path = 'd:/users/hermitte/bin/usr/local/wbin/xargs'
 endif
 
-" -- grep.vim
+" -- grep.vim {{{3
 let Grep_Key = ',g'
 
-" -- Doxygen syntax
+" -- Doxygen syntax {{{3
 let g:load_doxygen_syntax = 1
 
-" -- Dr Chip Campbell's StlShowFunc
+" -- Dr Chip Campbell's StlShowFunc {{{3
 hi User1 ctermfg=white ctermbg=black guifg=white guibg=black
 hi User2 ctermfg=lightblue ctermbg=black guifg=lightblue guibg=black
 hi User3 ctermfg=yellow ctermbg=black guifg=lightyellow guibg=black
 
-" -- Dr Chip Campbell's hiLink
+" -- Dr Chip Campbell's hiLink {{{3
 " don't map <S-F10>'
 map <Leader>hlt <Plug>HiLinkTrace
 
-" -- William Lee's DirDiff
+" -- William Lee's DirDiff {{{3
 let g:DirDiffExcludes = '*.vba,*.rss,CVS,SunWS_cache,ir.out,.*.state,exe,bin,obj,*.o,*.os,tags,lib,.svn,.git,html,*.a,*.so'.&wildignore
 let g:DirDiffIgnore   = '$Id,$Date'
 let g:DirDiffAddArgs  = "-b"
 
-" -- VCS commands.vim
+" -- VCS commands.vim {{{3
 let VCSCommandDisableMappings = 1
 augroup VCSCommand
   au User VCSBufferCreated silent! nmap <unique> <buffer> q :bwipeout<cr>
 augroup END
 
-" -- clang_complete
+" -- clang_indexer@lh {{{3
+" Keybindings
+let clang_key_usr          = '<c-x>U'
+let clang_key_declarations = '<c-x>d'
+let clang_key_references   = '<c-x>r'
+let clang_key_subclases    = '<c-x>S'
+
+" -- clang_complete {{{3
 let g:clang_complete_auto = 0
+function! s:FindLibClang()
+  " 1- check $LD_LIBRARY_PATH
+  if has('unix')
+    let libpaths = split($PATH, has('unix') ? ':' : ',')
+    for libpath in libpaths
+      if ! empty(glob(libpath.'/libclang*', 1)) 
+        let g:clang_library_path = libpath
+        " no need to search for other occurrences later in $PATH
+        return
+      endif
+    endfor
+  endif
+  " 2- check $PATH if nothing was found yet
+  let binpaths = split($PATH, has('unix') ? ':' : ',')
+  for p in binpaths
+    if p =~ '\<bin\>$'
+      let libpath = p[0:-4].'lib'
+      if ! empty(glob(libpath.'/libclang*', 1)) 
+        let g:clang_library_path = libpath
+        " no need to search for other occurrences later in $PATH
+        return
+      endif
+    endif
+  endfor
+endfunction
+call s:FindLibClang()
+
 set completeopt-=menu,preview
 set completeopt+=menuone
 
-" -- vim addons manager
+" -- vim addons manager {{{3
 let s:my_plugins = [
       \ 'lh-vim-lib'         ,
       \ 'lh-brackets'        ,
       \ 'build-tools-wrapper',
       \ 'lh-tags'            ,
       \ 'lh-dev'             ,
+      \ 'vim-clang'          ,
       \ 'mu-template@lh'     ,
       \ 'lh-cpp'             ,
       \ 'lh-refactor'        ,
@@ -292,7 +326,7 @@ let g:vim_addon_manager['plugin_sources']['misc'] = { 'type': 'svn', 'url': 'htt
 let g:vim_addon_manager['plugin_sources']['lh-compil-hints'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/compil-hints/trunk' }
 
 " fun X(plugin_sources, www_vim_org, scm_plugin_sources)
-fun X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_name)
+fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_name)
   " run default:
   call vam_known_repositories#MergeSources(a:plugin_sources, a:www_vim_org, a:scm_plugin_sources, a:patch_function, a:snr_to_name)
 
@@ -340,6 +374,10 @@ function! s:ActivateAddons()
   call vam#ActivateAddons(['Indent_Guides'])
   call vam#ActivateAddons(['stakeholders'])
   call vam#ActivateAddons(['vcscommand'])
+  call vam#ActivateAddons(['Splice'])
+  call vam#ActivateAddons(['gitv'])
+  call vam#ActivateAddons(['vim-addon-json-encoding'])
+  call vam#ActivateAddons(['clang_complete'])
   " call vam#ActivateAddons(['Syntastic'])
   call vam#ActivateAddons(s:my_plugins, {'auto_install' : 0})
   " pluginA could be github:YourName see vam#install#RewriteName()
@@ -356,15 +394,12 @@ call s:ActivateAddons()
 "" Optionally generate helptags:
 " UpdateAddon vim-addon-manager
 
-" -- no mark ring/preview word
+" -- no mark ring/preview word {{{3
 let g:loaded_markring = 1000
-imap <unique> <m-p> <Plug>PreviewWord
-nmap <unique> <m-p> <Plug>PreviewWord
+imap <m-p> <Plug>PreviewWord
+nmap <m-p> <Plug>PreviewWord
 
-
-" }}}
-
-" Multi-byte support {{{
+" Multi-byte support {{{2
 " Cf. http://vim.sourceforge.net/tips/tip.php?tip_id=246 by Tony Mechelynck
 if &encoding == 'utf-8'
     setglobal fileencoding=utf-8
@@ -392,9 +427,9 @@ if 0
     set termencoding=iso-8859-15
     " set fileencodings=ucs-bom,iso-8859-15,iso-8859-3,utf-8
   endif
-endif "}}}
+endif
 
-" Diff mode {{{
+" Diff mode {{{2
 " always
   set diffopt=filler,context:3,iwhite
   " if $OSTYPE != 'solaris' " some flavour of diff do not support -x flag
@@ -402,10 +437,9 @@ endif "}}}
   " endif
 " if &diff " if started in diff mode
 " endif
-" }}}
-" }}}
+" }}}1
 " ===================================================================
-" MAPpings {{{
+" MAPpings {{{1
 " ===================================================================
 " For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
 " let &guioptions = substitute(&guioptions, "t", "", "g")
@@ -649,9 +683,9 @@ command! -nargs=0 		 CD	cd %:p:h
 command! -nargs=0 		 LCD	lcd %:p:h
 " }}}
 " -------------------------------------------------------------------
-" }}}
+" }}}1
 " ===================================================================
-" General Editing {{{
+" General Editing {{{1
 " ===================================================================
 :VimrcHelp " 
 :VimrcHelp " ;rcm    = remove <C-M>s - for those mails sent from DOS:          [C]
@@ -843,9 +877,9 @@ endfunction
 
 " }}}
 "
-" }}}
+" }}}1
 " ===================================================================
-" AutoCommands {{{
+" AutoCommands {{{1
 " ===================================================================
 "
 ""source $VIMRUNTIME/../macros/let-modeline.vim
@@ -948,21 +982,10 @@ if (version >= 600) && has("autocmd") && has("folding")
 endif
 " }}}
 
-" }}}
+" }}}1
 
 " Prédac
 vnoremap <silent> µ <esc>:echo strftime('%c', lh#visual#selection())<cr>
 nnoremap <silent> µ :echo strftime('%c', matchstr(getline('.'), 'FRAME \zs\d\+\ze\d\{3}'))<cr>
-" ===================================================================
-" Last but not least... {{{
-" ===================================================================
-" The last line is allowed to be a "modeline" with my setup.
-" It gives vim commands for setting variable values that are
-" specific for editing this file.  Used mostly for setting
-" the textwidth (tw) and the "shiftwidth" (sw).
-" Note that the colon within the value of "comments" needs to
-" be escaped with a backslash!  (Thanks, Thomas!)
-"       vim:tw=75 et sw=2 comments=\:\"
-"       }}}
 " ===================================================================
 " vim600: set fdm=marker:
