@@ -1,6 +1,8 @@
 " myfiletypefile
 " ====================
 
+" GCov files:
+au BufNewFile,BufRead *.gcov set ft=gcov
 
 " ASX movies list files
 au BufNewFile,BufRead *.asx set ft=asx
