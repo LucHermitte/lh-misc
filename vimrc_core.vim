@@ -6,7 +6,7 @@
 " File		: vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer	: Luc Hermitte
-" Last update	: 21st Jan 2009 ($Date$)
+" Last update	: $Date$
 " ===================================================================
 
 let paths = split(&rtp, ',')
@@ -611,11 +611,11 @@ endif
    noremap <S-F10> :q!<cr>
 "
 :VimrcHelp " <F11>   : Previous Buffer                                         [I+N]
-   noremap <F11> :bprev<CR>
   inoremap <F11> <esc>:bprev<CR>
+  nnoremap <expr> <F11> (&ft=='qf' ? ":colder" : ":bprev")."\<cr>" 
 :VimrcHelp " <F12>   : Next Buffer                                             [I+N]
-   noremap <F12> :bnext<CR>
   inoremap <F12> <esc>:bnext<CR>
+  nnoremap <expr> <F12> (&ft=='qf' ? ":cnewer" : ":bnext")."\<cr>" 
 "
 :VimrcHelp " <C-Del> and <C-S-Del> Delete a whole word till its end            [I+N]
    noremap  <C-Del> dw
