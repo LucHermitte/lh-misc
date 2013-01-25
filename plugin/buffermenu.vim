@@ -1,6 +1,6 @@
 " Buffer Menus - Add menus to the current buffer only.
 " Author: Michael Geddes <michaelrgeddes@optushome.com.au>
-" Version: 1.9.2
+" Version: 1.9.3
 " URL: http://vim.sourceforge.net/scripts/script.php?script_id=246
 "
 " Contributions by Luc Hermitte
@@ -105,7 +105,7 @@ fun! s:DoBufferMenu( bang, ...)
         endif
     endwhile
     let menunumber=''
-    if a:{n} =~ '^\s*\d\+\>\(\.\d\+\)*'
+    if a:{n} =~ '^\s*\d\+\(\.\d\+\)*'
         let menunumber=a:{n}.' '
         let n=n+1
     endif
