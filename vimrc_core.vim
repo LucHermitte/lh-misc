@@ -303,6 +303,10 @@ call s:FindLibClang()
 set completeopt-=menu,preview
 set completeopt+=menuone
 
+" -- You Complete Me    {{{3
+let g:ycm_key_invoke_completion    = '<C-S-Space>'
+let g:ycm_key_detailed_diagnostics = '<C-X>d'
+
 " -- vim addons manager {{{3
 let s:my_plugins = [
       \ 'lh-vim-lib'         ,
@@ -384,6 +388,9 @@ function! s:ActivateAddons()
   " catch /.*/
   " echoe v:exception
   " endtry
+  "
+  " YouCompleteMe
+  exe 'set rtp+='.vimfiles.'/addons/clang/ycm/YouCompleteMe'
 endfunction
 " augroup VAM
   " au!
