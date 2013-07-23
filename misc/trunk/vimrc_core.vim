@@ -391,6 +391,10 @@ function! s:ActivateAddons()
   "
   " YouCompleteMe
   exe 'set rtp+='.vimfiles.'/addons/clang/ycm/YouCompleteMe'
+  " Unite stuff
+  call vam#ActivateAddons(['unite', 'unite-locate', 'unite-outline', 'vimproc'])
+  nnoremap <C-p> :Unite file_rec/async<cr>
+
 endfunction
 " augroup VAM
   " au!
@@ -982,7 +986,7 @@ augroup END
 if (version >= 600) && has("autocmd") && has("folding")
     augroup folding
       au!
-      au FileType * runtime fold/<amatch>-fold.vim
+      au FileType * silent! runtime fold/<amatch>-fold.vim
       au FileType * if &foldmethod != 'manual'
       \ | set foldcolumn=1 | else | set foldcolumn=0 | endif
     augroup END
