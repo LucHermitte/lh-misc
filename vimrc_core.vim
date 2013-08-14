@@ -254,7 +254,7 @@ hi User3 ctermfg=yellow ctermbg=black guifg=lightyellow guibg=black
 map <Leader>hlt <Plug>HiLinkTrace
 
 " -- William Lee's DirDiff {{{3
-let g:DirDiffExcludes = '*.vba,*.rss,CVS,SunWS_cache,ir.out,.*.state,exe,bin,obj,*.o,*.os,tags,lib,.svn,.git,html,*.a,*.so'.&wildignore
+let g:DirDiffExcludes = '*.gz,*.bz2,*.7z,*.vba,*.rss,CVS,SunWS_cache,ir.out,.*.state,exe,bin,obj,*.o,*.os,tags,lib,.svn,.git,html,*.a,*.so'.&wildignore
 let g:DirDiffIgnore   = '$Id,$Date'
 let g:DirDiffAddArgs  = "-b"
 
@@ -322,11 +322,12 @@ let s:my_plugins = [
       \ 'system-tools'       ,
       \ 'UT'                 ,
       \ 'lh-compil-hints'    ,
-      \ 'misc'
+      \ 'lh-misc'            ,
+      \ 'dirdiff-svn'
       \]
 let g:vim_addon_manager = {}
 let g:vim_addon_manager['plugin_sources'] = {}
-let g:vim_addon_manager['plugin_sources']['misc'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/misc/trunk' }
+let g:vim_addon_manager['plugin_sources']['lh-misc'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/misc/trunk' }
 let g:vim_addon_manager['plugin_sources']['lh-compil-hints'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/compil-hints/trunk' }
 
 " fun X(plugin_sources, www_vim_org, scm_plugin_sources)
@@ -354,7 +355,10 @@ fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_n
     for k in keys(a:plugin_sources)
       " Convert git protocol to SSH protocol for github access
       if get(a:plugin_sources[k],'type','') == 'git'
-        let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'git@\1:\2', '')
+        " Was:
+        " let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'git@\1:\2', '')
+        " Is:
+        let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'http://\1/\2', '')
       endif
     endfor
   endif
@@ -381,8 +385,11 @@ function! s:ActivateAddons()
   call vam#ActivateAddons(['Splice'])
   call vam#ActivateAddons(['gitv'])
   call vam#ActivateAddons(['vim-addon-json-encoding'])
-  call vam#ActivateAddons(['clang_complete'])
+  " call vam#ActivateAddons(['clang_complete'])
   call vam#ActivateAddons([ 'vim-airline' ])
+  let g:airline_powerline_fonts = 1
+  let g:airline_theme = 'solarized'
+  " let g:airline_solarized_bg = 'dark'
   " call vam#ActivateAddons(['Syntastic'])
   call vam#ActivateAddons(s:my_plugins, {'auto_install' : 0})
   " pluginA could be github:YourName see vam#install#RewriteName()
