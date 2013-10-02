@@ -3,7 +3,7 @@
 " File:         ftplugin/cmake.vim                                {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:      001
+" Version:      002
 " Created:      01st Mar 2012
 " Last Update:  $Date$
 "------------------------------------------------------------------------
@@ -13,12 +13,10 @@
 "------------------------------------------------------------------------
 " Installation:
 "       Drop this file into {rtp}/ftplugin
-" History:      «history»
-" TODO:         «missing features»
 " }}}1
 "=============================================================================
 
-let s:k_version = 1
+let s:k_version = 2
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
 if &cp || (exists("b:loaded_ftplug_cmake")
@@ -44,6 +42,7 @@ if exists("loaded_matchit")
         \ synIDattr(synID(line("."),col("."),1),"name") =~? "comment\\|string"'
 endif
 
+setlocal tw=100
 
 "=============================================================================
 " Global Definitions {{{1
