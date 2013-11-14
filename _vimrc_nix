@@ -13,7 +13,7 @@ if has("unix")
   let shell='tcsh'
 endif
 if has('gui_gtk')
-  set gfn=Luxi\ Mono\ 9
+  set gfn=Luxi\ Mono\ 8
 else
   set gfn=-*-Fixed-medium-r-semiCondensed-*-13-120-*-*-C-*-iso8859-1
 endif
