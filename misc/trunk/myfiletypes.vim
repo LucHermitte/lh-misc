@@ -40,3 +40,6 @@ au BufNewFile,BufRead *.ce,*.cty,*.cct set ft=c
 
 " OTB C++ file extensions:
 au BufNewFile,BufRead *.cxx,*.txx,*.hxx set ft=cpp
+
+" Understand Perl Check scripts
+au BufNewFile,BufRead *.upl set ft=perl
