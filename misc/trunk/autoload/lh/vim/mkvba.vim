@@ -56,7 +56,12 @@ function! lh#vim#mkvba#files(root)
 
     " remove a:root from all paths (suppose all files are within a different
     " directory)
-    let files = lh#path#strip_common(files)
+    " let files = lh#path#strip_common(files)
+    let l = len(a:root)
+    if a:root[-1] !~ '[/\\]'
+      let l += 1
+    endif
+    call map(files, 'strpart(v:val, '.l.')' )
     return files
   finally
     let &wildignore = ignore
