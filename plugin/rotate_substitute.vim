@@ -3,7 +3,7 @@
 " File:		plugin/rotate_substitute.vim                      {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:	1.0.1
+" Version:	1.0.2
 " Created:	27th Nov 2009
 " Last Update:	$Date$
 "------------------------------------------------------------------------
@@ -13,7 +13,9 @@
 "------------------------------------------------------------------------
 " Installation:	
 " Drop the file into {rtp}/plugin
-" History:	«history»
+" History:	
+"       v1.0.2: 
+"       * CycleSubstitute fixed to support: CycleSubstitute/title/subtitle
 " TODO:		«missing features»
 " }}}1
 "=============================================================================
@@ -22,7 +24,7 @@
 if &cp || (exists("g:loaded_rotate_substitute") && !exists('g:force_reload_rotate_substitute'))
   finish
 endif
-let g:loaded_rotate_substitute = 100
+let g:loaded_rotate_substitute = 102
 let s:cpo_save=&cpo
 set cpo&vim
 " Avoid global reinclusion }}}1
@@ -40,8 +42,9 @@ function! s:CycleSubstitute(bang, repl_arg) range
   let do_loop = a:bang != "!"
   let sep = a:repl_arg[0]
   let fields = split(a:repl_arg, sep)
+  let cleansed_fields = map(copy(fields), 'substitute(v:val, "\\\\[<>]", "", "g")')
   " build the action to execute
-  let action = '\=s:DoCycleSubst('.do_loop.',' . string(fields) . ', submatch(0))'
+  let action = '\=s:DoCycleSubst('.do_loop.',' . string(cleansed_fields) . ', "^".submatch(0)."$")'
   " prepare the :substitute command
   let args = [join(fields, '\|'), action ]
   let cmd = a:firstline . ',' . a:lastline . 's'
