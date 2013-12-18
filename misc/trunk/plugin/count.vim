@@ -37,7 +37,7 @@ command! -nargs=1 -bang -range Count <line1>,<line2>call s:Count("<bang>", <f-ar
 " Commands and Mappings }}}1
 "------------------------------------------------------------------------
 " Functions {{{1
-function! s:Count(bang, param) range
+function! s:Count(bang, param) range abort
   let pos = getpos('.')
   let inverse = a:bang == '!'
   let cmd = inverse ? 'v' : 'g'
