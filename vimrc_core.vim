@@ -385,8 +385,11 @@ function! s:ActivateAddons()
   call vam#ActivateAddons(['Splice'])
   call vam#ActivateAddons(['gitv'])
   call vam#ActivateAddons(['vim-addon-json-encoding'])
+  " call vam#ActivateAddons(['ManPageView'])
+  call vam#ActivateAddons(['viewdoc'])
   " call vam#ActivateAddons(['clang_complete'])
   call vam#ActivateAddons([ 'vim-airline' ])
+  call vam#ActivateAddons([ 'xmledit' ])
   let g:airline_powerline_fonts = 1
   let g:airline_theme = 'solarized'
   " let g:airline_solarized_bg = 'dark'
@@ -418,6 +421,8 @@ let g:loaded_markring = 1000
 imap <m-p> <Plug>PreviewWord
 nmap <m-p> <Plug>PreviewWord
 
+" -- xml edit {{{3
+let g:xml_jump_string = lh#marker#txt()
 " Multi-byte support {{{2
 " Cf. http://vim.sourceforge.net/tips/tip.php?tip_id=246 by Tony Mechelynck
 if &encoding == 'utf-8'
