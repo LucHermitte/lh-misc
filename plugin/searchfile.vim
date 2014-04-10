@@ -2,9 +2,10 @@
 " File:		searchfile.vim                                           {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:	0.0.7
+" License:      GPLv3
+" Version:	0.0.8
 " Created:	01st Feb 2006
-" Last Update:	12th Dec 2007
+" Last Update:	10th Apr 2014
 "------------------------------------------------------------------------
 " Description:	Vim plugin wrapper for searchfile.pl
 " 
@@ -22,7 +23,7 @@
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 007
+let s:k_version = 008
 if exists("g:loaded_searchfile") 
       \ && (g:loaded_searchfile >= s:k_version)
       \ && !exists('g:force_reload_searchfile')
@@ -34,10 +35,12 @@ set cpo&vim
 " Avoid global reinclusion }}}1
 "------------------------------------------------------------------------
 
-command! -nargs=+ Searchfile :call s:Search(<f-args>)
+command! -nargs=+ 
+      \ -complete=customlist,SFComplete
+      \ Searchfile :call s:Search(<f-args>)
 
-nnoremap <unique> <expr> <silent> <F3>	(&diff ? "]c:call \<sid>NextDiff()\<cr>" : ":cn\<cr>")
-nnoremap <unique><expr> <silent> <S-F3>	(&diff ? "[c" : ":cN\<cr>")
+nnoremap <expr> <silent> <F3>	(&diff ? "]c:call \<sid>NextDiff()\<cr>" : ":cn\<cr>")
+nnoremap <expr> <silent> <S-F3>	(&diff ? "[c" : ":cN\<cr>")
 nnoremap <C-F3> :call <sid>Search(<sid>Extension(), escape(expand('<cword>'), '%#'))<cr>
 vnoremap <C-F3> :call <sid>Search(<sid>Extension(), escape(lh#visual#selection(), '%#'))<cr>
 nnoremap <C-S-F3> :call <sid>Search(<c-r>=string(<sid>Extension())<cr>, escape(<c-r>=string(expand('<cword>'))<cr>, '%#'))
@@ -45,6 +48,10 @@ vnoremap <C-S-F3> :call <sid>Search(<c-r>=string(<sid>Extension())<cr>, escape(<
 
 " Functions {{{1
 
+" ## Next Diff Functions {{{2
+" Better ]c, [c jump
+
+" Function: s:GotoWinline() {{{3
 function! s:GotoWinline(w_l)
   normal! H
   while winline() < a:w_l
@@ -53,7 +60,7 @@ function! s:GotoWinline(w_l)
   " todo: beware of cases where the window is too little
 endfunction
 
-" Better ]c, [c jump
+" Function: s:NextDiff() {{{3
 function! s:NextDiff()
   if ! &diffopt =~ 'filler' | return | endif
 
@@ -139,7 +146,9 @@ function! s:NextDiff()
 endfunction
 
 
-" Searchfile functions {{{2
+" ## Searchfile functions {{{2
+
+" Function: s:Extension() {{{3
 function! s:Extension()
   if exists('b:searchfile_ext')    | return b:searchfile_ext
   elseif &ft == 'c'                | return 'h,c'
@@ -150,6 +159,7 @@ function! s:Extension()
   endif
 endfunction
 
+" Function: s:DoSearch() {{{3
 function! s:DoSearch(fileext, pattern, opt)
   let save_grepprg=&grepprg
   try 
@@ -168,7 +178,8 @@ function! s:DoSearch(fileext, pattern, opt)
   endtry
 endfunction
 
-function! s:Search(fileext, pattern, ...)
+" Function: s:Search() {{{3
+function! s:Search(fileext, pattern, ...) abort
   let pattern = a:pattern
   if &ft =~ 'vim\|help'
     let pattern = escape(pattern, '#')
@@ -214,6 +225,48 @@ function! s:Search(fileext, pattern, ...)
   catch /^SearchFile:/
     echoerr v:exception
   endtry
+endfunction
+
+" Function: SFComplete(ArgLead, CmdLine, CursorPos) {{{3
+let s:commands = 'Se\%[archfile]\>'
+function! SFComplete(ArgLead, CmdLine, CursorPos)
+  let cmd = matchstr(a:CmdLine, s:commands)
+  let cmdpat = '^'.cmd
+
+  let tmp = substitute(a:CmdLine, '\s*\S\+', 'Z', 'g')
+  let pos = strlen(tmp)
+  let lCmdLine = strlen(a:CmdLine)
+  let fromLast = strlen(a:ArgLead) + a:CursorPos - lCmdLine 
+  " The argument to expand, but cut where the cursor is
+  let ArgLead = strpart(a:ArgLead, 0, fromLast )
+  if 0
+    call confirm( "a:AL = ". a:ArgLead."\nAl  = ".ArgLead
+	  \ . "\nx=" . fromLast
+	  \ . "\ncut = ".strpart(a:CmdLine, a:CursorPos)
+	  \ . "\nCL = ". a:CmdLine."\nCP = ".a:CursorPos
+	  \ . "\ntmp = ".tmp."\npos = ".pos
+	  \ . "\ncmd = ".cmd
+	  \, '&Ok', 1)
+  endif
+
+  if cmd != 'Searchfile'
+    throw "Completion option called with wrong command"
+  endif
+
+  if pos >= 4
+    if a:ArgLead[0] == '-'
+      return ['-i', '-x']
+    else
+      if ArgLead[-1:]!= '/' && isdirectory(ArgLead)
+        let ArgLead .= '/'
+      endif
+      let dirs = split(glob(ArgLead.'*'), "\n")
+      call filter(dirs, 'isdirectory(v:val)')
+      return dirs
+    endif
+  else
+    return []
+  endif
 endfunction
 
 " Functions }}}1
