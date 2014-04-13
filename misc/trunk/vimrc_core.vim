@@ -10,6 +10,7 @@
 " ===================================================================
 
 let paths = split(&rtp, ',')
+let paths0=paths
 call map(paths, 'stridx(v:val, $LUCHOME)>=0 ? (v:val) : substitute(v:val, $HOME, $LUCHOME, "g")')
 "let res = []
 "for p in paths
@@ -329,6 +330,7 @@ let g:vim_addon_manager = {}
 let g:vim_addon_manager['plugin_sources'] = {}
 let g:vim_addon_manager['plugin_sources']['lh-misc'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/misc/trunk' }
 let g:vim_addon_manager['plugin_sources']['lh-compil-hints'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/compil-hints/trunk' }
+let g:vim_addon_manager['plugin_sources']['dirdiff-svn'] = { 'type': 'git', 'url': 'git@github.com:LucHermitte/dirdiff-svn.git' }
 
 " fun X(plugin_sources, www_vim_org, scm_plugin_sources)
 fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_name)
@@ -341,17 +343,24 @@ fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_n
     runtime addons/vim-pwds.vim
     let s:pwd = GetPwd('googlecode')
   endif
+  let g:ps = a:plugin_sources
   for k in s:my_plugins
-    let a:plugin_sources[k]['username'] = join(['luc.hermitte','gmail.com'], '@')
-    let a:plugin_sources[k]['password'] = s:pwd
-    echomsg a:plugin_sources[k]['url']
-    if a:plugin_sources[k]['url'] =~ 'svn'
-      let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], '^http\>', 'https', '')
-      let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(repo.or.cz\)/\(.*\)', 'LucHermitte@\1:srv/git/\2', '')
+  let g:k = k
+      if !has_key(a:plugin_sources, k.name)
+          echomsg "plugin ".(k.name)." unknown to VAM"
+          continue
+      endif
+    let a:plugin_sources[k.name]['username'] = join(['luc.hermitte','gmail.com'], '@')
+    let a:plugin_sources[k.name]['password'] = s:pwd
+    echomsg a:plugin_sources[k.name]['url']
+    if a:plugin_sources[k.name]['url'] =~ 'svn'
+      let a:plugin_sources[k.name]['url'] = substitute(a:plugin_sources[k.name]['url'], '^http\>', 'https', '')
+      let a:plugin_sources[k.name]['url'] = substitute(a:plugin_sources[k.name]['url'], 'git://\(repo.or.cz\)/\(.*\)', 'LucHermitte@\1:srv/git/\2', '')
     endif
   endfor
   " TODO: identify work place and not home place
   if $USERDOMAIN != 'TOPAZE'
+    silent! unlet k
     for k in keys(a:plugin_sources)
       " Convert git protocol to SSH protocol for github access
       if get(a:plugin_sources[k],'type','') == 'git'
@@ -369,7 +378,7 @@ function! s:ActivateAddons()
   runtime addons/lh-vim-lib/autoload/lh/option.vim
   let vimfiles = lh#path#vimfiles()
   "echomsg "vimfiles: ".string(vimfiles)
-  exe 'set rtp+='.vimfiles.'/addons/vim-addon-manager'
+  exe 'set rtp+='.fnameescape(vimfiles).'/addons/vim-addon-manager'
   " tell VAM to use your MergeSources function:
   let g:vim_addon_manager['MergeSources'] = function('X')
   " There should be no exception anyway
@@ -385,9 +394,7 @@ function! s:ActivateAddons()
   call vam#ActivateAddons(['Splice'])
   call vam#ActivateAddons(['gitv'])
   call vam#ActivateAddons(['vim-addon-json-encoding'])
-  " call vam#ActivateAddons(['ManPageView'])
   call vam#ActivateAddons(['viewdoc'])
-  " call vam#ActivateAddons(['clang_complete'])
   call vam#ActivateAddons([ 'vim-airline' ])
   call vam#ActivateAddons([ 'xmledit' ])
   let g:airline_powerline_fonts = 1
@@ -401,7 +408,7 @@ function! s:ActivateAddons()
   " endtry
   "
   " YouCompleteMe
-  exe 'set rtp+='.vimfiles.'/addons/clang/ycm/YouCompleteMe'
+  exe 'set rtp+='.fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe'
   " Unite stuff
   call vam#ActivateAddons(['unite', 'unite-locate', 'unite-outline', 'vimproc'])
   nnoremap <C-p> :Unite file_rec/async<cr>
