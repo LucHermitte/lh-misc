@@ -43,7 +43,7 @@ set cpo&vim
 "------------------------------------------------------------------------
 " Local commands {{{2
 
-command! -b -nargs=* MoveToAutoload call s:MoveToAutoload()
+command! -b -nargs=* MoveToAutoload call s:MoveToAutoload(<f-args>)
 
 "=============================================================================
 " Global Definitions {{{1
@@ -315,6 +315,25 @@ function! s:MoveToAutoload(...)
 
   " call s:DisplayDependenciesTree(deps)
 
+  " 0.2- determine the name of the autoload plugin, and of the prefix
+  let fname = a:0 > 0 ? (a:1) : ''
+  if empty(fname)
+    let fname = expand('%:p')
+    let ft = matchstr(fname, 'ftplugin/\zs[^/.]*')
+    let fname = substitute(fname, 'ftplugin/.*\<'.ft.'\(\>\|_\)\ze.*\.vim', 'autoload/lh/'.ft.'/', '')
+  else
+    if fname !~ 'autoload'
+      let fname = 'autoload/'.fname
+    endif
+  endif
+  let prefix = substitute(fname, '.*/autoload/\(.*\)\.vim$', '\1', '')
+  let prefix = substitute(prefix, '/', '#', 'g')
+  echomsg "go into ".fname . "  (".prefix.")"
+
+  " 0.3- determine the new name of the main function moved
+  let new_fn_name = a:0 > 1 . (a:2) : ''
+
+
   " 1- determine the functions to move
   " 1.1- shall be able to work on a selected range, a function name, or all
   " functions from a script (plugin, ftplugin)
@@ -326,17 +345,6 @@ function! s:MoveToAutoload(...)
   " 1.3- determine the dependant functions (just in case ?)
   "
   " 2- where they are used: change their reference name
-  " 2.1- determine the name of the autoload plugin
-  let fname = a:0 > 0 ? (a:1) : ''
-  if empty(fname)
-    let fname = expand('%:p')
-    let ft = matchstr(fname, 'ftplugin/\zs[^/.]*')
-    let fname = substitute(fname, 'ftplugin/.*\<'.ft.'\(\>\|_\)\ze.*\.vim', 'autoload/lh/'.ft.'/', '')
-  endif
-  let prefix = substitute(fname, '.*/autoload/\(.*\)\.vim$', '\1', '')
-  let prefix = substitute(prefix, '/', '#', 'g')
-  echomsg "go into ".fname . "  (".prefix.")"
-
   " 2.5- check everything is consistant: i.e. a function moved, but that stays
   " internal shall not be referenced anymore.
   " 2.?- what about comments ?
