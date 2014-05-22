@@ -212,8 +212,8 @@ let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">"
 " let g:author_short="Luc Hermitte <hermitte at free.fr>"
 " let g:author	    ="Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>\<c-m>" .
 " \ '"'. "\<tab>\<tab><URL:http://code.google.com/p/lh-vim/>"
-imap <c-space>	<Plug>MuT_cWORD
-vmap <c-space>	<Plug>MuT_Surround
+imap <c-space>  <Plug>MuT_ckword
+vmap <c-space>  <Plug>MuT_Surround
 
 " -- lhVimSpell {{{3
 let g:VS_aspell_add_directly_to_dict = 1
@@ -308,6 +308,18 @@ set completeopt+=menuone
 let g:ycm_key_invoke_completion    = '<C-S-Space>'
 let g:ycm_key_detailed_diagnostics = '<C-X>d'
 
+" -- Unite              {{{3
+nnoremap <C-p> :Unite file_rec/async<cr>
+augroup LhUnite
+  au!
+  autocmd FileType unite call s:unite_my_settings()
+augroup END
+function! s:unite_my_settings()
+  " Overwrite settings.
+  imap <silent><buffer><expr> <CR> unite#do_action('split')
+endfunction
+
+
 " -- vim addons manager {{{3
 let s:my_plugins = [
       \ 'lh-vim-lib'         ,
@@ -324,15 +336,18 @@ let s:my_plugins = [
       \ 'UT'                 ,
       \ 'lh-compil-hints'    ,
       \ 'lh-misc'            ,
+      \ 'lh-cmake'           ,
       \ 'dirdiff-svn'
       \]
 let g:vim_addon_manager = {}
 let g:vim_addon_manager['plugin_sources'] = {}
 let g:vim_addon_manager['plugin_sources']['lh-misc'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/misc/trunk' }
 let g:vim_addon_manager['plugin_sources']['lh-compil-hints'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/compil-hints/trunk' }
+let g:vim_addon_manager['plugin_sources']['lh-cmake'] = { 'type': 'svn', 'url': 'git@github.com:LucHermitte/lh-cmake.git' }
 let g:vim_addon_manager['plugin_sources']['dirdiff-svn'] = { 'type': 'git', 'url': 'git@github.com:LucHermitte/dirdiff-svn.git' }
 
 " fun X(plugin_sources, www_vim_org, scm_plugin_sources)
+let g:problems = []
 fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_name)
   " run default:
   call vam_known_repositories#MergeSources(a:plugin_sources, a:www_vim_org, a:scm_plugin_sources, a:patch_function, a:snr_to_name)
@@ -345,7 +360,7 @@ fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_n
   endif
   let g:ps = a:plugin_sources
   for k in s:my_plugins
-  let g:k = k
+      let g:k = k
       if !has_key(a:plugin_sources, k.name)
           echomsg "plugin ".(k.name)." unknown to VAM"
           continue
@@ -355,8 +370,9 @@ fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_n
     echomsg a:plugin_sources[k.name]['url']
     if a:plugin_sources[k.name]['url'] =~ 'svn'
       let a:plugin_sources[k.name]['url'] = substitute(a:plugin_sources[k.name]['url'], '^http\>', 'https', '')
-      let a:plugin_sources[k.name]['url'] = substitute(a:plugin_sources[k.name]['url'], 'git://\(repo.or.cz\)/\(.*\)', 'LucHermitte@\1:srv/git/\2', '')
+      let a:plugin_sources[k.name]['url'] = substitute(a:plugin_sources[k.name]['url'], 'git://\(repo.or.cz\)/\(.*\)','LucHermitte@\1:srv/git/\2', '')
     endif
+    unlet k
   endfor
   " TODO: identify work place and not home place
   if $USERDOMAIN != 'TOPAZE'
@@ -365,9 +381,9 @@ fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_n
       " Convert git protocol to SSH protocol for github access
       if get(a:plugin_sources[k],'type','') == 'git'
         " Was:
-        " let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'git@\1:\2', '')
+        let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'git@\1:\2', '')
         " Is:
-        let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'http://\1/\2', '')
+        " "let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'http://\1/\2', '')
       endif
     endfor
   endif
@@ -411,7 +427,6 @@ function! s:ActivateAddons()
   exe 'set rtp+='.fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe'
   " Unite stuff
   call vam#ActivateAddons(['unite', 'unite-locate', 'unite-outline', 'vimproc'])
-  nnoremap <C-p> :Unite file_rec/async<cr>
 
 endfunction
 " augroup VAM
@@ -507,7 +522,7 @@ endif
 " As I always want to see the buffer number I map it to CTRL-G.
 " Please note that here we need to prevent a loop in the mapping by
 " using the comamnd "noremap"!
-  noremap <C-G> 2<C-G>
+  nnoremap <C-G> 2<C-G>
 
 :VimrcHelp " backspace in Visual mode deletes selection
   vnoremap <BS> d
@@ -712,6 +727,8 @@ if ! exists(':Make')
 endif
 command! -nargs=0 		 CD	cd %:p:h
 command! -nargs=0 		 LCD	lcd %:p:h
+" http://vim.wikia.com/wiki/Reverse_selected_text
+command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
 " }}}
 " -------------------------------------------------------------------
 " }}}1
