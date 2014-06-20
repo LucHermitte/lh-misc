@@ -3,9 +3,9 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:	1.10
+" Version:	1.11
 " Created:	09th Apr 2003
-" Last Update:	10th Apr 2012
+" Last Update:	19th Jun 2014
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -53,6 +53,7 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"	v1.11   Less errors are printed when the file loaded contains errors
 "	v1.10   s:k_version in local_vimrc files is automatically incremented
 "	        on saving
 "	v1.9    New command :SourceLocalVimrc in order to explicitly load the
@@ -81,7 +82,7 @@
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 109
+let s:k_version = 111
 if exists("g:loaded_local_vimrc") 
       \ && (g:loaded_local_vimrc >= s:k_version)
       \ && !exists('g:force_reload_local_vimrc')
@@ -112,7 +113,7 @@ let s:re_last_path = '^/\=$\|^[A-Za-z]:[/\\]\+$\|^//$\|^\\\\$'.
       \ ((s:home != '') ? ('\|^'.s:home.'$') : '')
 
 " The main function                                                   {{{2
-function! s:SourceLocal(path)
+function! s:SourceLocal(path) abort
   let up_path = fnamemodify(a:path,':h')
   if up_path == '.' " likelly a non existant path
     if ! isdirectory(a:path)
@@ -149,14 +150,14 @@ function! s:SourceLocal(path)
   endif
 endfunction
 
-function! s:CheckForbiddenPath(path)
-  let ok = a:path !~ '^\(s\=ftp:\|s\=http:\|scp:\|^$\)'
-  return ok
+function! s:IsAForbiddenPath(path)
+  let forbidden = a:path !~ '^\(s\=ftp:\|s\=http:\|scp:\|^$\)'
+  return forbidden
 endfunction
 
-function! s:Main(path)
+function! s:Main(path) abort
   " echomsg 'Sourcing: '.a:path
-  if !s:CheckForbiddenPath(a:path) 
+  if !s:IsAForbiddenPath(a:path) 
     return
   else
     call s:SourceLocal(a:path)
