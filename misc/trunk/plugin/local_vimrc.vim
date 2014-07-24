@@ -3,7 +3,7 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:	1.11
+" Version:	1.12
 " Created:	09th Apr 2003
 " Last Update:	19th Jun 2014
 " License:      GPLv3
@@ -53,6 +53,8 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"	v1.12   Version deprecated in favour of   
+"	        <URL:https://github.com/LucHermitte/local_vimrc>
 "	v1.11   Less errors are printed when the file loaded contains errors
 "	v1.10   s:k_version in local_vimrc files is automatically incremented
 "	        on saving
@@ -82,15 +84,16 @@
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 111
+let s:k_version = 112
 if exists("g:loaded_local_vimrc") 
       \ && (g:loaded_local_vimrc >= s:k_version)
       \ && !exists('g:force_reload_local_vimrc')
   finish 
 endif
-let g:loaded_local_vimrc_vim = s:k_version
+let g:loaded_local_vimrc = s:k_version
 let s:cpo_save=&cpo
 set cpo&vim
+echomsg "This version of local_vimrc is deprecated, please get the last one from https://github.com/LucHermitte/local_vimrc"
 " Avoid global reinclusion }}}1
 "------------------------------------------------------------------------
 " Commands {{{1
