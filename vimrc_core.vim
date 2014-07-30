@@ -647,9 +647,6 @@ endif
 "
 :VimrcHelp " <F9>    : toggle on and off the bracketing shortcuts              [I+N]
 :VimrcHelp " <M-F9>  : toggle on and off the use of markers with «brackets»    [I+N]
-" Within common_brackets.vim :
-"   call Trigger_Function('<F9>', 'Brackets', expand("<sfile>:p") )
-"   call Trigger_DoSwitch('<M-F9>',':let b:usemarks=1',':let b:usemarks=0')
 "
 :VimrcHelp " <F10>   : EXIT                                                    [I+N]
 :VimrcHelp " <S-F10> : EXIT!                                                   [I+N]
