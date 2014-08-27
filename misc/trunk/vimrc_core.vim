@@ -323,7 +323,7 @@ endfunction
 " -- vim addons manager {{{3
 let s:my_plugins = [
       \ 'lh-vim-lib'         ,
-      \ 'local_vimrc@lh'     ,
+      \ 'local_vimrc'        ,
       \ 'lh-brackets'        ,
       \ 'build-tools-wrapper',
       \ 'lh-tags'            ,
@@ -342,14 +342,12 @@ let s:my_plugins = [
       \]
 let g:vim_addon_manager = {}
 let g:vim_addon_manager['plugin_sources'] = {}
-let g:vim_addon_manager['plugin_sources']['local_vimrc@lh'] = { 'type': 'git', 'url': 'git@github.com:LucHermitte/local_vimrc.git' }
 let g:vim_addon_manager['plugin_sources']['lh-misc'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/misc/trunk' }
-let g:vim_addon_manager['plugin_sources']['lh-compil-hints'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/compil-hints/trunk' }
-let g:vim_addon_manager['plugin_sources']['lh-cmake'] = { 'type': 'svn', 'url': 'git@github.com:LucHermitte/lh-cmake.git' }
+" let g:vim_addon_manager['plugin_sources']['lh-compil-hints'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/compil-hints/trunk' }
+" let g:vim_addon_manager['plugin_sources']['lh-cmake'] = { 'type': 'svn', 'url': 'git@github.com:LucHermitte/lh-cmake.git' }
 let g:vim_addon_manager['plugin_sources']['dirdiff-svn'] = { 'type': 'git', 'url': 'git@github.com:LucHermitte/dirdiff-svn.git' }
 
 " fun X(plugin_sources, www_vim_org, scm_plugin_sources)
-let g:problems = []
 fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_name)
   " run default:
   call vam_known_repositories#MergeSources(a:plugin_sources, a:www_vim_org, a:scm_plugin_sources, a:patch_function, a:snr_to_name)
@@ -363,16 +361,16 @@ fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_n
   let g:ps = a:plugin_sources
   for k in s:my_plugins
       let g:k = k
-      if !has_key(a:plugin_sources, k)
-          echomsg "plugin ".(k)." unknown to VAM"
+      if !has_key(a:plugin_sources, k.name)
+          echomsg "plugin ".(k.name)." unknown to VAM"
           continue
       endif
-    let a:plugin_sources[k]['username'] = join(['luc.hermitte','gmail.com'], '@')
-    let a:plugin_sources[k]['password'] = s:pwd
-    " echomsg a:plugin_sources[k]['url']
-    if a:plugin_sources[k]['url'] =~ 'svn'
-      let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], '^http\>', 'https', '')
-      let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(repo.or.cz\)/\(.*\)','LucHermitte@\1:srv/git/\2', '')
+    let a:plugin_sources[k.name]['username'] = join(['luc.hermitte','gmail.com'], '@')
+    let a:plugin_sources[k.name]['password'] = s:pwd
+    " echomsg a:plugin_sources[k.name]['url']
+    if a:plugin_sources[k.name]['url'] =~ 'svn'
+      let a:plugin_sources[k.name]['url'] = substitute(a:plugin_sources[k.name]['url'], '^http\>', 'https', '')
+      let a:plugin_sources[k.name]['url'] = substitute(a:plugin_sources[k.name]['url'], 'git://\(repo.or.cz\)/\(.*\)','LucHermitte@\1:srv/git/\2', '')
     endif
     unlet k
   endfor
