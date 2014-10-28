@@ -41,9 +41,9 @@ endif
     inoremap <S-F1> <c-o>:call ShowHelp('vimrc')
     call ClearHelp("vimrc")
   else
-    command! -nargs=1 VimrcHelp 
+    command! -nargs=1 VimrcHelp
   endif
- 
+
 :VimrcHelp "			-------------------------
 :VimrcHelp "			C U S T O M   M A C R O S
 :VimrcHelp "			-------------------------
@@ -81,15 +81,15 @@ endif
   set helpheight=0      " zero disables this.
 " set helpfile=c:\\vim-4.6\\docs\\help.txt
                         " filename of the helpfile
-                        " this is where I usually put it on DOS; sometimes 
-                        " is required to set as the default installation 
+                        " this is where I usually put it on DOS; sometimes
+                        " is required to set as the default installation
                         " does not find it  :-(
-  set hidden            " 
+  set hidden            "
   set highlight=8r,db,es,hs,mb,Mr,nu,rs,sr,tb,vr,ws
                         "  highlight=8b,db,es,hs,mb,Mn,nu,rs,sr,tb,vr,ws
   set nohlsearch
                         " highlight search - show the current search pattern
-                        " This is a nice feature sometimes - but it sure 
+                        " This is a nice feature sometimes - but it sure
                         " can get in the way sometimes when you edit.
   set noicon            " ...
 " set iconstring        " set iconstring file of icon (Sven doesn't use an icon)
@@ -102,14 +102,14 @@ endif
                         " Add the dash ('-') and the dot ('.')
                         "                   as "letters" to "words".
                         "       iskeyword=@,48-57,_,192-255   (default)
-  set joinspaces        " insert two spaces after a period with every joining 
+  set joinspaces        " insert two spaces after a period with every joining
                         " of lines.  This is very nice!
   set laststatus=2      " show status line?  Yes, always!
                         " Even for only one buffer.
   set lazyredraw        " [VIM5];  do not update screen while executing macros
   set magic             " Use some magic in search patterns?  Certainly!
   set modeline          " Allow the last line to be a modeline - useful when
-                        " the last line in sig gives the preferred textwidth 
+                        " the last line in sig gives the preferred textwidth
                         " for replies.
   set modelines=3
   set mousemodel=popup  " instead on extend
@@ -136,10 +136,10 @@ endif
 "  endif
 "
 "
-  set shiftwidth=4      " Number of spaces to use for each insertion of 
+  set shiftwidth=4      " Number of spaces to use for each insertion of
                         " (auto)indent.
   set shortmess=at      " Kind of messages to show.   Abbreviate them all!
-                        " New since vim-5.0v: flag 'I' to suppress "intro 
+                        " New since vim-5.0v: flag 'I' to suppress "intro
                         " message".
   set showcmd           " Show current uncompleted command?  Absolutely!
   set showmatch         " Show the matching bracket for the last ')'?
@@ -156,21 +156,21 @@ endif
   set title             " Permet de voir le tit. du doc. crt. ds les XTERM
   set nottyfast         " are we using a fast terminal?
                         " seting depends on where I use Vim...
-  set nottybuiltin      " 
+  set nottybuiltin      "
   set ttyscroll=0       " turn off scrolling -> faster!
 " set ttytype=rxvt
   set viminfo='50,<100,:1000,n~/.viminfo
                         " What info to store from an editing session
                         " in the viminfo file;  can be used at next session.
-  set visualbell        "   
+  set visualbell        "
   set t_vb=             " terminal's visual bell - turned off to make Vim quiet!
-  set whichwrap=<,>     " 
+  set whichwrap=<,>     "
   set wildchar=<TAB>    " the char used for "expansion" on the command line
                         " default value is "<C-E>" but I prefer the tab key:
   set wildignore=*.bak,*.swp,*.o,*~,*.class,*.exe,*.obj,/CVS/,/.svn/,/.git/,*.so,*.a,*.lo,*.la,*.Plo,*.Po,*.gcno,*.gcda
   set wildmenu          " Completion on th command line shows a menu
   set winminheight=0	" Minimum height of VIM's windows opened
-  set wrapmargin=1    
+  set wrapmargin=1
   set nowritebackup
 
   set cpoptions-=C      " enable commands that continue on the next line
@@ -208,7 +208,7 @@ let g:marker_center                = 0
 let g:url         = 'http://code.google.com/p/lh-vim/'
 let g:author_short= "Luc Hermitte"
 let g:author_email= "hermitte {at} free {dot} fr"
-let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">" 
+let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">"
 " let g:author_short="Luc Hermitte <hermitte at free.fr>"
 " let g:author	    ="Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>\<c-m>" .
 " \ '"'. "\<tab>\<tab><URL:http://code.google.com/p/lh-vim/>"
@@ -279,7 +279,7 @@ function! s:FindLibClang()
   if has('unix')
     let libpaths = split($PATH, has('unix') ? ':' : ',')
     for libpath in libpaths
-      if ! empty(glob(libpath.'/libclang*', 1)) 
+      if ! empty(glob(libpath.'/libclang*', 1))
         let g:clang_library_path = libpath
         " no need to search for other occurrences later in $PATH
         return
@@ -291,7 +291,7 @@ function! s:FindLibClang()
   for p in binpaths
     if p =~ '\<bin\>$'
       let libpath = p[0:-4].'lib'
-      if ! empty(glob(libpath.'/libclang*', 1)) 
+      if ! empty(glob(libpath.'/libclang*', 1))
         let g:clang_library_path = libpath
         " no need to search for other occurrences later in $PATH
         return
@@ -343,7 +343,6 @@ let s:my_plugins = [
 let g:vim_addon_manager = {}
 let g:vim_addon_manager['plugin_sources'] = {}
 
-" fun X(plugin_sources, www_vim_org, scm_plugin_sources)
 fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_name)
   " run default:
   call vam_known_repositories#MergeSources(a:plugin_sources, a:www_vim_org, a:scm_plugin_sources, a:patch_function, a:snr_to_name)
@@ -356,17 +355,17 @@ fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_n
   endif
   let g:ps = a:plugin_sources
   for k in s:my_plugins
-      let g:k = k
-      if !has_key(a:plugin_sources, k.name)
-          echomsg "plugin ".(k.name)." unknown to VAM"
-          continue
+    let g:k = k
+    if !has_key(a:plugin_sources, k)
+      echomsg "plugin ".(k)." unknown to VAM"
+      continue
       endif
-    let a:plugin_sources[k.name]['username'] = join(['luc.hermitte','gmail.com'], '@')
-    let a:plugin_sources[k.name]['password'] = s:pwd
-    " echomsg a:plugin_sources[k.name]['url']
-    if a:plugin_sources[k.name]['url'] =~ 'svn'
-      let a:plugin_sources[k.name]['url'] = substitute(a:plugin_sources[k.name]['url'], '^http\>', 'https', '')
-      let a:plugin_sources[k.name]['url'] = substitute(a:plugin_sources[k.name]['url'], 'git://\(repo.or.cz\)/\(.*\)','LucHermitte@\1:srv/git/\2', '')
+    let a:plugin_sources[k]['username'] = join(['luc.hermitte','gmail.com'], '@')
+    let a:plugin_sources[k]['password'] = s:pwd
+    " echomsg a:plugin_sources[k]['url']
+    if a:plugin_sources[k]['url'] =~ 'svn'
+      let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], '^http\>', 'https', '')
+      let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(repo.or.cz\)/\(.*\)','LucHermitte@\1:srv/git/\2', '')
     endif
     unlet k
   endfor
@@ -457,7 +456,7 @@ if &encoding == 'utf-8'
 endif
 
 if 0
-  if 0 && has("multi_byte") && (version >= 602) 
+  if 0 && has("multi_byte") && (version >= 602)
     " \ && (confirm("change encoding -> utf-8", "&Yes\n&No", 2)==1)
     set encoding=utf-8
     " set encoding=latin2
@@ -561,7 +560,7 @@ vmap <S-end> <end>
 " Valid names for keys are:  <Up> <Down> <Left> <Right> <Home> <End>
 " <S-Left> <S-Right> <S-Up> <PageUp> <S-Down> <PageDown>  <LeftMouse>
 "
-:VimrcHelp " 
+:VimrcHelp "
 :VimrcHelp " Command line editing commands in emacs style:
 :VimrcHelp "   <C-A>      : home
 :VimrcHelp "   <C-F>      : right
@@ -591,9 +590,9 @@ elseif has("win32")
   source <sfile>:p:h/_vimrc_win
 endif
 "
-:VimrcHelp " 
+:VimrcHelp "
 :VimrcHelp " <S-F1>  : Display this help                                       [N]
-" 
+"
 :VimrcHelp " <C-s>   : Save a file                                             [I+N]
   nnoremap <C-s> :update<CR>
   inoremap <C-s> <c-o>:update<CR>
@@ -610,8 +609,8 @@ endif
 ""so $VIMRUNTIME/../macros/words_tools.vim
 ""so $VIMRUNTIME/../macros/Triggers.vim
 ""Runtime plugin/fr-abbr.vim
-""call Trigger_Function('<F3>', 'FRabbrInit', 
-""  \                     expand('$VIM/settings/fr-abbr.vim') ) 
+""call Trigger_Function('<F3>', 'FRabbrInit',
+""  \                     expand('$VIM/settings/fr-abbr.vim') )
 :VimrcHelp " <F3>    : Activates or desactivates mappings for french edition   [I+N]
 :VimrcHelp " <C-F3>  : Reloads the French mappings dictionary                  [N]
 :VimrcHelp " <S-F3>  : Split-open the French mappings dictionary               [N]
@@ -655,10 +654,10 @@ endif
 "
 :VimrcHelp " <F11>   : Previous Buffer                                         [I+N]
   inoremap <F11> <esc>:bprev<CR>
-  nnoremap <expr> <F11> (&ft=='qf' ? ":colder" : ":bprev")."\<cr>" 
+  nnoremap <expr> <F11> (&ft=='qf' ? ":colder" : ":bprev")."\<cr>"
 :VimrcHelp " <F12>   : Next Buffer                                             [I+N]
   inoremap <F12> <esc>:bnext<CR>
-  nnoremap <expr> <F12> (&ft=='qf' ? ":cnewer" : ":bnext")."\<cr>" 
+  nnoremap <expr> <F12> (&ft=='qf' ? ":cnewer" : ":bnext")."\<cr>"
 "
 :VimrcHelp " <C-Del> and <C-S-Del> Delete a whole word till its end            [I+N]
    noremap  <C-Del> dw
@@ -732,7 +731,7 @@ command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
 " ===================================================================
 " General Editing {{{1
 " ===================================================================
-:VimrcHelp " 
+:VimrcHelp "
 :VimrcHelp " ;rcm    = remove <C-M>s - for those mails sent from DOS:          [C]
   cmap ;rcm %s/<C-M>$//g
 "
@@ -778,7 +777,7 @@ function! DateStamp()
   endif
   let year  = strftime(" %Y")
   return day . th . ' ' . month . year
-endfunction  
+endfunction
 :VimrcHelp " ydate   = print the current date                                  [A+C]
   iab ydate <C-R>=DateStamp()<cr>
   command! -nargs=0 Ydate @=DateStamp()<cr>
@@ -833,14 +832,14 @@ endfunction
 
 : VimrcHelp " [N],mc = move to col number [N]
   nnoremap ,mc :<c-u>call <sid>MoveToCol()<cr>
-  
+
 function! s:MoveToCol()
   let d = v:count - col('.')
   if d > 0
     exe 'normal! '.d."i \<esc>"
   endif
 endfunction
-  
+
 " }}}
 " -------------------------------------------------------------------
 " Useful stuff.  At least these are nice examples.  :-) {{{
@@ -916,7 +915,7 @@ endfunction
 " From the vim mailing list, Bob Hiestand's solution.
  vnoremap ,rev <esc>:execute "'<,'>g/^/m" line("'<")-1<cr>
  nnoremap ,rev :execute "%g/^/m" 0<cr>
-" 
+"
 " :digraph oe 156
 " :digraph OE 140
 
@@ -931,7 +930,7 @@ endfunction
 
 " autocmd!
 " -------------------------------------------------------------------
-" Syntax files 
+" Syntax files
 " -------------------------------------------------------------------
 " Toggle syntax coloring on/off with "__":
 " nn __ mg:if has("syntax_items")<Bar>syn clear<CR>else<Bar>syn on<CR>en<CR>`g
