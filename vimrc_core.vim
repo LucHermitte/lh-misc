@@ -328,7 +328,7 @@ let s:my_plugins = [
       \ 'build-tools-wrapper',
       \ 'lh-tags'            ,
       \ 'lh-dev'             ,
-      \ 'vim-clang'          ,
+      \ 'vim-clang@lh'       ,
       \ 'mu-template@lh'     ,
       \ 'lh-cpp'             ,
       \ 'lh-refactor'        ,
@@ -342,10 +342,6 @@ let s:my_plugins = [
       \]
 let g:vim_addon_manager = {}
 let g:vim_addon_manager['plugin_sources'] = {}
-let g:vim_addon_manager['plugin_sources']['lh-misc'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/misc/trunk' }
-" let g:vim_addon_manager['plugin_sources']['lh-compil-hints'] = { 'type': 'svn', 'url': 'http://lh-vim.googlecode.com/svn/compil-hints/trunk' }
-" let g:vim_addon_manager['plugin_sources']['lh-cmake'] = { 'type': 'svn', 'url': 'git@github.com:LucHermitte/lh-cmake.git' }
-let g:vim_addon_manager['plugin_sources']['dirdiff-svn'] = { 'type': 'git', 'url': 'git@github.com:LucHermitte/dirdiff-svn.git' }
 
 " fun X(plugin_sources, www_vim_org, scm_plugin_sources)
 fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_name)
@@ -424,7 +420,11 @@ function! s:ActivateAddons()
   " endtry
   "
   " YouCompleteMe
-  exe 'set rtp+='.fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe'
+  if version >= 703 && has("patch-7.3.584") && has('python')
+        \ && isdirectory(fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe/third_party/ycmd')
+        \ && executable(fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe/third_party/ycmd/libclang.so')
+    exe 'set rtp+='.fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe'
+  endif
   " Unite stuff
   call vam#ActivateAddons(['unite', 'unite-locate', 'unite-outline', 'vimproc'])
 
