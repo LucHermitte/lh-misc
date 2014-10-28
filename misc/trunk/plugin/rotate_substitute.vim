@@ -3,18 +3,21 @@
 " File:		plugin/rotate_substitute.vim                      {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:	1.0.2
+" Version:	1.0.3
 " Created:	27th Nov 2009
 " Last Update:	$Date$
 "------------------------------------------------------------------------
 " Description:	
-" <http://stackoverflow.com/questions/1809571/how-do-i-substitute-from-a-list-of-strings-in-vim>
+"   CycleSubstitute: <http://stackoverflow.com/questions/1809571/how-do-i-substitute-from-a-list-of-strings-in-vim>
+"   Tr:              <http://stackoverflow.com/a/25665554/15934>
 " 
 "------------------------------------------------------------------------
 " Installation:	
 " Drop the file into {rtp}/plugin
 " History:	
-"       v1.0.2: 
+"       v1.0.3:
+"       * +:Translate
+"       v1.0.2:
 "       * CycleSubstitute fixed to support: CycleSubstitute/title/subtitle
 " TODO:		«missing features»
 " }}}1
@@ -24,7 +27,7 @@
 if &cp || (exists("g:loaded_rotate_substitute") && !exists('g:force_reload_rotate_substitute'))
   finish
 endif
-let g:loaded_rotate_substitute = 102
+let g:loaded_rotate_substitute = 103
 let s:cpo_save=&cpo
 set cpo&vim
 " Avoid global reinclusion }}}1
@@ -32,6 +35,7 @@ set cpo&vim
 " Commands and Mappings {{{1
 :command! -bang -nargs=1 -range CycleSubstitute <line1>,<line2>call s:CycleSubstitute("<bang>", <f-args>)
 :command! -bang -nargs=1 -range RotateSubstitute <line1>,<line2>call s:RotateSubstitute("<bang>", <f-args>)
+:command! -nargs=1 -range=1 Translate <line1>,<line2>call s:Translate(<f-args>)
 " Commands and Mappings }}}1
 "------------------------------------------------------------------------
 " Functions {{{1
@@ -129,6 +133,18 @@ function! s:DoRotateSubst(do_loop, list, replaced, ...)
 
     return res
   endif
+endfunction
+
+function! s:Translate(repl_arg) range abort
+  let sep = a:repl_arg[0]
+  let fields = split(a:repl_arg, sep)
+  " build the action to execute
+  " prepare the :global command
+  let cmd = a:firstline . ',' . a:lastline . 'g'.sep.'.'.sep
+        \. 'call setline(".", tr(getline("."), '.string(fields[0]).','.string(fields[1]).'))'
+  " and run it
+  " echom cmd
+  exe cmd
 endfunction
 
 " %RotateSubstitute/\(.\)foo\(.\)/\2bar\1/\1bar\2/
