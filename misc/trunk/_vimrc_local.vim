@@ -17,7 +17,7 @@
 " }}}1
 "=============================================================================
 
-let s:k_version = 100
+let s:k_version = 108
 " Always loaded {{{1
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
@@ -36,7 +36,7 @@ set cpo&vim
 
 if expand('%:p:h') !~ 'tests/lh'
   let b:tags_dirname = expand('<sfile>:p:h')
-  let b:tags_options = ' --exclude=tests --exclude="*.cpp" --exclude="*.h" --exclude="*.template" --exclude=cpo_save'
+  let b:tags_options = ' --exclude=.svn --exclude=.git --exclude=tests --exclude="*.*sh" --exclude="*.bat" --exclude="*.php" --exclude="*.js" --exclude="Makefile*" --exclude="*.mak" --exclude="*.pl" --exclude="*.py*" --exclude="*.c*" --exclude="*.h*" --exclude="*.template" --exclude=cpo_save'
 else
   let b:tags_dirname = expand('%:p:h')
   let b:tags_options = ' --exclude="*.vim"'
