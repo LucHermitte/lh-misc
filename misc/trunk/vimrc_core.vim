@@ -408,11 +408,13 @@ function! s:ActivateAddons()
   call vam#ActivateAddons(['viewdoc'])
   call vam#ActivateAddons([ 'vim-airline' ])
   call vam#ActivateAddons([ 'xmledit' ])
+  call vam#ActivateAddons([ 'vim-jira-complete' ])
   let g:airline_powerline_fonts = 1
   let g:airline_theme = 'solarized'
   " let g:airline_solarized_bg = 'dark'
   " call vam#ActivateAddons(['Syntastic'])
-  call vam#ActivateAddons(s:my_plugins, {'auto_install' : 0})
+  " s:my_plugins is copied otherwise VAM will mutate its content
+  call vam#ActivateAddons(copy(s:my_plugins), {'auto_install' : 0})
   " pluginA could be github:YourName see vam#install#RewriteName()
   " catch /.*/
   " echoe v:exception
