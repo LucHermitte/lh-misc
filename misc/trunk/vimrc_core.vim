@@ -342,6 +342,7 @@ let s:my_plugins = [
       \]
 let g:vim_addon_manager = {}
 let g:vim_addon_manager['plugin_sources'] = {}
+let g:vim_addon_manager['plugin_sources']['vim-jira-complete'] = { 'type': 'git', 'url': 'ssh://ssh.github.com/LucHermitte/vim-jira-complete'}
 
 fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_name)
   " run default:
@@ -410,7 +411,7 @@ function! s:ActivateAddons()
   call vam#ActivateAddons([ 'xmledit' ])
   call vam#ActivateAddons([ 'vim-jira-complete' ])
   let g:airline_powerline_fonts = 1
-  let g:airline_theme = 'solarized'
+  " let g:airline_theme = 'solarized'
   " let g:airline_solarized_bg = 'dark'
   " call vam#ActivateAddons(['Syntastic'])
   " s:my_plugins is copied otherwise VAM will mutate its content
