@@ -126,7 +126,9 @@ endif
   set report=0          " show a report when N lines were changed.
                         " report=0 thus means "show all changes"!
   set ruler             " show cursor position?  Yep!
-"
+
+  set sessionoptions=curdir,folds,options,resize,winsize,globals
+
 " Setting the "shell" is always tricky - especially when you are
 " trying to use the same vimrc on different operating systems.
 " Now that vim-5 has ":if" I am trying to automate the setting:
@@ -135,7 +137,7 @@ endif
 "    let shell='tcsh'
 "  endif
 "
-"
+
   set shiftwidth=4      " Number of spaces to use for each insertion of
                         " (auto)indent.
   set shortmess=at      " Kind of messages to show.   Abbreviate them all!
