@@ -3,9 +3,9 @@
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
 " License:      GPLv3
-" Version:	0.0.8
+" Version:	0.0.9
 " Created:	01st Feb 2006
-" Last Update:	10th Apr 2014
+" Last Update:	12th Dec 2014
 "------------------------------------------------------------------------
 " Description:	Vim plugin wrapper for searchfile.pl
 " 
@@ -23,7 +23,7 @@
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 008
+let s:k_version = 009
 if exists("g:loaded_searchfile") 
       \ && (g:loaded_searchfile >= s:k_version)
       \ && !exists('g:force_reload_searchfile')
@@ -155,6 +155,7 @@ function! s:Extension()
   elseif &ft == 'cpp'              | return 'h,cpp,hpp'
   elseif &ft =~ 'xslt\|javascript' | return 'xsl,js'
   elseif &ft =~ 'vim\|help'        | return 'vim,txt,template'
+  elseif &ft =~ 'python'           | return 'py'
   else                             | return &ft
   endif
 endfunction
