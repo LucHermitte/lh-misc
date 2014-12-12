@@ -424,7 +424,7 @@ function! s:ActivateAddons()
   " endtry
   "
   " YouCompleteMe
-  if version >= 703 && has("patch-7.3.584") && has('python')
+  if ((version == 704 && has("patch72")) || version > 704) && has('python')
         \ && isdirectory(fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe/third_party/ycmd')
         \ && executable(fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe/third_party/ycmd/libclang.so')
     exe 'set rtp+='.fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe'
