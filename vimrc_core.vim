@@ -449,6 +449,11 @@ nmap <m-p> <Plug>PreviewWord
 
 " -- xml edit {{{3
 let g:xml_jump_string = lh#marker#txt()
+
+" -- diffchar {{{3
+nmap ]<f7> <Plug>ToggleDiffCharAll
+nmap ]<f8> <Plug>ToggleDiffCharOneLine
+
 " Multi-byte support {{{2
 " Cf. http://vim.sourceforge.net/tips/tip.php?tip_id=246 by Tony Mechelynck
 if &encoding == 'utf-8'
