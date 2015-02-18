@@ -3,10 +3,10 @@
 " ===================================================================
 " Core rules for vimrc
 "
-" File		: vimrc_core.vim
+" File          : vimrc_core.vim
 " Initial Author: Sven Guckes
-" Maintainer	: Luc Hermitte
-" Last update	: $Date$
+" Maintainer    : Luc Hermitte
+" Last update   : $Date$
 " ===================================================================
 
 let paths = split(&rtp, ',')
@@ -44,9 +44,9 @@ endif
     command! -nargs=1 VimrcHelp
   endif
 
-:VimrcHelp "			-------------------------
-:VimrcHelp "			C U S T O M   M A C R O S
-:VimrcHelp "			-------------------------
+:VimrcHelp "                    -------------------------
+:VimrcHelp "                    C U S T O M   M A C R O S
+:VimrcHelp "                    -------------------------
 :VimrcHelp "
 :VimrcHelp "
 :VimrcHelp "
@@ -57,10 +57,10 @@ endif
 " Vim Options: {{{2
   set nocompatible
 
-  set bs=2		" allow backspacing over everything in insert mode
-  set ai			" always set autoindenting on
+  set bs=2              " allow backspacing over everything in insert mode
+  set ai                        " always set autoindenting on
   set autowrite
-  set nobackup		" do not keep a backup file, use versions instead
+  set nobackup          " do not keep a backup file, use versions instead
 
   set cmdheight=2
   set comments=b:#,:%,fb:-,n:>,n:)
@@ -149,7 +149,7 @@ endif
   set suffixes=.bak,.swp,.o,~,.class,.exe,.obj,.a
                         " Suffixes to ignore in file completion, see wildignore
   set switchbuf=useopen,split " test!
-			" :cnext, :make uses thefirst open windows that
+                        " :cnext, :make uses thefirst open windows that
                         " contains the specified buffer
   set tabstop=8         " tabstop
 " set term=rxvt
@@ -171,7 +171,7 @@ endif
                         " default value is "<C-E>" but I prefer the tab key:
   set wildignore=*.bak,*.swp,*.o,*~,*.class,*.exe,*.obj,/CVS/,/.svn/,/.git/,*.so,*.a,*.lo,*.la,*.Plo,*.Po,*.gcno,*.gcda
   set wildmenu          " Completion on th command line shows a menu
-  set winminheight=0	" Minimum height of VIM's windows opened
+  set winminheight=0    " Minimum height of VIM's windows opened
   set wrapmargin=1
   set nowritebackup
 
@@ -184,275 +184,6 @@ if filereadable("tags")
     " $PWD => problem is there are spaces within the path name
     exec "set tags+=" . escape(expand('%:p:h'),' ') . "/tags"
 endif
-
-" Options for differents plugins. {{{2
-let g:tex_flavor = 'tex'
-" -- Mail_Re_set {{{3
-let g:mail_tag_placement = "tag_second"
-" -- EnhCommentify {{{3
-let g:EnhCommentifyUseAltKeys    = "yes"
-let g:EnhCommentifyRespectIndent = "yes"
-"let g:EnhCommentifyFirstLineMode = "yes"
-let g:EnhCommentifyPretty        = "yes"
-let g:EnhCommentifyUseSyntax	 = 'yes'
-
-" -- Michael Geddes's Buffer Menu <http://vim.sf.net/>  {{{3
-let g:buffermenu_use_disable     = 1
-let g:want_buffermenu_for_tex    = 2 " 0 : no, 1 : yes, 2 : global disable
-                                     " cf. tex-maps.vim & texmenus.vim
-
-" -- lhBrackets {{{3
-let g:marker_select_empty_marks    = 1
-let g:marker_center                = 0
-
-" -- muTemplate {{{3
-" To override in some ftplugins if required.
-let g:url         = 'http://code.google.com/p/lh-vim/'
-let g:author_short= "Luc Hermitte"
-let g:author_email= "hermitte {at} free {dot} fr"
-let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">"
-" let g:author_short="Luc Hermitte <hermitte at free.fr>"
-" let g:author	    ="Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>\<c-m>" .
-" \ '"'. "\<tab>\<tab><URL:http://code.google.com/p/lh-vim/>"
-imap <c-space>  <Plug>MuT_ckword
-vmap <c-space>  <Plug>MuT_Surround
-
-" -- lhVimSpell {{{3
-let g:VS_aspell_add_directly_to_dict = 1
-
-" -- BTW {{{3
-let g:BTW_qf_position = 'bot'
-
-" -- SearchInRuntime {{{3
-let g:sir_goto_hsplit = "Hsplit"
-let g:sir_goto_vsplit = "Vsplit"
-
-" -- Johannes Zellner's Man <http://www.zellner.org/> {{{3
-let g:man_vim_only = 1
-
-" -- Yegappan Lakshmanan's grep.vim <http://vim.sf.net/>  {{{3
-let Grep_key = '<F4>'
-if has('win32')
-  " let       Grep_Path = 'd:/users/hermitte/bin/usr/local/wbin/grep'
-  " let      Fgrep_Path = 'd:/users/hermitte/bin/usr/local/wbin/fgrep'
-  " let      Egrep_Path = 'd:/users/hermitte/bin/usr/local/wbin/egrep'
-  " let     Agrep_Path = 'd:/users/hermitte/bin/usr/local/wbin/agrep'
-  " let  Grep_Find_Path = 'd:/users/hermitte/bin/usr/local/wbin/find'
-  " let Grep_Xargs_Path = 'd:/users/hermitte/bin/usr/local/wbin/xargs'
-endif
-
-" -- grep.vim {{{3
-let Grep_Key = ',g'
-
-" -- Doxygen syntax {{{3
-let g:load_doxygen_syntax = 1
-
-" -- Dr Chip Campbell's StlShowFunc {{{3
-hi User1 ctermfg=white ctermbg=black guifg=white guibg=black
-hi User2 ctermfg=lightblue ctermbg=black guifg=lightblue guibg=black
-hi User3 ctermfg=yellow ctermbg=black guifg=lightyellow guibg=black
-
-" -- Dr Chip Campbell's hiLink {{{3
-" don't map <S-F10>'
-map <Leader>hlt <Plug>HiLinkTrace
-
-" -- William Lee's DirDiff {{{3
-let g:DirDiffExcludes = '*.gz,*.bz2,*.7z,*.vba,*.rss,CVS,SunWS_cache,ir.out,.*.state,exe,bin,obj,*.o,*.os,tags,lib,.svn,.git,html,*.a,*.so'.&wildignore
-let g:DirDiffIgnore   = '$Id,$Date'
-let g:DirDiffAddArgs  = "-b"
-
-" -- VCS commands.vim {{{3
-let VCSCommandDisableMappings = 1
-augroup VCSCommand
-  au User VCSBufferCreated silent! nmap <unique> <buffer> q :bwipeout<cr>
-augroup END
-
-" -- clang_indexer@lh {{{3
-" Keybindings
-let clang_key_usr          = '<c-x>U'
-let clang_key_declarations = '<c-x>d'
-let clang_key_references   = '<c-x>r'
-let clang_key_subclases    = '<c-x>S'
-
-" -- clang_complete {{{3
-let g:clang_complete_auto = 0
-function! s:FindLibClang()
-  " 1- check $LD_LIBRARY_PATH
-  if has('unix')
-    let libpaths = split($PATH, has('unix') ? ':' : ',')
-    for libpath in libpaths
-      if ! empty(glob(libpath.'/libclang*', 1))
-        let g:clang_library_path = libpath
-        " no need to search for other occurrences later in $PATH
-        return
-      endif
-    endfor
-  endif
-  " 2- check $PATH if nothing was found yet
-  let binpaths = split($PATH, has('unix') ? ':' : ',')
-  for p in binpaths
-    if p =~ '\<bin\>$'
-      let libpath = p[0:-4].'lib'
-      if ! empty(glob(libpath.'/libclang*', 1))
-        let g:clang_library_path = libpath
-        " no need to search for other occurrences later in $PATH
-        return
-      endif
-    endif
-  endfor
-endfunction
-call s:FindLibClang()
-
-set completeopt-=menu,preview
-set completeopt+=menuone
-
-" -- You Complete Me    {{{3
-let g:ycm_key_invoke_completion    = '<C-S-Space>'
-let g:ycm_key_detailed_diagnostics = '<C-X>d'
-
-" -- Unite              {{{3
-nnoremap <C-p> :Unite file_rec/async<cr>
-augroup LhUnite
-  au!
-  autocmd FileType unite call s:unite_my_settings()
-augroup END
-function! s:unite_my_settings()
-  " Overwrite settings.
-  imap <silent><buffer><expr> <CR> unite#do_action('split')
-endfunction
-
-
-" -- vim addons manager {{{3
-let s:my_plugins = [
-      \ 'lh-vim-lib'         ,
-      \ 'local_vimrc'        ,
-      \ 'lh-brackets'        ,
-      \ 'build-tools-wrapper',
-      \ 'lh-tags'            ,
-      \ 'lh-dev'             ,
-      \ 'vim-clang@lh'       ,
-      \ 'mu-template@lh'     ,
-      \ 'lh-cpp'             ,
-      \ 'lh-refactor'        ,
-      \ 'search-in-runtime'  ,
-      \ 'system-tools'       ,
-      \ 'UT'                 ,
-      \ 'lh-compil-hints'    ,
-      \ 'lh-misc'            ,
-      \ 'lh-cmake'           ,
-      \ 'dirdiff-svn'
-      \]
-let g:vim_addon_manager = {}
-let g:vim_addon_manager['plugin_sources'] = {}
-let g:vim_addon_manager['plugin_sources']['vim-jira-complete'] = { 'type': 'git', 'url': 'ssh://ssh.github.com/LucHermitte/vim-jira-complete'}
-
-fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_name)
-  " run default:
-  call vam_known_repositories#MergeSources(a:plugin_sources, a:www_vim_org, a:scm_plugin_sources, a:patch_function, a:snr_to_name)
-
-  " patch sources the way you like:
-  let s:pwd = 'to_be_defined'
-  if !exists('s:pwd')
-    runtime addons/vim-pwds.vim
-    let s:pwd = GetPwd('googlecode')
-  endif
-  let g:ps = a:plugin_sources
-  for k in s:my_plugins
-    let g:k = k
-    if !has_key(a:plugin_sources, k)
-      echomsg "plugin ".(k)." unknown to VAM"
-      continue
-      endif
-    let a:plugin_sources[k]['username'] = join(['luc.hermitte','gmail.com'], '@')
-    let a:plugin_sources[k]['password'] = s:pwd
-    " echomsg a:plugin_sources[k]['url']
-    if a:plugin_sources[k]['url'] =~ 'svn'
-      let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], '^http\>', 'https', '')
-      let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(repo.or.cz\)/\(.*\)','LucHermitte@\1:srv/git/\2', '')
-    endif
-    unlet k
-  endfor
-  " TODO: identify work place and not home place
-  if $USERDOMAIN != 'TOPAZE'
-    silent! unlet k
-    for k in keys(a:plugin_sources)
-      " Convert git protocol to SSH protocol for github access
-      if get(a:plugin_sources[k],'type','') == 'git'
-        " Was:
-        let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'git@\1:\2', '')
-        " Is:
-        " "let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'http://\1/\2', '')
-      endif
-    endfor
-  endif
-endf
-
-function! s:ActivateAddons()
-  runtime addons/lh-vim-lib/autoload/lh/path.vim
-  runtime addons/lh-vim-lib/autoload/lh/option.vim
-  let vimfiles = lh#path#vimfiles()
-  "echomsg "vimfiles: ".string(vimfiles)
-  exe 'set rtp+='.fnameescape(vimfiles).'/addons/vim-addon-manager'
-  " tell VAM to use your MergeSources function:
-  let g:vim_addon_manager['MergeSources'] = function('X')
-  " There should be no exception anyway
-  " try
-  " latex-suite stuff, only in run for latex
-  if match(argv(), 'tex$') >= 0
-    call vam#ActivateAddons(['vim-latex'])
-  endif
-  " script #3361
-  call vam#ActivateAddons(['Indent_Guides'])
-  call vam#ActivateAddons(['stakeholders'])
-  call vam#ActivateAddons(['vcscommand'])
-  call vam#ActivateAddons(['Splice'])
-  call vam#ActivateAddons(['gitv'])
-  call vam#ActivateAddons(['vim-addon-json-encoding'])
-  call vam#ActivateAddons(['viewdoc'])
-  call vam#ActivateAddons([ 'vim-airline' ])
-  call vam#ActivateAddons([ 'xmledit' ])
-  call vam#ActivateAddons([ 'vim-jira-complete' ])
-  let g:airline_powerline_fonts = 1
-  " let g:airline_theme = 'solarized'
-  " let g:airline_solarized_bg = 'dark'
-  " call vam#ActivateAddons(['Syntastic'])
-  " s:my_plugins is copied otherwise VAM will mutate its content
-  call vam#ActivateAddons(copy(s:my_plugins), {'auto_install' : 0})
-  " pluginA could be github:YourName see vam#install#RewriteName()
-  " catch /.*/
-  " echoe v:exception
-  " endtry
-  "
-  " YouCompleteMe
-  if ((version == 704 && has("patch72")) || version > 704) && has('python')
-        \ && isdirectory(fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe/third_party/ycmd')
-        \ && executable(fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe/third_party/ycmd/libclang.so')
-    exe 'set rtp+='.fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe'
-  endif
-  " Unite stuff
-  call vam#ActivateAddons(['unite', 'unite-locate', 'unite-outline', 'vimproc'])
-
-endfunction
-" augroup VAM
-  " au!
-  " au VimEnter * call <sid>ActivateAddons()
-" augroup END
-call s:ActivateAddons()
-
-"" Optionally generate helptags:
-" UpdateAddon vim-addon-manager
-
-" -- no mark ring/preview word {{{3
-let g:loaded_markring = 1000
-imap <m-p> <Plug>PreviewWord
-nmap <m-p> <Plug>PreviewWord
-
-" -- xml edit {{{3
-let g:xml_jump_string = lh#marker#txt()
-
-" -- diffchar {{{3
-nmap ]<f7> <Plug>ToggleDiffCharAll
-nmap ]<f8> <Plug>ToggleDiffCharOneLine
 
 " Multi-byte support {{{2
 " Cf. http://vim.sourceforge.net/tips/tip.php?tip_id=246 by Tony Mechelynck
@@ -685,7 +416,7 @@ endif
    nnoremap <silent> <C-PageDown> <c-w>w<c-w>_
 
    nnoremap <silent> <Plug>ShowSyntax
-	 \ :echo synIDattr(synID(line("."), col("."), 1), "name")<cr>
+         \ :echo synIDattr(synID(line("."), col("."), 1), "name")<cr>
 " }}}
 " -------------------------------------------------------------------
 " Make p in Visual mode replace the selected text with the specified register,
@@ -728,11 +459,11 @@ endfunction
 " -------------------------------------------------------------------
 " Commands: {{{
 if ! exists(':Make')
-  command! -nargs=* -complete=file Make	cd %:p:h | make <args>
-  command! -nargs=* -complete=file MAKE	cd %:p:h | make <args>
+  command! -nargs=* -complete=file Make cd %:p:h | make <args>
+  command! -nargs=* -complete=file MAKE cd %:p:h | make <args>
 endif
-command! -nargs=0 		 CD	cd %:p:h
-command! -nargs=0 		 LCD	lcd %:p:h
+command! -nargs=0                CD     cd %:p:h
+command! -nargs=0                LCD    lcd %:p:h
 " http://vim.wikia.com/wiki/Reverse_selected_text
 command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
 " }}}
@@ -795,12 +526,12 @@ endfunction
     if version >= 600
       " nmap ,last 1G/\c\(last changes\=\\|last update\)\s*:\s*/e+1<CR>Cydate<ESC>
       nnoremap <silent> ,last gg
-	    \\|:silent let fdsave = &foldenable
-	    \\|:silent set nofoldenable
-	    \\|:silent if search('\clast \(changes\=\\|update\)\s*:\s*\zs')
-	    \\|:silent! normal "_Cydate<ESC>
-	    \\|:endif
-	    \\|:silent let &foldenable = fdsave<cr>
+            \\|:silent let fdsave = &foldenable
+            \\|:silent set nofoldenable
+            \\|:silent if search('\clast \(changes\=\\|update\)\s*:\s*\zs')
+            \\|:silent! normal "_Cydate<ESC>
+            \\|:endif
+            \\|:silent let &foldenable = fdsave<cr>
     else
       nmap ,last 1G/[lL][Aa][Ss][Tt] [Uu][Pp][Dd][Aa][Tt][Ee]\s*:\s*/e+1<CR>Cydate<ESC>
     endif
@@ -864,21 +595,21 @@ endfunction
 "
 "------ center the view on the current line
 :VimrcHelp "  ]].    : center the view on the current line                     [I]
-   " nnoremap	].	:let vc=virtcol('.')<cr>z.:exe "normal! ".vc."\|"<cr>
-   " inoremap	]].      Ø<esc>zzs
-   inoremap	]].      <c-o>zz
+   " nnoremap   ].      :let vc=virtcol('.')<cr>z.:exe "normal! ".vc."\|"<cr>
+   " inoremap   ]].      Ø<esc>zzs
+   inoremap     ]].      <c-o>zz
 "
 "----- place le curseur au de'but du mot (lettre) sous (ou avant) le curseur
-   noremap      ]!wb!	ylpmz?\<[a-zA-Z_]<CR>mx`zx`x
+   noremap      ]!wb!   ylpmz?\<[a-zA-Z_]<CR>mx`zx`x
 "-----  place dans "y <count> fois le motif @x
 "
 "-----  Place N fois @x dans "y
 "-----  Ne deplace pas le curseur
-   noremap      ]!count!	i@x<esc>a <esc>BiX<esc>/@x<CR>"ydEhmzlBx`zx
+   noremap      ]!count!        i@x<esc>a <esc>BiX<esc>/@x<CR>"ydEhmzlBx`zx
 "
 "------ supprime la ligne courante si elle ne contient que des blancs
-"------ l'intervalle [ 	] contient un espace et une tabulation
-   noremap      ]!erase!	:.g/^[ 	]*$/-j<CR>$
+"------ l'intervalle [  ] contient un espace et une tabulation
+   noremap      ]!erase!        :.g/^[  ]*$/-j<CR>$
 "
 "------
 " :VimrcHelp "  #      : toggle the 'number' option
@@ -889,15 +620,15 @@ endfunction
 "------
 :VimrcHelp "# q      : put # words between `quotes'
 "------
-   " map  q		]!count!]!wb!mzi`e<esc>"xdlh@ya<c-v>'<esc>w
+   " map  q             ]!count!]!wb!mzi`e<esc>"xdlh@ya<c-v>'<esc>w
 "
 ""------
 ":VimrcHelp "
 ":VimrcHelp "! @@   : inserts command's result before the cursor               [N]
 ":VimrcHelp "! @!   - inserts the result of the command that starts after @    [N]
 ""EX
-""EX:	Nous sommes le date@@
-""EX:	Nombre de mots du fichier : @wc -c %@!
+""EX:   Nous sommes le date@@
+""EX:   Nombre de mots du fichier : @wc -c %@!
 ""so $VIMRUNTIME/../macros/executer.vim
 "------
 "
@@ -990,9 +721,9 @@ if has("autocmd")
       " Don't do it when the position is invalid or when inside an event handler
       " (happens when dropping a file on gvim).
       autocmd BufReadPost *
-	    \ if line("'\"") > 0 && line("'\"") <= line("$") |
-	    \   exe "normal! g`\"" |
-	    \ endif
+            \ if line("'\"") > 0 && line("'\"") <= line("$") |
+            \   exe "normal! g`\"" |
+            \ endif
     endif
   augroup END
 
@@ -1037,6 +768,285 @@ endif
 " }}}
 
 " }}}1
+" ===================================================================
+" Plugins {{{1
+" ===================================================================
+" Options for differents plugins. {{{2
+let g:tex_flavor = 'tex'
+" -- Mail_Re_set {{{3
+let g:mail_tag_placement = "tag_second"
+" -- EnhCommentify {{{3
+let g:EnhCommentifyUseAltKeys    = "yes"
+let g:EnhCommentifyRespectIndent = "yes"
+"let g:EnhCommentifyFirstLineMode = "yes"
+let g:EnhCommentifyPretty        = "yes"
+let g:EnhCommentifyUseSyntax     = 'yes'
+
+" -- Michael Geddes's Buffer Menu <http://vim.sf.net/>  {{{3
+let g:buffermenu_use_disable     = 1
+let g:want_buffermenu_for_tex    = 2 " 0 : no, 1 : yes, 2 : global disable
+                                     " cf. tex-maps.vim & texmenus.vim
+
+" -- lhBrackets {{{3
+let g:marker_select_empty_marks    = 1
+let g:marker_center                = 0
+
+" -- muTemplate {{{3
+" To override in some ftplugins if required.
+let g:url         = 'http://code.google.com/p/lh-vim/'
+let g:author_short= "Luc Hermitte"
+let g:author_email= "hermitte {at} gmail {dot} com"
+let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">"
+" let g:author_short="Luc Hermitte <hermitte at free.fr>"
+" let g:author      ="Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>\<c-m>" .
+" \ '"'. "\<tab>\<tab><URL:http://code.google.com/p/lh-vim/>"
+imap <c-space>  <Plug>MuT_ckword
+vmap <c-space>  <Plug>MuT_Surround
+
+" -- lhVimSpell {{{3
+let g:VS_aspell_add_directly_to_dict = 1
+
+" -- BTW {{{3
+let g:BTW_qf_position = 'bot'
+
+" -- SearchInRuntime {{{3
+let g:sir_goto_hsplit = "Hsplit"
+let g:sir_goto_vsplit = "Vsplit"
+
+" -- Johannes Zellner's Man <http://www.zellner.org/> {{{3
+let g:man_vim_only = 1
+
+" -- Yegappan Lakshmanan's grep.vim <http://vim.sf.net/>  {{{3
+let Grep_key = '<F4>'
+if has('win32')
+  " let       Grep_Path = 'd:/users/hermitte/bin/usr/local/wbin/grep'
+  " let      Fgrep_Path = 'd:/users/hermitte/bin/usr/local/wbin/fgrep'
+  " let      Egrep_Path = 'd:/users/hermitte/bin/usr/local/wbin/egrep'
+  " let     Agrep_Path = 'd:/users/hermitte/bin/usr/local/wbin/agrep'
+  " let  Grep_Find_Path = 'd:/users/hermitte/bin/usr/local/wbin/find'
+  " let Grep_Xargs_Path = 'd:/users/hermitte/bin/usr/local/wbin/xargs'
+endif
+
+" -- grep.vim {{{3
+let Grep_Key = ',g'
+
+" -- Doxygen syntax {{{3
+let g:load_doxygen_syntax = 1
+
+" -- Dr Chip Campbell's StlShowFunc {{{3
+hi User1 ctermfg=white ctermbg=black guifg=white guibg=black
+hi User2 ctermfg=lightblue ctermbg=black guifg=lightblue guibg=black
+hi User3 ctermfg=yellow ctermbg=black guifg=lightyellow guibg=black
+
+" -- Dr Chip Campbell's hiLink {{{3
+" don't map <S-F10>'
+map <Leader>hlt <Plug>HiLinkTrace
+
+" -- William Lee's DirDiff {{{3
+let g:DirDiffExcludes = '*.gz,*.bz2,*.7z,*.vba,*.rss,CVS,SunWS_cache,ir.out,.*.state,exe,bin,obj,*.o,*.os,tags,lib,.svn,.git,html,*.a,*.so'.&wildignore
+let g:DirDiffIgnore   = '$Id,$Date'
+let g:DirDiffAddArgs  = "-b"
+
+" -- VCS commands.vim {{{3
+let VCSCommandDisableMappings = 1
+augroup VCSCommand
+  au User VCSBufferCreated silent! nmap <unique> <buffer> q :bwipeout<cr>
+augroup END
+
+" -- clang_indexer@lh {{{3
+" Keybindings
+let clang_key_usr          = '<c-x>U'
+let clang_key_declarations = '<c-x>d'
+let clang_key_references   = '<c-x>r'
+let clang_key_subclases    = '<c-x>S'
+
+" -- clang_complete {{{3
+let g:clang_complete_auto = 0
+function! s:FindLibClang()
+  " 1- check $LD_LIBRARY_PATH
+  if has('unix')
+    let libpaths = split($PATH, has('unix') ? ':' : ',')
+    for libpath in libpaths
+      if ! empty(glob(libpath.'/libclang*', 1))
+        let g:clang_library_path = libpath
+        " no need to search for other occurrences later in $PATH
+        return
+      endif
+    endfor
+  endif
+  " 2- check $PATH if nothing was found yet
+  let binpaths = split($PATH, has('unix') ? ':' : ',')
+  for p in binpaths
+    if p =~ '\<bin\>$'
+      let libpath = p[0:-4].'lib'
+      if ! empty(glob(libpath.'/libclang*', 1))
+        let g:clang_library_path = libpath
+        " no need to search for other occurrences later in $PATH
+        return
+      endif
+    endif
+  endfor
+endfunction
+call s:FindLibClang()
+
+set completeopt-=menu,preview
+set completeopt+=menuone
+
+" -- no mark ring/preview word {{{3
+let g:loaded_markring = 1000
+imap <m-p> <Plug>PreviewWord
+nmap <m-p> <Plug>PreviewWord
+
+" -- diffchar {{{3
+nmap ]<f7> <Plug>ToggleDiffCharAll
+nmap ]<f8> <Plug>ToggleDiffCharOneLine
+
+" -- viewdoc {{{3
+let g:viewdoc_open = "new"
+
+" -- You Complete Me    {{{3
+let g:ycm_key_invoke_completion    = '<C-S-Space>'
+let g:ycm_key_detailed_diagnostics = '<C-X>d'
+let g:ycm_server_log_level = 'debug'
+let g:ycm_server_use_vim_stdout = 1
+
+" -- Unite              {{{3
+nnoremap <C-p> :Unite file_rec/async<cr>
+augroup LhUnite
+  au!
+  autocmd FileType unite call s:unite_my_settings()
+augroup END
+function! s:unite_my_settings()
+  " Overwrite settings.
+  imap <silent><buffer><expr> <CR> unite#do_action('split')
+endfunction
+
+
+" -- vim addons manager {{{3
+let s:my_plugins = [
+      \ 'lh-vim-lib'         ,
+      \ 'local_vimrc'        ,
+      \ 'lh-brackets'        ,
+      \ 'build-tools-wrapper',
+      \ 'lh-tags'            ,
+      \ 'lh-dev'             ,
+      \ 'vim-clang@lh'       ,
+      \ 'mu-template@lh'     ,
+      \ 'lh-cpp'             ,
+      \ 'lh-refactor'        ,
+      \ 'search-in-runtime'  ,
+      \ 'system-tools'       ,
+      \ 'UT'                 ,
+      \ 'lh-compil-hints'    ,
+      \ 'lh-misc'            ,
+      \ 'lh-cmake'           ,
+      \ 'dirdiff-svn'
+      \]
+let g:vim_addon_manager = {}
+let g:vim_addon_manager['plugin_sources'] = {}
+let g:vim_addon_manager['plugin_sources']['vim-jira-complete'] = { 'type': 'git', 'url': 'ssh://ssh.github.com/LucHermitte/vim-jira-complete'}
+
+fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_name)
+  " run default:
+  call vam_known_repositories#MergeSources(a:plugin_sources, a:www_vim_org, a:scm_plugin_sources, a:patch_function, a:snr_to_name)
+
+  " patch sources the way you like:
+  let s:pwd = 'to_be_defined'
+  if !exists('s:pwd')
+    runtime addons/vim-pwds.vim
+    let s:pwd = GetPwd('googlecode')
+  endif
+  let g:ps = a:plugin_sources
+  for k in s:my_plugins
+    let g:k = k
+    if !has_key(a:plugin_sources, k)
+      echomsg "plugin ".(k)." unknown to VAM"
+      continue
+      endif
+    let a:plugin_sources[k]['username'] = join(['luc.hermitte','gmail.com'], '@')
+    let a:plugin_sources[k]['password'] = s:pwd
+    " echomsg a:plugin_sources[k]['url']
+    if a:plugin_sources[k]['url'] =~ 'svn'
+      let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], '^http\>', 'https', '')
+      let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(repo.or.cz\)/\(.*\)','LucHermitte@\1:srv/git/\2', '')
+    endif
+    unlet k
+  endfor
+  " TODO: identify work place and not home place
+  if $USERDOMAIN != 'TOPAZE'
+    silent! unlet k
+    for k in keys(a:plugin_sources)
+      " Convert git protocol to SSH protocol for github access
+      if get(a:plugin_sources[k],'type','') == 'git'
+        " Was:
+        let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'git@\1:\2', '')
+        " Is:
+        " "let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'http://\1/\2', '')
+      endif
+    endfor
+  endif
+endf
+
+" ===================================================================
+" Load plugins {{{2
+function! s:ActivateAddons()
+  runtime addons/lh-vim-lib/autoload/lh/path.vim
+  runtime addons/lh-vim-lib/autoload/lh/option.vim
+  let vimfiles = lh#path#vimfiles()
+  "echomsg "vimfiles: ".string(vimfiles)
+  exe 'set rtp+='.fnameescape(vimfiles).'/addons/vim-addon-manager'
+  " tell VAM to use your MergeSources function:
+  let g:vim_addon_manager['MergeSources'] = function('X')
+  " There should be no exception anyway
+  " try
+  " latex-suite stuff, only in run for latex
+  if match(argv(), 'tex$') >= 0
+    call vam#ActivateAddons(['vim-latex'])
+  endif
+  " script #3361
+  call vam#ActivateAddons(['Indent_Guides'])
+  call vam#ActivateAddons(['stakeholders'])
+  call vam#ActivateAddons(['vcscommand'])
+  call vam#ActivateAddons(['Splice'])
+  call vam#ActivateAddons(['gitv'])
+  call vam#ActivateAddons(['vim-addon-json-encoding'])
+  call vam#ActivateAddons(['viewdoc'])
+  call vam#ActivateAddons([ 'vim-airline' ])
+  call vam#ActivateAddons([ 'xmledit' ])
+  call vam#ActivateAddons([ 'vim-jira-complete' ])
+  let g:airline_powerline_fonts = 1
+  let g:airline_theme = 'lh_dark'
+  " let g:airline_solarized_bg = 'dark'
+  " call vam#ActivateAddons(['Syntastic'])
+  " s:my_plugins is copied otherwise VAM will mutate its content
+  call vam#ActivateAddons(copy(s:my_plugins), {'auto_install' : 0})
+  " pluginA could be github:YourName see vam#install#RewriteName()
+  " catch /.*/
+  " echoe v:exception
+  " endtry
+  "
+  " YouCompleteMe
+  if ((version == 704 && has("patch72")) || version > 704) && has('python')
+        \ && isdirectory(fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe/third_party/ycmd')
+        \ && executable(fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe/third_party/ycmd/libclang.so')
+    exe 'set rtp+='.fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe'
+  endif
+  " Unite stuff
+  call vam#ActivateAddons(['unite', 'unite-locate', 'unite-outline', 'vimproc'])
+
+endfunction
+call s:ActivateAddons()
+
+"" Optionally generate helptags:
+" UpdateAddon vim-addon-manager
+
+" Options for plugins that relies on autoloaded functions {{{2
+" -- xml edit {{{3
+let g:xml_jump_string = lh#marker#txt()
+
+" }}}1
+" }}}1
+" ===================================================================
 
 " Prédac
 vnoremap <silent> µ <esc>:echo strftime('%c', lh#visual#selection())<cr>
