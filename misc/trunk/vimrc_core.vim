@@ -727,6 +727,12 @@ if has("autocmd")
     endif
   augroup END
 
+  " Avoid qfwindow in :bnext & co
+  augroup qf_no_bnext
+    au!
+    au FileType qf set nobuflisted
+  augroup END
+
   ""source $VIMRUNTIME/settings/gz.set
   if version < 600
     source $VIMRUNTIME/mysettingfile.vim
