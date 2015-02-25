@@ -97,6 +97,7 @@ endif
   set noinsertmode      " start in insert mode?  Naah.
   set isfname+={        " In order to use <c-w>f on ${FOO}/path
   set isfname+=}        " In order to use <c-w>f on ${FOO}/path
+  set isfname-==        " In order to use <c-w>f on option=filename
   "set iskeyword=@,48-57,_,192-255,-,.
   set iskeyword+=-
                         " Add the dash ('-') and the dot ('.')
@@ -418,11 +419,6 @@ endif
    nnoremap <silent> <Plug>ShowSyntax
          \ :echo synIDattr(synID(line("."), col("."), 1), "name")<cr>
 " }}}
-" -------------------------------------------------------------------
-" Make p in Visual mode replace the selected text with the specified register,
-" if any
-runtime macros/repl-visual-no-reg-overwrite.vim
-
 " -------------------------------------------------------------------
 " Tags Browsing macros {{{
 :VimrcHelp " <M-Left> & <M-Right> works like in internet browers, but for tags [N]
