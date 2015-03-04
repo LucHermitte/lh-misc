@@ -17,7 +17,7 @@
 "	 to cwd, and source .exrc from every directory if present ?
 "	 (And if cwd is not under $HOME, just source ~/.exrc).
 "	 What do I put into .vimrc to do this ?
-" 
+"
 "	"Example: current dir is ~/a/b/c. Files are sourced in this order:
 "	 ~/.exrc, then ~/a/.exrc, ~/a/b/.exrc, ~/a/b/c/.exrc.
 "	 No messages if some of .exrc does not exist."
@@ -34,14 +34,14 @@
 " 	   way as a ftplugin, i.e.: {{{3
 "		" Global stuff that needs to be updated/override
 "		let g:bar = 'bar'  " YES! This is a global variable!
-"		
+"
 "		" Local stuff that needs to be defined once for each buffer
 "		if exists('b:foo_bar_local_vimrc') | finish | endif
 "		let b:foo_bar_local_vimrc = 1
 "		setlocal xxx
 "		nnoremap <buffer> foo :call <sid>s:Foo()<cr>
 "		let b:foo = 'foo'
-"		
+"
 "		" Global stuff that needs to be defined once only => functions
 "		if exists('g:foo_bar_local_vimrc') | finish | endif
 "		let g:foo_bar_local_vimrc = 1
@@ -53,7 +53,7 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
-"	v1.12   Version deprecated in favour of   
+"	v1.12   Version deprecated in favour of
 "	        <URL:https://github.com/LucHermitte/local_vimrc>
 "	v1.11   Less errors are printed when the file loaded contains errors
 "	v1.10   s:k_version in local_vimrc files is automatically incremented
@@ -77,7 +77,7 @@
 " 	v1.0	Initial solution
 " TODO:		{{{2
 " 	(*) Add option to stop looking at $HOME or elsewhere
-" 	    ([bg]:lv_stop_at : string, default $HOME) 
+" 	    ([bg]:lv_stop_at : string, default $HOME)
 " See also: alternative scripts: #441, #3393, #1860, ...
 " }}}1
 "=============================================================================
@@ -85,14 +85,18 @@
 "=============================================================================
 " Avoid global reinclusion {{{1
 let s:k_version = 112
-if exists("g:loaded_local_vimrc") 
+if exists("g:loaded_local_vimrc")
       \ && (g:loaded_local_vimrc >= s:k_version)
       \ && !exists('g:force_reload_local_vimrc')
-  finish 
+  finish
 endif
 let g:loaded_local_vimrc = s:k_version
 let s:cpo_save=&cpo
 set cpo&vim
+if exists('g:local_vimrc_options')
+  " Actually, the latest version has already been loaded
+  finish
+endif
 echomsg "This version of local_vimrc is deprecated, please get the last one from https://github.com/LucHermitte/local_vimrc"
 " Avoid global reinclusion }}}1
 "------------------------------------------------------------------------
@@ -112,7 +116,7 @@ let s:home = substitute($HOME, '/\|\\', '[/\\\\]', 'g')
 
 " Regex used to determine when we must stop looking for local-vimrc's {{{2
 " Sometimes paths appears as Z:\\ ....
-let s:re_last_path = '^/\=$\|^[A-Za-z]:[/\\]\+$\|^//$\|^\\\\$'. 
+let s:re_last_path = '^/\=$\|^[A-Za-z]:[/\\]\+$\|^//$\|^\\\\$'.
       \ ((s:home != '') ? ('\|^'.s:home.'$') : '')
 
 " The main function                                                   {{{2
@@ -160,7 +164,7 @@ endfunction
 
 function! s:Main(path) abort
   " echomsg 'Sourcing: '.a:path
-  if !s:IsAForbiddenPath(a:path) 
+  if !s:IsAForbiddenPath(a:path)
     return
   else
     call s:SourceLocal(a:path)
@@ -177,7 +181,7 @@ function! s:IncrementVersionOnSave()
 endfunction
 
 " Auto-command                                                        {{{2
-" => automate the loading of local-vimrc's every time we change buffers 
+" => automate the loading of local-vimrc's every time we change buffers
 aug LocalVimrc
   au!
   au BufEnter * :call s:Main(expand('<afile>:p:h'))
