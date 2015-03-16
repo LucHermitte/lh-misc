@@ -1,26 +1,18 @@
-" -*- vim -*-
-" $Id$
 " ===================================================================
 " Core rules for vimrc
 "
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : $Date$
+" Last update   : 16th Mar 2015
 " ===================================================================
 
-let paths = split(&rtp, ',')
-let paths0=paths
-call map(paths, 'stridx(v:val, $LUCHOME)>=0 ? (v:val) : substitute(v:val, $HOME, $LUCHOME, "g")')
-"let res = []
-"for p in paths
-"  let p2 = stridx(p, $LUCHOME)>=0 ? (p) : substitute(p, $HOME, $LUCHOME, "g")
-"  echomsg p ' -> ' p2 ' -- stridx('$LUCHOME')=' stridx(p, $LUCHOME)
-"  let res += [p2]
-"endfor
-"let &rtp = join(res, ',')
-let &rtp = join(paths, ',')
-"finish
+if !empty($LUCHOME) && $LUCHOME != $HOME
+  let paths = split(&rtp, ',')
+  let paths0=paths
+  call map(paths, 'stridx(v:val, $LUCHOME)>=0 ? (v:val) : substitute(v:val, $HOME, $LUCHOME, "g")')
+  let &rtp = join(paths, ',')
+endif
 
 " ===================================================================
 " Runtime {{{1
@@ -795,13 +787,13 @@ let g:marker_center                = 0
 
 " -- muTemplate {{{3
 " To override in some ftplugins if required.
-let g:url         = 'http://code.google.com/p/lh-vim/'
+let g:url         = 'http://github.com/LucHermitte/«»'
 let g:author_short= "Luc Hermitte"
 let g:author_email= "hermitte {at} gmail {dot} com"
 let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">"
 " let g:author_short="Luc Hermitte <hermitte at free.fr>"
 " let g:author      ="Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>\<c-m>" .
-" \ '"'. "\<tab>\<tab><URL:http://code.google.com/p/lh-vim/>"
+" \ '"'. "\<tab>\<tab><URL:http://github.com/LucHermitte>"
 imap <c-space>  <Plug>MuT_ckword
 vmap <c-space>  <Plug>MuT_Surround
 
@@ -944,7 +936,7 @@ let s:my_plugins = [
       \ 'lh-cmake'           ,
       \ 'dirdiff-svn'
       \]
-let g:vim_addon_manager = {}
+let g:vim_addon_manager = get(g:, 'vim_addon_manager', {})
 let g:vim_addon_manager['plugin_sources'] = {}
 let g:vim_addon_manager['plugin_sources']['vim-jira-complete'] = { 'type': 'git', 'url': 'ssh://ssh.github.com/LucHermitte/vim-jira-complete'}
 
@@ -965,10 +957,10 @@ fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_n
       echomsg "plugin ".(k)." unknown to VAM"
       continue
       endif
-    let a:plugin_sources[k]['username'] = join(['luc.hermitte','gmail.com'], '@')
-    let a:plugin_sources[k]['password'] = s:pwd
     " echomsg a:plugin_sources[k]['url']
     if a:plugin_sources[k]['url'] =~ 'svn'
+      let a:plugin_sources[k]['username'] = join(['luc.hermitte','gmail.com'], '@')
+      let a:plugin_sources[k]['password'] = s:pwd
       let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], '^http\>', 'https', '')
       let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(repo.or.cz\)/\(.*\)','LucHermitte@\1:srv/git/\2', '')
     endif
@@ -1036,6 +1028,10 @@ function! s:ActivateAddons()
   " Unite stuff
   call vam#ActivateAddons(['unite', 'unite-locate', 'unite-outline', 'vimproc'])
 
+  " Impossible to make it work! :(
+  " let g:vim_addon_manager['plugin_sources']['BreakPts@albfan'] = { 'type': 'git', 'url': 'git@github.com:albfan/BreakPts.git',
+        " \ 'dependecies': {'genutils': g:vim_addon_manager['plugin_sources']['genutils']}}
+  call vam#ActivateAddons(['BreakPts@albfan', 'genutils'])
 endfunction
 call s:ActivateAddons()
 
