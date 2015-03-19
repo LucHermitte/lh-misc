@@ -956,7 +956,7 @@ fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_n
     if !has_key(a:plugin_sources, k)
       echomsg "plugin ".(k)." unknown to VAM"
       continue
-      endif
+    endif
     " echomsg a:plugin_sources[k]['url']
     if a:plugin_sources[k]['url'] =~ 'svn'
       let a:plugin_sources[k]['username'] = join(['luc.hermitte','gmail.com'], '@')
@@ -972,10 +972,18 @@ fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_n
     for k in keys(a:plugin_sources)
       " Convert git protocol to SSH protocol for github access
       if get(a:plugin_sources[k],'type','') == 'git'
-        " Was:
-        let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'git@\1:\2', '')
-        " Is:
-        " "let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'http://\1/\2', '')
+        if match(s:my_plugins, '^'.k.'$') != -1
+          if executable('corkscrew')
+            " When accessing through a proxy with corkcrew
+            let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'ssh://ssh.\1/\2', '')
+          else
+            " When every thing works
+            let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'git@\1:\2', '')
+          endif
+        else
+          " When a read only access is enough
+          let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'https://\1/\2', '')
+        endif
       endif
     endfor
   endif
@@ -1031,7 +1039,7 @@ function! s:ActivateAddons()
   " Impossible to make it work! :(
   " let g:vim_addon_manager['plugin_sources']['BreakPts@albfan'] = { 'type': 'git', 'url': 'git@github.com:albfan/BreakPts.git',
         " \ 'dependecies': {'genutils': g:vim_addon_manager['plugin_sources']['genutils']}}
-  call vam#ActivateAddons(['BreakPts@albfan', 'genutils'])
+  " call vam#ActivateAddons(['BreakPts@albfan', 'genutils'])
 endfunction
 call s:ActivateAddons()
 
