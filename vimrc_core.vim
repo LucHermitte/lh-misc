@@ -1010,6 +1010,7 @@ function! s:ActivateAddons()
   call vam#ActivateAddons(['stakeholders'])
   call vam#ActivateAddons(['vcscommand'])
   call vam#ActivateAddons(['Splice'])
+  call vam#ActivateAddons(['fugitive']) " required by gitv
   call vam#ActivateAddons(['gitv'])
   call vam#ActivateAddons(['vim-addon-json-encoding'])
   call vam#ActivateAddons(['viewdoc'])
@@ -1050,7 +1051,12 @@ call s:ActivateAddons()
 " -- xml edit {{{3
 let g:xml_jump_string = lh#marker#txt()
 
-" }}}1
+" -- Machine specifics {{{3
+"       Specific configuration for the current machine (i.e. where corporate
+"       and personal projects are stored, ...). Used to configure local_vimrc
+"       whitelists
+runtime machine-specifics.vim
+
 " }}}1
 " ===================================================================
 
