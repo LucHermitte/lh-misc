@@ -1,8 +1,8 @@
 " ========================================================================
 " File:         ftplugin/vim_set.vim
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"               <URL:http://code.google.com/p/lh-vim/>
-" Last Update:  16th Jan 2015
+"               <URL:http://github.com/LucHermitte/lh-misc>
+" Last Update:  20th Mar 2015
 " Requirements: lh-vim-lib
 "
 " ========================================================================
@@ -22,7 +22,7 @@ if exists("b:loaded_vim_set") && !exists('g:force_reload_vim_set')
   let &cpo = s:cpo_save
   finish
 endif
-let b:loaded_vim_set = 200
+let b:loaded_vim_set = 201
 
 " ------------------------------------------------------------------------
 " Options to be set {{{2
@@ -50,7 +50,13 @@ endif
 
 " Stuff for mu-template
 let b:author_short='Luc Hermitte <hermitte {at} free {dot} fr>'
-let b:lhvim_url = 'http://code.google.com/p/lh-vim/'
+let b:lhvim_url = 'http://github.com/LucHermitte/«»'
+if lh#vcs#is_git()
+  let repo = lh#vcs#decode_github_url(lh#vcs#get_url(expand('%:p:h')))
+  if !empty(repo)
+    let b:lhvim_url = 'http://github.com/'.repo[1].'/'.repo[2]
+  endif
+endif
 let b:author        ="Luc Hermitte <EMAIL:".g:author_email.">\r" .
       \ '"'. "\<tab>\<tab><URL:".b:lhvim_url.">"
 "
