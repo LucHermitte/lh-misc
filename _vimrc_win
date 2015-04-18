@@ -3,16 +3,17 @@
 "
 " File		: _vimrc_win
 " Maintainer	: Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-" 		  <URL:http://code.google.com/p/lh-vim/>
-" Last update	: $Date$ (08th May 2010)
+" 		  <URL:http://github.com/LucHermitte/lh-misc>
+" Last update	: 18th Apr 2015
 " ======================================================================
 " Font {{{
 try
   " set gfn=Andale_Mono:h10
   " set gfn=Andale_Mono:h8
-  set gfn=Lucida_Console:h8
+  set gfn=Ubuntu_Mono_derivative_Powerlin:h9:cANSI
 catch /E596/
-  call confirm("Can't load the font Lucida_Console", '&Ok', 1)
+  set gfn=Lucida_Console:h8
+  " call confirm("Can't load the font Lucida_Console", '&Ok', 1)
 endtry
 " Font }}}
 
@@ -41,6 +42,8 @@ endfunction
 
 function! s:RunBrowser(url)
   let url = escape(a:url, '%')
+  call netrw#NetrwBrowseX(url, 0)
+  return
   if SystemDetected() == 'unix'
     silent exe ':! '.<sid>Browser().url
   else
@@ -48,20 +51,20 @@ function! s:RunBrowser(url)
   endif
 endfunction
 
-nnoremap <silent> <C-L>e 
+nnoremap <silent> <C-L>e
       \ :call <sid>RunBrowser(
-      \    matchstr(escape(expand('<cWORD>'), '#'), 
+      \    matchstr(escape(expand('<cWORD>'), '#'),
       \    '\%(.\{-}\zs\%(news:\\|mailto:\\|ftp://\\|https\=://\)\)\=[^:;,<>]\+'
       \ ))<CR>
 
 " Problem with urls ending in .html
-" nnoremap <silent> <C-L>m 
+" nnoremap <silent> <C-L>m
       " \ :exe ':!start rundll32 url.dll,FileProtocolHandler '.
-      " \    matchstr(expand('<cWORD>'), 
+      " \    matchstr(expand('<cWORD>'),
       " \    '\%(.\{-}\zs\%(news:\\|mailto:\\|ftp://\\|https\=://\)\)\=[^:;,<>]\+'
       " \ )<CR>
 
-vnoremap <silent> <C-L>e 
+vnoremap <silent> <C-L>e
       \ :call <sid>RunBrowser(lh#visual#selection())<cr>
 
 " Running IE }}}

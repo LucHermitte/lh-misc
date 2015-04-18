@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 16th Mar 2015
+" Last update   : 18th Apr 2015
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -179,6 +179,10 @@ if filereadable("tags")
 endif
 
 " Multi-byte support {{{2
+" Force utf-8 on windows in order to have airline display nice characters
+if has('windows') && has('multi_byte')
+  set enc=utf-8
+endif
 " Cf. http://vim.sourceforge.net/tips/tip.php?tip_id=246 by Tony Mechelynck
 if &encoding == 'utf-8'
     setglobal fileencoding=utf-8
