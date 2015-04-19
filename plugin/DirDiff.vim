@@ -400,8 +400,8 @@ function! <SID>DirDiff(srcA, srcB)
     " let cmd = cmd." > '".DiffBuffer."'"
     " let cmd = '!' . cmd
     let cmd .= cmdarg." ".addarg
-                \ ." ". FixPathName(DirDiffAbsSrcA)
-                \ ." ". FixPathName(DirDiffAbsSrcB)
+                \ ." ". lh#path#fix(DirDiffAbsSrcA)
+                \ ." ". lh#path#fix(DirDiffAbsSrcB)
 
     let stuffToIgnore = !s:DiffSupportsIgnore && 0!=strlen(g:DirDiffIgnore)
     if ! s:DiffSupportsBrief || stuffToIgnore
@@ -909,8 +909,8 @@ function! <SID>Copy(fileFromOrig, fileToOrig)
             let copydircmd .= " " . s:DirDiffCopyInteractiveFlag
         endif
         let copydircmd .= ' '
-                    \ . lh#system#FixPathName(fileFrom) . ' '
-                    \ . lh#system#FixPathName(fileTo)
+                    \ . lh#path#fix(fileFrom) . ' '
+                    \ . lh#path#fix(fileTo)
         let copydircmd = '!'.SysCopyDir(fileFrom, fileTo)
         " echomsg copydircmd
         let error = <SID>DirDiffExec(copydircmd, g:DirDiffInteractive)

@@ -9,19 +9,20 @@
 "                have less possible errors.
 "      the v1.13 attempt to not mess when recreating *.switch files.
 "      the v1.14 simplifies a few things, and attempt to solve the error on
-"      		 creation of the file on gvim-win32 launched from windows
-"      		 shell. Will break with Vim 5.x that does not define :silent
+"                creation of the file on gvim-win32 launched from windows
+"                shell. Will break with Vim 5.x that does not define :silent
+"      the v1.15 relies less on system-tools.
 "===========================================================================
 " Vim script file
 "
-" File:		Triggers.vim -- v1.14
-" Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"		<URL:http://code.google.com/p/lh-vim/>
-" Last Update:	14th Jan 2006
+" File:         Triggers.vim -- v1.15
+" Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
+"               <URL:http://code.google.com/p/lh-vim/>
+" Last Update:  19th Apr 2015
 "
-" Purpose:	Help to map a sequence of keys to activate and desactivate
-" 		either a mapping, a setting or an abbreviation.
-"               
+" Purpose:      Help to map a sequence of keys to activate and desactivate
+"               either a mapping, a setting or an abbreviation.
+"
 " Remarks:      {{{
 "  * You may have to customize Trigger_File(<funcname>) in regards of your
 "    installation
@@ -30,10 +31,10 @@
 "  * |call Trigger_Define( '<F7>', 'set ai' )
 "    When pressing <F7> a first time, 'set ai!' is executed. Pressing <F7>
 "    a second time executes 'set ai'. Of course, for sets, it is not really
-"    interresting thanks to "map <F7> :set ai!<CR>"... I must admit that I 
+"    interresting thanks to "map <F7> :set ai!<CR>"... I must admit that I
 "    haven't seen any interrest (yet) in switching the numerical value of
 "    settings, but it is handled ->
-"  * |call Trigger_Define( '<F4>', 'set tw=120 sw^=2' ) 
+"  * |call Trigger_Define( '<F4>', 'set tw=120 sw^=2' )
 "    ... works fine
 "  * |call Trigger_Define( '<F9>', 'inoremap { {}<Left>' )
 "    I'm sure you have allready seen an interrest in this one.
@@ -48,17 +49,17 @@
 "    "Switched_MyAbbrevs()".
 "    }}}
 "
-" Inspiration:	buffoptions.vim
-" Deps:		fileuptodate.vim, and
-" 		(ensure_path.vim, fix_d_name.vim) or system_utils.vim
+" Inspiration:  buffoptions.vim
+" Deps:         fileuptodate.vim, and
+"               (ensure_path.vim, fix_d_name.vim) or system_utils.vim
 "
 " TODO:         {{{
 " (*) Support menus, setlocal, commands
 " (*) Try to find a better $HOME than 'c:\' on Win 9x when VIM is run from the
 "     file explorer...
 " (*) Can't use <cr> in Trigger_Define(); e.g.:
-"      call Trigger_Define( '<M-w>', 
-"  	\ 'nnoremap <silent> <C-W> :call Window_CTRL_W()<cr>')
+"      call Trigger_Define( '<M-w>',
+"       \ 'nnoremap <silent> <C-W> :call Window_CTRL_W()<cr>')
 "     won't work.
 " }}}
 "---------------------------------------------------------------------------
@@ -89,19 +90,19 @@ function! CheckDeps(func,file,path,or) " {{{
   if !exists(a:func)
     if version < 600
       if filereadable(a:path.'/'.a:file)
-	exe 'so '.a:path.'/'.a:file
+        exe 'so '.a:path.'/'.a:file
       elseif (''!=a:or) && filereadable(a:path.'/'.a:or)
-	exe 'so '.a:path.'/'.a:or
+        exe 'so '.a:path.'/'.a:or
       endif
     else
       exe 'runtime plugin/'.a:file.' macros/'.a:file.
-	    \ ((''!=a:or) ? (' plugin/'.a:or.' macros/'.a:or) : '')
+            \ ((''!=a:or) ? (' plugin/'.a:or.' macros/'.a:or) : '')
     endif
   endif
   if !exists(a:func)
     echohl ErrorMsg
     echo "<Triggers.vim> needs '".a:func."()' defined in <".a:file.">".
-	    \ ((''!=a:or) ? ' or in <'.a:or.'>' : '')
+            \ ((''!=a:or) ? ' or in <'.a:or.'>' : '')
     echo "   Please check for it on <http://hermitte.free.fr/vim/>\n"
     echohl None
     return 0
@@ -114,31 +115,29 @@ let s_path = expand('<sfile:p:h>')
 if !CheckDeps('*IsFileUpToDate', 'fileuptodate.vim', s_path,'')
       \ || !CheckDeps('*EnsurePath', 'ensure_path.vim', s_path,
       \               'system_utils.vim')
-      \ || !CheckDeps('*FixPathName', 'fix_d_name.vim', s_path,
-      \               'system_utils.vim')
   finish
 endif
 
 " }}}
 "---------------------------------------------------------------------------
 "---------------------------------------------------------------------------
-" Function: TRIGGER(action, opposite)				<internal>
-" Command:  TRIGGER "action", "opposite"			<exported>
+" Function: TRIGGER(action, opposite)                           <internal>
+" Command:  TRIGGER "action", "opposite"                        <exported>
 " {{{
 " {{{
 " This little tool will enable to define switchable triggers that are
-" neither mappins, settings nor abbreviations. 
+" neither mappins, settings nor abbreviations.
 " When called, the function executes the command that should be in the first
-" parameter and totally ignores the second parameter. 
+" parameter and totally ignores the second parameter.
 " The function Trigger_File() swap the two parameters of the TRIGGER command.
-" The parameters must be separated by an unique comma -- or else update the 
+" The parameters must be separated by an unique comma -- or else update the
 " pattern ! I only use it for echoings !
 "
-" Note:It is not designed to be used directly. Use instead the corresponding 
+" Note:It is not designed to be used directly. Use instead the corresponding
 " command : TRIGGER.
 " Ex: TRIGGER "echo 'ON'", "echo 'OFF'"
-" Attention: In order to work correctly, the double quotes must be around each 
-" parameter while the single ones are inside in order to protect the constant 
+" Attention: In order to work correctly, the double quotes must be around each
+" parameter while the single ones are inside in order to protect the constant
 " parameters of echo.
 " }}}
 function! TRIGGER(a, b)
@@ -150,11 +149,11 @@ command! TRIGGER call TRIGGER(<args>)
 "---------------------------------------------------------------------------
 "---------------------------------------------------------------------------
 " Function: Trigger_DoSwitch( keys, action, opposite [, verbose [,execute] ] )
-" 								<internal> {{{
+"                                                               <internal> {{{
 " {{{
 " Maps a sequence of "keys" to execute turn after turn "action" and its
 " "opposite"
-" 
+"
 " I suppose that the NoVerbose is equivalent to the wish to see the
 " "action" not executed. The verbose is really done only if the global
 " variable g:loaded_vimrc is defined. Hence, do *not* forget to set it at
@@ -163,8 +162,8 @@ command! TRIGGER call TRIGGER(<args>)
 function! Trigger_DoSwitch( ... )
   if (a:0 < 3) || (a:0 > 5)
     echohl ErrorMsg
-    echo "«Trigger_DoSwitch(keys, action, opposite [,verbose [,execute] ] )» ".
-	  \	 "incorrect number of arguments..."
+    echo "Trigger_DoSwitch(keys, action, opposite [,verbose [,execute] ] )? ".
+          \      "incorrect number of arguments..."
     echohl None
     return
   endif
@@ -172,7 +171,7 @@ function! Trigger_DoSwitch( ... )
     if a:0 >= 5 | let l_exec = a:5
     else        | let l_exec = l_verb
     endif
-  else 
+  else
     let l_verb = 0 | let l_exec = 0
   endif
 
@@ -181,25 +180,25 @@ function! Trigger_DoSwitch( ... )
   let a3 = substitute( a:3, '<.\{-}>', '<c-v>\0', 3)
   if l_exec == 1
     exe "noremap ".a:1." :call Trigger_DoSwitch('".a1."','".
-	  \	a3."','".a2."',".l_verb.",1)<CR>"
+          \     a3."','".a2."',".l_verb.",1)<CR>"
     exe a:2
-    if (l_verb==1) && exists("g:loaded_vimrc") 
+    if (l_verb==1) && exists("g:loaded_vimrc")
       echo a:2
     endif
   else
     " delay the execution
     exe "noremap ".a:1." :call Trigger_DoSwitch('".a1."','".
-	  \	a2."','".a3."',".l_verb.",1)<CR>"
+          \     a2."','".a3."',".l_verb.",1)<CR>"
   endif
 endfunction
 " }}}
 "---------------------------------------------------------------------------
-" Function: Trigger_BuildInv4Set( action )			
-" 								<internal> {{{
+" Function: Trigger_BuildInv4Set( action )
+"                                                               <internal> {{{
 " {{{
 " Builds the opposite action of the option assignment "action"
 "
-" The set format is the one accepted by vim, except that it authorizes white 
+" The set format is the one accepted by vim, except that it authorizes white
 " spaces after the affectation signs.
 " }}}
 function! Trigger_BuildInv4Set( action )
@@ -215,18 +214,18 @@ function! Trigger_BuildInv4Set( action )
       let val  = substitute( sets, pattern_set, '\5', '')
       let sets = substitute( sets, pattern_set, '\7', '')
       "echo var . sign . val . "-- " . sets
-      if val == "" 
-	let opp = opp . ' ' . var . "!"
+      if val == ""
+        let opp = opp . ' ' . var . "!"
       elseif sign =~ "+="
-	let opp = opp . " ". var . "-=" . val
+        let opp = opp . " ". var . "-=" . val
       elseif sign =~ "-="
-	let opp = opp . " ". var . "-=" . val
+        let opp = opp . " ". var . "-=" . val
       else
-	exe "let val2 = &" .var 
-	let opp = opp . " ". var . "=" . val2
+        exe "let val2 = &" .var
+        let opp = opp . " ". var . "=" . val2
       endif
       if sets == ""
-	break
+        break
       endif
     endwhile
     return opp
@@ -238,8 +237,8 @@ function! Trigger_BuildInv4Set( action )
 endfunction
 " }}}
 "---------------------------------------------------------------------------
-" Function: Trigger_BuildInv4Map_n_Abbr( action [,CheckOldValue])	
-" 								<internal> {{{
+" Function: Trigger_BuildInv4Map_n_Abbr( action [,CheckOldValue])
+"                                                               <internal> {{{
 " {{{
 " Builds the opposite action of the Mapping or abbreviation : "action"
 "
@@ -248,9 +247,9 @@ endfunction
 function! Trigger_BuildInv4Map_n_Abbr( ... )
   if (a:0==0) || (a:0>2)
     echohl ErrorMsg
-    echo '«Trigger_BuildInv4Map_n_Abbr(action [,CheckOldValue])» : Incorect number of arguments...'
+    echo '?Trigger_BuildInv4Map_n_Abbr(action [,CheckOldValue])? : Incorect number of arguments...'
     echohl None
-    return 
+    return
   endif
   let p_abbrv = '\([ic]\=\(nore\)\=ab\(br\)\=\)'
   let p_map   = '\(!\=[nvoic]\=\(nore\)\=map\)'
@@ -268,42 +267,42 @@ function! Trigger_BuildInv4Map_n_Abbr( ... )
     " Map ----------------------------------------------------------------
     if cmd =~ p_map
       if (a:0==2)&&(a:2!=0)
-	let rhs = maparg( name, ctx )
-	if rhs != ""
-	  " check for 'nore' feature -- equiv 16th char from map is '*'
-	  " Message will be echo
-	  redir @a | exe ctx . 'map '.name | redir END
-	  if @a[16] == '*' | let opp = ctx . 'noremap ' .name . ' ' . rhs 
-	  else             | let opp = ctx . 'map ' .name . ' ' . rhs 
-	  endif
-	else
-	  let opp = ctx . 'unmap ' . name 
-	endif
+        let rhs = maparg( name, ctx )
+        if rhs != ""
+          " check for 'nore' feature -- equiv 16th char from map is '*'
+          " Message will be echo
+          redir @a | exe ctx . 'map '.name | redir END
+          if @a[16] == '*' | let opp = ctx . 'noremap ' .name . ' ' . rhs
+          else             | let opp = ctx . 'map ' .name . ' ' . rhs
+          endif
+        else
+          let opp = ctx . 'unmap ' . name
+        endif
       else
-	let opp = ctx . 'unmap ' . name 
+        let opp = ctx . 'unmap ' . name
       endif
       " Abbreviation -------------------------------------------------------
     elseif cmd =~ p_abbrv
       if (a:0==2)&&(a:2!=0)
-	redir @a | exe ctx . 'abbr ' . name | redir END
-	if @a =~ "No abbreviation found"
-	  let opp = ctx . 'unabbr ' . name
-	else
-	  " first char matched is the nul char from @a
-	  let val = substitute( @a, '.[ic]\s*\(\\ \|\S\)\+\s\+\*\=\(.*\)$','\2', '' )
-	  let va0 = substitute( @a, '.[ic]\s*\(\(\\ \|\S\)\+\)\s\+\*\=\(.*\)$','\1', '' )
-	  if va0 != name
-	    echohl ErrorMsg
-	    echo 'Abbreviation [' . name . '] inconsistant with a previous one [' . va0 . ']...'
-	    echohl None
-	    return 
-	  endif
-	  if @a[16] == '*' | let opp = ctx . 'noreabbr ' . name . ' ' . val
-	  else             | let opp = ctx . 'abbr ' . name . ' ' . val
-	  endif
-	endif
+        redir @a | exe ctx . 'abbr ' . name | redir END
+        if @a =~ "No abbreviation found"
+          let opp = ctx . 'unabbr ' . name
+        else
+          " first char matched is the nul char from @a
+          let val = substitute( @a, '.[ic]\s*\(\\ \|\S\)\+\s\+\*\=\(.*\)$','\2', '' )
+          let va0 = substitute( @a, '.[ic]\s*\(\(\\ \|\S\)\+\)\s\+\*\=\(.*\)$','\1', '' )
+          if va0 != name
+            echohl ErrorMsg
+            echo 'Abbreviation [' . name . '] inconsistant with a previous one [' . va0 . ']...'
+            echohl None
+            return
+          endif
+          if @a[16] == '*' | let opp = ctx . 'noreabbr ' . name . ' ' . val
+          else             | let opp = ctx . 'abbr ' . name . ' ' . val
+          endif
+        endif
       else
-	let opp = ctx . 'unabbr ' . name
+        let opp = ctx . 'unabbr ' . name
       endif
     endif
     return opp
@@ -315,17 +314,17 @@ function! Trigger_BuildInv4Map_n_Abbr( ... )
 endfunction
 " }}}
 "---------------------------------------------------------------------------
-" Function: Trigger_BuildInv( action [, CheckOldValue] )	
-" 								<internal> {{{
+" Function: Trigger_BuildInv( action [, CheckOldValue] )
+"                                                               <internal> {{{
 " {{{
 " Builds the opposite action for the Setting, Mapping or abbreviation :
 " "action"
-" 
+"
 " Rem.1: Setting CheckOldValue to something different to 0, prevent the
 " function to checks for previous values of the switch mapping or
 " abbreviation. The main purpose is to prevent the execution of "abbrv foo"
 " or "map foo" which cause the display of unwanted messages. The main
-" application comes when loading for the first time the new mapping. 
+" application comes when loading for the first time the new mapping.
 "
 " Rem.2: CheckOldValue doesn't apply to "set" actions. Moreover, for hard
 " settings of non boolean options, the value pushed is the one that were
@@ -345,7 +344,7 @@ function! Trigger_BuildInv( ... )
     echohl ErrorMsg
     echo 'Trigger_BuildInv(action [,CheckOldValue]) : Incorect number of arguments...'
     echohl None
-    return 
+    return
   endif
   if a:1 =~ '^\s*set\s\+'
     return Trigger_BuildInv4Set( a:1 )
@@ -360,21 +359,21 @@ endfunction
 " }}}
 "---------------------------------------------------------------------------
 "---------------------------------------------------------------------------
-" Function: Trigger_Define( keys, action [, verbose] )		
-" 								<exported> {{{
+" Function: Trigger_Define( keys, action [, verbose] )
+"                                                               <exported> {{{
 " Ex: Trigger_Define( '<F4>', 'set hlsearch' )
 "
 function! Trigger_Define( ... )
   if (a:0 < 2) || (a:0 > 3)
     echohl ErrorMsg
-    echo '«Trigger_Define(keys, action [,verbose] )» '.
-	  \	 'incorrect number of arguments...'
+    echo '?Trigger_Define(keys, action [,verbose] )? '.
+          \      'incorrect number of arguments...'
     echohl None
-    return 
+    return
   endif
   let opp = Trigger_BuildInv( a:2 )
   if opp == ""
-    return 
+    return
     "return a:2
   else
     if a:0 == 2
@@ -386,8 +385,8 @@ function! Trigger_Define( ... )
 endfunction
 " }}}
 "---------------------------------------------------------------------------
-" Function: Trigger_FileName(funcname)				
-" 								<internal> {{{
+" Function: Trigger_FileName(funcname)
+"                                                               <internal> {{{
 " {{{
 " Returns the filename of the file containing the switch function for
 " <funcname>. }}}
@@ -395,26 +394,26 @@ function! Trigger_FileName(funcname)
   " call confirm('RT ='.$VIMRUNTIME, 'ok')
   if (version >= 600) " {{{
     " let path = matchstr(
-	  " \      FixPathName(&runtimepath,1),
-	  " \      substitute(FixPathName(expand('$HOME'),1), '\\', '.', 'g')
-	  " \         .'.\(vimfiles\|\.vim\)',
-	  " \    ) . '/.triggers/'
+          " \      lh#path#fix(&runtimepath,1),
+          " \      substitute(lh#path#fix(expand('$HOME'),1), '\\', '.', 'g')
+          " \         .'.\(vimfiles\|\.vim\)',
+          " \    ) . '/.triggers/'
     let where =  lh#path#to_regex($HOME.'/').'\(vimfiles\|.vim\)'
     let path = lh#path#find(&rtp, where). '/.triggers/'
     " call confirm('pathv6 = '.path, 'ok')
-    call EnsurePath(FixPathName(path, 1))
+    call EnsurePath(lh#path#fix(path, 1))
     " }}}
   else " VIM 5.x {{{
     let path = expand("$VIMRUNTIME") . "/.triggers/"
     call input('pathv5 = '.path)
-    if 1 != EnsurePath(path) 
-      let path = expand("$HOME") 
+    if 1 != EnsurePath(path)
+      let path = expand("$HOME")
       if filereadable(path.'/.vim')
-	let path = path . "/.vim/"
+        let path = path . "/.vim/"
       elseif filereadable(path.'/vimfiles')
-	let path = path . "/vimfiles/"
+        let path = path . "/vimfiles/"
       else
-	let path = path . "/vimfiles/"
+        let path = path . "/vimfiles/"
       endif
       let path = path . '/.triggers/'
       " call input('pathv5bis = '.path)
@@ -427,13 +426,13 @@ function! Trigger_FileName(funcname)
 endfunction
 " }}}
 "---------------------------------------------------------------------------
-" Function: Trigger_File(funcname, filename)				
-" 								<internal> {{{
+" Function: Trigger_File(funcname, filename)
+"                                                               <internal> {{{
 " {{{
 " Builds the file containing all the opposite (undefinitions) macros of
 " those defined in "funcname".
 " Note: This macro should be apply while editing the file containing the
-" function to transform. 
+" function to transform.
 " Called by: |Trigger_Function()|
 " Assumes: no function embeded, no group, etc
 " }}}
@@ -453,9 +452,9 @@ function! Trigger_File(funcname,inputfilename, outputfilename)
   " 1- Load a:inputfilename
   %delete _
   :exe '0r '.a:inputfilename
-  
-  "   disable folding 
-  if version >= 600 | normal! zn 
+
+  "   disable folding
+  if version >= 600 | normal! zn
   endif
 
   "2- Extract the function only
@@ -463,7 +462,7 @@ function! Trigger_File(funcname,inputfilename, outputfilename)
   normal! gg
   /^\s*endf\%[function]/+1,$delete _
 
-  "3- Apply Trigger_DoSwitch() on all the corresponding lines 
+  "3- Apply Trigger_DoSwitch() on all the corresponding lines
   let p_set   = '\%(set\)'
   let p_abbrv = '\([ic]\=\(nore\)\=ab\%[br]\=\)'
   let p_map   = '\(!\=[nvoic]\=\(nore\)\=map\)'
@@ -496,9 +495,9 @@ endfunction
 " }}}
 "---------------------------------------------------------------------------
 " Function: Trigger_Function(keys, funcname, fileassoc [, verbose [,execute] ] )
-" 								<exported> {{{
+"                                                               <exported> {{{
 " {{{
-" Set a switch mapping on "keys" that executes in turn "funcname"() 
+" Set a switch mapping on "keys" that executes in turn "funcname"()
 " then its opposite/negate. "funcname"() is defined in <"fileassoc">.
 " This function search for Switched_"funcname"() in
 " <$VIMRUNTIME/.triggers/"funcname".switch>. If the file does not
@@ -507,8 +506,8 @@ endfunction
 function! Trigger_Function(...)
   if (a:0 < 3) || (a:0 > 5)
     echohl ErrorMsg
-    echo "«Trigger_Function(keys, funcname, fileassoc [,verbose [,execute]])» ".
-	  \	 "incorrect number of arguments..."
+    echo "?Trigger_Function(keys, funcname, fileassoc [,verbose [,execute]])? ".
+          \      "incorrect number of arguments..."
     let p="(" | let i=1
     while i < a:0
       exe "let p = p . a:".i.".', '"
@@ -529,12 +528,12 @@ function! Trigger_Function(...)
     if Trigger_RebuildFile( a:2, a:3 ) != ""
       echo "Trigger_RebuildFile(".a:2.",".a:3.") failed."
       return
-    endif 
+    endif
     echo filename . ' created...'
   else
     exe "so " . filename
   endif
-  "2- Loads the opposite function .. 
+  "2- Loads the opposite function ..
   "  .. embeded in Trigger_RebuildFile()
   "3- Defines the switch
   let call1 = 'call ' . a:2 . '()'
@@ -553,14 +552,14 @@ endfunction
 "---------------------------------------------------------------------------
 function! Trigger_RebuildFile(funcname, fileassoc) " {{{
   echo "executing: Trigger_RebuildFile(".a:funcname.",".a:fileassoc.")."
-  ""let this     = $VIMRUNTIME . '/macros/Triggers.vim' 
+  ""let this     = $VIMRUNTIME . '/macros/Triggers.vim'
   " -e -s => silent, no gvim
   let filename = Trigger_FileName(a:funcname)
   " exe 'silent sp '.filename
   silent new
-  " "1" required in FixPathName in order to work in win32-gvim lauched from
+  " "1" required in lh#path#fix in order to work in win32-gvim lauched from
   " Windows-shell
-  call Trigger_File(a:funcname, FixPathName(a:fileassoc,1), filename)
+  call Trigger_File(a:funcname, lh#path#fix(a:fileassoc,1), filename)
   if &verbose >=1 | call confirm('<'.filename.'> built', 'ok') | endif
 endfunction
 " }}}
