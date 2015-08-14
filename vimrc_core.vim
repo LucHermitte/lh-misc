@@ -801,6 +801,11 @@ let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">"
 imap <c-space>  <Plug>MuT_ckword
 vmap <c-space>  <Plug>MuT_Surround
 
+" -- latex-suite {{{3
+let g:Tex_SmartKeyQuote = 0
+let g:Tex_SmartKeyBS    = 0
+let g:Tex_SmartKeyDot   = 1
+
 " -- lhVimSpell {{{3
 let g:VS_aspell_add_directly_to_dict = 1
 
@@ -1036,7 +1041,7 @@ function! s:ActivateAddons()
   if ((version == 704 && has("patch72")) || version > 704) && has('python')
         \ && isdirectory(fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe/third_party/ycmd')
         \ && executable(fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe/third_party/ycmd/libclang.so')
-    exe 'set rtp+='.fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe'
+    " exe 'set rtp+='.fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe'
   endif
   " Unite stuff
   call vam#ActivateAddons(['unite', 'unite-locate', 'unite-outline', 'vimproc'])
