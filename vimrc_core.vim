@@ -381,7 +381,7 @@ if ! strlen(maparg('<F7>'))
 endif
 "
 :VimrcHelp " <F9>    : toggle on and off the bracketing shortcuts              [I+N]
-:VimrcHelp " <M-F9>  : toggle on and off the use of markers with ?brackets?    [I+N]
+:VimrcHelp " <M-F9>  : toggle on and off the use of markers with «brackets»    [I+N]
 "
 :VimrcHelp " <F10>   : EXIT                                                    [I+N]
 :VimrcHelp " <S-F10> : EXIT!                                                   [I+N]
@@ -558,7 +558,7 @@ endfunction
   nmap ,B r<CR>Vjgq
 "
 :VimrcHelp " ,,,     = break current line at current column,
-:VimrcHelp "           inserting ellipsis and ?filling space?                  [N]
+:VimrcHelp "           inserting ellipsis and «filling space»                  [N]
   nmap ,,,  ,,1,,2
   nmap ,,1  a...X...<ESC>FXr<CR>lmaky$o<CC-R>"<ESC>
   nmap ,,2  :s/./ /g<C-M>3X0"yy$dd`a"yP
@@ -588,7 +588,6 @@ endfunction
 "------ center the view on the current line
 :VimrcHelp "  ]].    : center the view on the current line                     [I]
    " nnoremap   ].      :let vc=virtcol('.')<cr>z.:exe "normal! ".vc."\|"<cr>
-   " inoremap   ]].      ?<esc>zzs
    inoremap     ]].      <c-o>zz
 "
 "----- place le curseur au de'but du mot (lettre) sous (ou avant) le curseur
@@ -791,7 +790,7 @@ let g:marker_center                = 0
 
 " -- muTemplate {{{3
 " To override in some ftplugins if required.
-let g:url         = 'http://github.com/LucHermitte/??'
+let g:url         = 'http://github.com/LucHermitte/«»'
 let g:author_short= "Luc Hermitte"
 let g:author_email= "hermitte {at} gmail {dot} com"
 let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">"
@@ -1071,7 +1070,7 @@ runtime machine-specifics.vim
 " ===================================================================
 
 " Pr?dac
-vnoremap <silent> ? <esc>:echo strftime('%c', lh#visual#selection())<cr>
-nnoremap <silent> ? :echo strftime('%c', matchstr(getline('.'), 'FRAME \zs\d\+\ze\d\{3}'))<cr>
+vnoremap <silent> µ <esc>:echo strftime('%c', lh#visual#selection())<cr>
+nnoremap <silent> µ :echo strftime('%c', matchstr(getline('.'), 'FRAME \zs\d\+\ze\d\{3}'))<cr>
 " ===================================================================
 " vim600: set fdm=marker:
