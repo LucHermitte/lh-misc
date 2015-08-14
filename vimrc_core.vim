@@ -381,7 +381,7 @@ if ! strlen(maparg('<F7>'))
 endif
 "
 :VimrcHelp " <F9>    : toggle on and off the bracketing shortcuts              [I+N]
-:VimrcHelp " <M-F9>  : toggle on and off the use of markers with «brackets»    [I+N]
+:VimrcHelp " <M-F9>  : toggle on and off the use of markers with ?brackets?    [I+N]
 "
 :VimrcHelp " <F10>   : EXIT                                                    [I+N]
 :VimrcHelp " <S-F10> : EXIT!                                                   [I+N]
@@ -558,7 +558,7 @@ endfunction
   nmap ,B r<CR>Vjgq
 "
 :VimrcHelp " ,,,     = break current line at current column,
-:VimrcHelp "           inserting ellipsis and «filling space»                  [N]
+:VimrcHelp "           inserting ellipsis and ?filling space?                  [N]
   nmap ,,,  ,,1,,2
   nmap ,,1  a...X...<ESC>FXr<CR>lmaky$o<CC-R>"<ESC>
   nmap ,,2  :s/./ /g<C-M>3X0"yy$dd`a"yP
@@ -588,7 +588,7 @@ endfunction
 "------ center the view on the current line
 :VimrcHelp "  ]].    : center the view on the current line                     [I]
    " nnoremap   ].      :let vc=virtcol('.')<cr>z.:exe "normal! ".vc."\|"<cr>
-   " inoremap   ]].      Ø<esc>zzs
+   " inoremap   ]].      ?<esc>zzs
    inoremap     ]].      <c-o>zz
 "
 "----- place le curseur au de'but du mot (lettre) sous (ou avant) le curseur
@@ -791,7 +791,7 @@ let g:marker_center                = 0
 
 " -- muTemplate {{{3
 " To override in some ftplugins if required.
-let g:url         = 'http://github.com/LucHermitte/«»'
+let g:url         = 'http://github.com/LucHermitte/??'
 let g:author_short= "Luc Hermitte"
 let g:author_email= "hermitte {at} gmail {dot} com"
 let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">"
@@ -1002,9 +1002,8 @@ endf
 " Load plugins {{{2
 function! s:ActivateAddons()
   runtime addons/lh-vim-lib/autoload/lh/path.vim
-  runtime addons/lh-vim-lib/autoload/lh/option.vim
   let vimfiles = lh#path#vimfiles()
-  "echomsg "vimfiles: ".string(vimfiles)
+  " echomsg "vimfiles: ".string(vimfiles)
   exe 'set rtp+='.fnameescape(vimfiles).'/addons/vim-addon-manager'
   " tell VAM to use your MergeSources function:
   let g:vim_addon_manager['MergeSources'] = function('X')
@@ -1012,7 +1011,7 @@ function! s:ActivateAddons()
   " try
   " latex-suite stuff, only in run for latex
   if match(argv(), 'tex$') >= 0
-    call vam#ActivateAddons(['vim-latex'])
+    " call vam#ActivateAddons(['vim-latex'])
   endif
   " script #3361
   call vam#ActivateAddons(['Indent_Guides'])
@@ -1025,7 +1024,9 @@ function! s:ActivateAddons()
   call vam#ActivateAddons(['viewdoc'])
   call vam#ActivateAddons([ 'vim-airline' ])
   call vam#ActivateAddons([ 'xmledit' ])
-  call vam#ActivateAddons([ 'vim-jira-complete' ])
+  if has('python')
+    call vam#ActivateAddons([ 'vim-jira-complete' ])
+  endif
   let g:airline_powerline_fonts = 1
   let g:airline_theme = 'lh_dark'
   " let g:airline_solarized_bg = 'dark'
@@ -1069,8 +1070,8 @@ runtime machine-specifics.vim
 " }}}1
 " ===================================================================
 
-" Prédac
-vnoremap <silent> µ <esc>:echo strftime('%c', lh#visual#selection())<cr>
-nnoremap <silent> µ :echo strftime('%c', matchstr(getline('.'), 'FRAME \zs\d\+\ze\d\{3}'))<cr>
+" Pr?dac
+vnoremap <silent> ? <esc>:echo strftime('%c', lh#visual#selection())<cr>
+nnoremap <silent> ? :echo strftime('%c', matchstr(getline('.'), 'FRAME \zs\d\+\ze\d\{3}'))<cr>
 " ===================================================================
 " vim600: set fdm=marker:
