@@ -932,7 +932,6 @@ let s:my_plugins = [
       \ 'build-tools-wrapper',
       \ 'lh-tags'            ,
       \ 'lh-dev'             ,
-      \ 'vim-clang@lh'       ,
       \ 'mu-template@lh'     ,
       \ 'lh-cpp'             ,
       \ 'lh-refactor'        ,
@@ -942,7 +941,8 @@ let s:my_plugins = [
       \ 'lh-compil-hints'    ,
       \ 'lh-misc'            ,
       \ 'lh-cmake'           ,
-      \ 'dirdiff-svn'
+      \ 'dirdiff-svn'        ,
+      \ 'vim-clang@lh'
       \]
 let g:vim_addon_manager = get(g:, 'vim_addon_manager', {})
 let g:vim_addon_manager['plugin_sources'] = {}
@@ -980,17 +980,13 @@ fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_n
     for k in keys(a:plugin_sources)
       " Convert git protocol to SSH protocol for github access
       if get(a:plugin_sources[k],'type','') == 'git'
-        if match(s:my_plugins, '^'.k.'$') != -1
-          if executable('corkscrew')
-            " When accessing through a proxy with corkcrew
-            let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'ssh://ssh.\1/\2', '')
-          else
-            " When every thing works
-            let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'git@\1:\2', '')
-          endif
+        if executable('corkscrew')
+          " When accessing through a proxy with corkcrew
+          let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'ssh://ssh.\1/\2', '')
+          let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git@\(bitbucket.org\)[/:]\(.*\)', 'ssh://git@\1/\2', '')
         else
-          " When a read only access is enough
-          let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'https://\1/\2', '')
+          " When every thing works
+          let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'git@\1:\2', '')
         endif
       endif
     endfor
