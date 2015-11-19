@@ -932,7 +932,6 @@ let s:my_plugins = [
       \ 'build-tools-wrapper',
       \ 'lh-tags'            ,
       \ 'lh-dev'             ,
-      \ 'vim-clang@lh'       ,
       \ 'mu-template@lh'     ,
       \ 'lh-cpp'             ,
       \ 'lh-refactor'        ,
@@ -942,7 +941,8 @@ let s:my_plugins = [
       \ 'lh-compil-hints'    ,
       \ 'lh-misc'            ,
       \ 'lh-cmake'           ,
-      \ 'dirdiff-svn'
+      \ 'dirdiff-svn'        ,
+      \ 'vim-clang@lh'
       \]
 let g:vim_addon_manager = get(g:, 'vim_addon_manager', {})
 let g:vim_addon_manager['plugin_sources'] = {}
