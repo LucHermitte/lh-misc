@@ -1,33 +1,32 @@
 "=============================================================================
-" $Id$
 " File:         ftplugin/vim/vim_maintain.vim                     {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"               <URL:http://code.google.com/p/lh-vim/>
-" Version:      0.0.4
+"               <URL:http://github.com/LucHermitte/lh-misc>
+" Version:      0.0.5
+let s:k_version = 005
 " Created:      07th May 2010
-" Last Update:  $Date$
+" Last Update:  24th Nov 2015
 "------------------------------------------------------------------------
 " Description:
 "       Commands and mapping to help maintaining VimL scripts
-" 
+"
 "------------------------------------------------------------------------
 " Installation:
 "       Drop this file into {rtp}/ftplugin/vim
 "       Requires Vim7+
-" History:      
-"       v0.0.1 :Verbose, :Reload, n_K
-"       v0.0.2 K keeps the opening bracket if any in order to correctly open
-"              function help
+" History:
+"       v0.0.5: Reload and Verbose moved to plugin
+"       v0.0.4: Reload works when the &isk contains ' or "
 "       v0.0.3 :Reload accept arguments (the same as :runtime), and argument
 "              completion
-"       v0.0.4: Reload works when the &isk contains ' or "
-"       v0.0.5: Reload and Verbose moved to plugin
-" TODO:         
+"       v0.0.2 K keeps the opening bracket if any in order to correctly open
+"              function help
+"       v0.0.1 :Verbose, :Reload, n_K
+" TODO:
 "       Refactoring feature: move s:functions to autoload plugins
 " }}}1
 "=============================================================================
 
-let s:k_version = 005
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
 if &cp || (exists("b:loaded_ftplug_vim_maintain")
@@ -73,7 +72,7 @@ let g:loaded_ftplug_vim_maintain = s:k_version
 
 " Function: s:CurrentHelpWord() {{{3
 function! s:CurrentHelpWord()
-  try 
+  try
     let isk = &isk
     set isk+=(,:,#,&
     let w = expand('<cword>')

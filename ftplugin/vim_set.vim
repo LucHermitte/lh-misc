@@ -2,7 +2,7 @@
 " File:         ftplugin/vim_set.vim
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Last Update:  20th Mar 2015
+" Last Update:  24th Nov 2015
 " Requirements: lh-vim-lib
 "
 " ========================================================================
@@ -22,7 +22,7 @@ if exists("b:loaded_vim_set") && !exists('g:force_reload_vim_set')
   let &cpo = s:cpo_save
   finish
 endif
-let b:loaded_vim_set = 201
+let b:loaded_vim_set = 202
 
 " ------------------------------------------------------------------------
 " Options to be set {{{2
@@ -87,19 +87,19 @@ VIMHelp  "
 "
 VIMHelp  "[i  ] §i      inoremap
 VIMHelp  "[i  ] §n      noremap
-VIMHelp  "[i  ] §v      vnoremap
+VIMHelp  "[i  ] §v      xnoremap
 VIMHelp  "[i  ] §m      <M-><Left>
 inoremap  <buffer> ]i inoremap
 inoremap  <buffer> ]n noremap
-inoremap  <buffer> ]v vnoremap
+inoremap  <buffer> ]v xnoremap
 inoremap  <buffer> ]m <M-><Left>
 
 VIMHelp  "[i  ] <M-c>   <<call _()<CR> >>
 VIMHelp  "[i  ] <M-e>   <<exe 'normal _' >>
 inoremap  <buffer> <silent> <M-c>
-      \ <c-r>=InsertSeq('<m-c>', ':call !cursorhere!(!mark!)!mark!')<cr>
+      \ <c-r>=lh#map#insert_seq('<m-c>', ':call !cursorhere!(!mark!)!mark!')<cr>
 inoremap  <buffer> <silent> <M-e>
-      \ <c-r>=InsertSeq('<m-e>', ':exe "normal! !cursorhere!"!mark!')<cr>
+      \ <c-r>=lh#map#insert_seq('<m-e>', ':exe "normal! !cursorhere!"!mark!')<cr>
 
 VIMHelp  "[i  ] <M-n>   <<normal>>
 VIMHelp  "[i  ] <M-p>   <<put = '_'>>
@@ -107,12 +107,15 @@ VIMHelp  "[i  ] <M-r>   <<return>>
 VIMHelp  "[i  ] <M-s>   <<source>>
 inoremap  <buffer> <M-n> normal
 inoremap  <buffer> <M-p>
-      \ <c-r>=InsertSeq('<m-n>', "put='!cursorhere!'!mark!")<cr>
+      \ <c-r>=lh#map#insert_seq('<m-n>', "put='!cursorhere!'!mark!")<cr>
 inoremap  <buffer> <M-r> return
 
-vnoremap <buffer> <c-l>e <c-\><c-n>:echo <c-r>=lh#visual#selection()<cr><cr>gv
-vnoremap <buffer> <c-l>d <c-\><c-n>:debug echo <c-r>=lh#visual#selection()<cr><cr>gv
-vnoremap <buffer> <c-l>x <c-\><c-n>:exe lh#visual#selection()<cr>gv
+" TODO: support multilines
+xnoremap <buffer> <c-l>e <c-\><c-n>:echo <c-r>=lh#visual#selection()<cr><cr>gv
+xnoremap <buffer> <c-l>d <c-\><c-n>:debug echo <c-r>=lh#visual#selection()<cr><cr>gv
+xnoremap <buffer> <c-l>x <c-\><c-n>:exe lh#visual#selection()<cr>gv
+
+nnoremap <buffer> <c-l>x :exe getline('.')<cr>
 
 " Loads MapNoContext()
 ""so $VIMRUNTIME/macros/misc_map.vim
@@ -122,64 +125,65 @@ VIMHelp  "[i v] <M-f>   <<function! _() ^Mendfunction>>
 "NB: there is a space before !cursorhere! with mappings and with with
 "abbreviations.
 inoremap  <buffer> <silent> <M-f>
-      \ <C-R>=InsertSeq('<M-f>',
-      \ 'function! !cursorhere!(!mark!)\n!mark!\nendfunction!mark!')<CR>
+      \ <C-R>=lh#map#insert_seq('<M-f>',
+      \ "function! !cursorhere!(!mark!)\n!mark!\nendfunction!mark!")<CR>
 inoreab  <buffer> <silent>  fun
       \ <C-R>=<sid>InsertIfNotAfter('fun',
-      \ 'function!!cursorhere!(!mark!)\n!mark!\nendfunction!mark!',
+      \ "function!!cursorhere!(!mark!)\n!mark!\nendfunction!mark!",
       \ '\S')<CR>
 inoreab  <buffer> <silent>  function
       \ <C-R>=<sid>InsertIfNotAfter('function',
-      \ 'function!!cursorhere!(!mark!)\n!mark!\nendfunction!mark!',
+      \ "function!!cursorhere!(!mark!)\n!mark!\nendfunction!mark!",
       \ '\S')<CR>
 
-vmap  <buffer> <silent> <M-f> <localleader>fun
-vnoremap <buffer> <silent> <localleader>fun
-      \ <c-\><c-n>@=Surround('function! !cursorhere!(!mark!)', 'endfunction',
+xmap  <buffer> <silent> <M-f> <localleader>fun
+xnoremap <buffer> <silent> <localleader>fun
+      \ <c-\><c-n>@=lh#map#surround('function! !cursorhere!(!mark!)', 'endfunction',
       \ 1, 1, '``!jump-and-del!', 1, 'fun ')<cr>
 
 " Control statement: if       {{{3
 VIMHelp  "[i v] <M-i>   <<if _ ^Mendif>>
 inoremap <buffer> <silent> <M-i>
-      \ <C-R>=InsertSeq('<M-i>', 'if !cursorhere!\nendif!mark!')<CR>
+      \ <C-R>=lh#map#insert_seq('<M-i>', "if !cursorhere!\nendif!mark!")<CR>
 inoreab  <buffer> <silent> if
-      \ <C-R>=InsertSeq('if', 'if!cursorhere!\nendif!mark!')<CR>
+      \ <C-R>=lh#map#insert_seq('if', "if !cursorhere!\nendif!mark!")<CR>
 
-vmap  <buffer> <silent> <M-i> <localleader>if
-vnoremap <buffer> <silent> <localleader>if
-      \ <c-\><c-n>@=Surround('if !cursorhere!', 'endif!mark!',
+
+xmap  <buffer> <silent> <M-i> <localleader>if
+xnoremap <buffer> <silent> <localleader>if
+      \ <c-\><c-n>@=lh#map#surround('if !cursorhere!', 'endif!mark!',
       \ 1, 1, '', 1, 'if ')<cr>
 
 " Control statement: while    {{{3
 VIMHelp  "[i  ] <M-w>   <<while _ ^Mendwhile>>
 inoremap <buffer> <silent> <M-w>
-      \ <C-R>=InsertSeq('<M-w>', 'while !cursorhere!\nendwhile!mark!')<CR>
+      \ <C-R>=lh#map#insert_seq('<M-w>', "while !cursorhere!\nendwhile!mark!")<CR>
 inoreab  <buffer> <silent> wh
-      \ <C-R>=InsertSeq('wh', 'while!cursorhere!\nendwhile!mark!')<CR>
+      \ <C-R>=lh#map#insert_seq('wh', "while!cursorhere!\nendwhile!mark!")<CR>
 inoreab  <buffer> <silent> while
-      \ <C-R>=InsertSeq('while', 'while!cursorhere!\nendwhile!mark!')<CR>
+      \ <C-R>=lh#map#insert_seq('while', "while!cursorhere!\nendwhile!mark!")<CR>
 
 " Control statement: for      {{{3
-vmap  <buffer> <silent> <M-w> <localleader>wh
-vnoremap <buffer> <silent> <localleader>wh
-      \ <c-\><c-n>@=Surround('while !cursorhere!', 'endwhile!mark!',
+xmap  <buffer> <silent> <M-w> <localleader>wh
+xnoremap <buffer> <silent> <localleader>wh
+      \ <c-\><c-n>@=lh#map#surround('while !cursorhere!', 'endwhile!mark!',
       \ 1, 1, '', 1, 'wh ')<cr>
 
 " vmap  <buffer> <silent> <M-f> <localleader>for
 inoreab  <buffer> <silent> for
-      \ <C-R>=InsertSeq('for', 'for!cursorhere! in!mark!\nendfor!mark!')<CR>
-vnoremap <buffer> <silent> <localleader>for
-      \ <c-\><c-n>@=Surround('for !cursorhere! in !mark!', 'endfor!mark!',
+      \ <C-R>=lh#map#insert_seq('for', "for!cursorhere! in!mark!\nendfor!mark!")<CR>
+xnoremap <buffer> <silent> <localleader>for
+      \ <c-\><c-n>@=lh#map#surround('for !cursorhere! in !mark!', 'endfor!mark!',
       \ 1, 1, '', 1, 'for ')<cr>
 
 " Control statement: try      {{{3
 nmap <buffer> <silent> <localleader>try V<localleader>try
-vnoremap <buffer> <silent> <localleader>try
-      \ <c-\><c-n>@=Surround('try!cursorhere!', 'finally!mark!\nendtry!mark!',
+xnoremap <buffer> <silent> <localleader>try
+      \ <c-\><c-n>@=lh#map#surround('try!cursorhere!', "finally!mark!\nendtry!mark!",
       \ 1, 1, '', 1, 'try ')<cr>
 
 inoreab  <buffer> <silent> try
-      \ <C-R>=InsertSeq('try', 'try!cursorhere! \nfinally!mark!\nendtry!mark!')<CR>
+      \ <C-R>=lh#map#insert_seq('try', "try!cursorhere! \nfinally!mark!\nendtry!mark!")<CR>
 " Control statements }}}3
 
 VIMHelp  "
@@ -210,7 +214,7 @@ if !exists("s:ftplugin_loaded") || exists('g:force_reload_vim_set')
     if l =~ a:pattern.'\s*$'
       return a:key
     else
-      return InsertSeq(a:key, a:what)
+      return lh#map#insert_seq(a:key, a:what)
     endif
   endfunction
 
