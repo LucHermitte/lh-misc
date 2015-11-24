@@ -64,6 +64,7 @@ function! s:Toc() abort range
   call map(titles, 'v:val + [v:val[-1]]')
   call lh#list#map_on(titles, 1, 'substitute(v:val, "\\v[^-A-Za-z-1-9_ ]", "", "g")' )
   call lh#list#map_on(titles, 1, 'substitute(v:val, "\\v\\s+", "-", "g")' )
+  call lh#list#map_on(titles, 1, 'tolower(v:val)' )
   call lh#list#map_on(titles, 0, 'substitute(v:val, "\\v.*", "\\=strlen(submatch(0))", "")' )
   let level_min = min(lh#list#get(titles, 0)) - 1
   let t2 = lh#list#map_on(deepcopy(titles), 0, 'repeat("  ", v:val -'.level_min.') . "* "')
