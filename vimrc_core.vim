@@ -392,10 +392,10 @@ endif
 "
 :VimrcHelp " <F11>   : Previous Buffer                                         [I+N]
   inoremap <F11> <esc>:bprev<CR>
-  nnoremap <expr> <F11> (&ft=='qf' ? ":colder" : ":bprev")."\<cr>"
+  "nnoremap <expr> <F11> (&ft=='qf' ? ":colder" : ":bprev")."\<cr>"
 :VimrcHelp " <F12>   : Next Buffer                                             [I+N]
   inoremap <F12> <esc>:bnext<CR>
-  nnoremap <expr> <F12> (&ft=='qf' ? ":cnewer" : ":bnext")."\<cr>"
+  "nnoremap <expr> <F12> (&ft=='qf' ? ":cnewer" : ":bnext")."\<cr>"
 "
 :VimrcHelp " <C-Del> and <C-S-Del> Delete a whole word till its end            [I+N]
    noremap  <C-Del> dw
