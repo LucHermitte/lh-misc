@@ -1,12 +1,11 @@
 " example -> VIM: let b:toto="foo" g:tata=4 g:egal="t=y".&tw
 " ===========================================================================
-" $Id$
 " File:         let-modeline.vim {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"               <URL:http://hermitte.free.fr/vim/>
-" URL: http://code.google.com/p/lh-vim/source/browse/misc/trunk/plugin/let-modeline.vim
-" Version:      1.9
-" Last Update:  21st Apr 2011 ($Date$)
+"               <URL:http://github.com/LucHermitte/lh-misc>
+" URL: http://github.com/LucHermitte/lh-misc/tree/master/plugin/let-modeline.vim
+" Version:      1.10
+" Last Update:  05th Jan 2016
 "
 " Purpose:                        {{{2
 "       Defines the function : FirstModeLine() that extends the VIM modeline
@@ -20,7 +19,7 @@
 " practical to know the name of the main file whichever file is edited --
 " TKlatex does this thanks the global variable g:TeXfile. Hence it knows
 " that latex should be called on this main file ; aux2tags.vim could also
-" be told to compute the associated .aux file. 
+" be told to compute the associated .aux file.
 " Anyway. Defining (through menus or a let command) g:TeXfile each time is
 " really boring. It bored me so much that I programmed a first version of
 " this script. In every file of one of my projects I added the line :
@@ -37,7 +36,7 @@
 " calls the right function and return true. Otherwise, it returns false.
 " You will find the code of this precise callback function as an example at
 " the end of this file.
-" 
+"
 " Tune C Compilations:      {{{3
 " An easy way to tune the parameters of the compilation of simple programs
 " without having to maintain a makefile:
@@ -56,7 +55,7 @@
 "                                   Can also be an environment variable -> $VAR.
 "               {value}         ::= string or numeral value : no function
 "                                   call allowed.
-"               
+"
 " Options:         {{2
 "       (*) 'modeline' : vim-option that must be set to 1
 "       (*) 'modelines': vim-option corrsponding to the number of lines
@@ -66,7 +65,7 @@
 "
 " Installation:                   {{{2
 "       (*) Drop the file into your {rtp}/plugin/ folder.
-" 
+"
 " Remarks:                        {{{2
 "       (*) The only way to call a function is through the callback feature.
 "           Affectation like 'let g:foo="abc".DEF()' are recognized and
@@ -75,6 +74,7 @@
 "           uppercase letters
 "
 " Changes:                        {{{2
+"       v1.10   Code simplified, lh-vim-lib 3.5.0 required
 "       v1.9:   @/ is preserved
 "       v1.8:   autocommands moved to the plugin
 "       v1.7:   Optimizations
@@ -101,7 +101,7 @@ if exists("g:loaded_let_modeline") && ! exists('g:force_reload_let_modeline') | 
 let g:loaded_let_modeline = 1
 
 " Internal function dedicated to the recognition of function calls {{{2
-function! s:FoundFunctionCall(value_str)
+function! s:FindFunctionCall(value_str) abort
   let str = substitute(a:value_str, '"[^"]*"', '', 'g')
   let str = substitute(str, "'[^']*'", '', 'g')
   return match(str, '(.*)') != -1
@@ -110,12 +110,12 @@ endfunction
 
 let s:re_var   = '\s\+\([[:alnum:]:_$]\+\)'
 " beware the comments ending characters
-let s:re_val   = '\(\%(' . "'[^']*'" . '\|"[^"]*"\|[-a-zA-Z0-9:_.&$]\)\+\)$' 
+let s:re_val   = '\(\%(' . "'[^']*'" . '\|"[^"]*"\|[-a-zA-Z0-9:_.&$]\)\+\)$'
 let s:re_other = '^\(.\{-}\)'
-let s:re_sub   = s:re_other . s:re_var . '\s*=\s*' . s:re_val 
+let s:re_sub   = s:re_other . s:re_var . '\s*=\s*' . s:re_val
 
 " Internal function dedicated to the parsing of a line {{{2
-function! FML_parse_line(mtch)
+function! s:FML_parse_line(mtch) abort
   " call confirm('Find:'.a:mtch, '&ok', 1)
   if a:mtch !=""
     let mtch  = a:mtch
@@ -127,9 +127,9 @@ function! FML_parse_line(mtch)
         return
       endif
       " Check : no function !
-      if s:FoundFunctionCall(valu)
+      if s:FindFunctionCall(valu)
         echohl ErrorMsg
-        echo "Find a function call in the affectation : let " . vari . " = " . valu
+        echo "Found a function call in the assignement: let " . vari . " = " . valu
         echohl None
         return
       endif
@@ -149,38 +149,29 @@ endfunction
 " Internal function dedicated searching the matching lines {{{2
 " let s:modeline_pat = '[vV][iI][mM]\d*:\s*let\s*\zs.*$'
 let s:modeline_pat = '[vV][iI][mM]\d*:\s*let\zs.*$'
-function! s:Do_it_on_range(first, last)
+function! s:Do_it_on_range(first, last) abort
   if &verbose >= 2 " {{{
     echo "\n->"a:first.','.a:last. 'g/'.s:modeline_pat.
-          \ '/:call FML_parse_line(matchstr(getline("."),"'.
+          \ '/:call s:FML_parse_line(matchstr(getline("."),"'.
           \ escape(s:modeline_pat, '\\') .'"))'
   endif " }}}
-  let s:save_fold_enable= &foldenable
-  set nofoldenable
-  if exists(':try')
-    try
-      let s = @/
-      silent execute a:first.','.a:last. 'g/'.s:modeline_pat.
-            \ '/:call FML_parse_line(matchstr(getline("."),"'.
-            \ escape(s:modeline_pat, '\\') .'"))'
-      " Purge the history for the search pattern just used.
-      call histdel('search', -1)
-    finally
-      let @/ = s
-      let &foldenable = s:save_fold_enable
-    endtry
-  else " Older versions of Vim
+  let cleanup = lh#on#exit()
+        \.restore('&foldenable')
+        \.restore('@/')
+  try
+    set nofoldenable
     silent execute a:first.','.a:last. 'g/'.s:modeline_pat.
-          \ '/:call FML_parse_line(matchstr(getline("."),"'.
+          \ '/:call s:FML_parse_line(matchstr(getline("."),"'.
           \ escape(s:modeline_pat, '\\') .'"))'
     " Purge the history for the search pattern just used.
     call histdel('search', -1)
-    let &foldenable = s:save_fold_enable
-  endif
+  finally
+    call cleanup.finalize()
+  endtry
 endfunction
 
 " The main function {{{2
-function! FirstModeLine()
+function! s:FirstModeLine() abort
   if !&modeline | return | endif
   let pos = line('.') . 'normal! ' . virtcol('.') . '|'
   let e1 = 1+&modelines-1
@@ -205,7 +196,7 @@ endfunction
 " autocommand {{{2
 aug LetModeline
   au!
-  au BufReadPost * :call FirstModeLine()
+  au BufReadPost * call s:FirstModeLine()
 
   " To not interfere with Templates loaders
   " au BufNewFile * :let b:this_is_new_buffer=1
@@ -227,7 +218,7 @@ if 0
       "let valu  = substitute( valu, '^"\=\([[:alnum:].]\+\)"\=$', '"\1"', '' )
       call TKSetTeXfileName( 2, a:val )
       return 1
-    else 
+    else
       return 0
     endif
   endfunction
