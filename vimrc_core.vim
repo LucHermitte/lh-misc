@@ -553,9 +553,9 @@ endfunction
   map ,\| 80\|F
 "
 "------ center the view on the current line
-:VimrcHelp "  ]].    : center the view on the current line                     [I]
+" :VimrcHelp "  ]].    : center the view on the current line                     [I]
    " nnoremap   ].      :let vc=virtcol('.')<cr>z.:exe "normal! ".vc."\|"<cr>
-   inoremap     ]].      <c-o>zz
+   " inoremap     ]].      <c-o>zz
 "
 "----- place le curseur au de'but du mot (lettre) sous (ou avant) le curseur
    noremap      ]!wb!   ylpmz?\<[a-zA-Z_]<CR>mx`zx`x
