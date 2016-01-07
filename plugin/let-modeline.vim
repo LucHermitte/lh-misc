@@ -173,7 +173,7 @@ endfunction
 " The main function {{{2
 function! s:FirstModeLine() abort
   if !&modeline | return | endif
-  let pos = line('.') . 'normal! ' . virtcol('.') . '|'
+  let pos = getcurpos()
   let e1 = 1+&modelines-1
   let b2 = line('$') - &modelines+1
   " call confirm('e1='.e1."\nb2=".b2, '&ok', 1)
@@ -184,7 +184,7 @@ function! s:FirstModeLine() abort
     call s:Do_it_on_range(b2, line('$'))
   endif
   if !exists('b:this_is_new_buffer')
-    exe pos
+    call setpos('.', pos)
   else
     unlet b:this_is_new_buffer
   endif
