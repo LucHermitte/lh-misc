@@ -148,6 +148,16 @@ xnoremap <buffer> <silent> <localleader>if
       \ <c-\><c-n>@=lh#map#surround('if !cursorhere!', 'endif!mark!',
       \ 1, 1, '', 1, 'if ')<cr>
 
+" Control statement: elif     {{{3
+inoreab  <buffer> <silent> elif
+      \ <C-R>=lh#map#insert_seq('elif', "elseif!cursorhere!")<CR>
+
+
+xmap  <buffer> <silent> <M-i> <localleader>elif
+xnoremap <buffer> <silent> <localleader>elif
+      \ <c-\><c-n>@=lh#map#surround('elif !cursorhere!', '!mark!',
+      \ 1, 1, '', 1, 'elif ')<cr>
+
 " Control statement: while    {{{3
 VIMHelp  "[i  ] <M-w>   <<while _ ^Mendwhile>>
 inoremap <buffer> <silent> <M-w>
