@@ -1,11 +1,10 @@
 "=============================================================================
-" $Id$
 " File:		sh_set.vim                                           {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"		<URL:http://hermitte.free.fr/vim/>
+"		<URL:http://github.com/LucHermitte/lh-misc>
 " Version:	1.0.0
 " Created:	16th Nov 2007
-" Last Update:	$Date$
+" Last Update:	21st Jan 2016
 "
 " Purpose:	ftplugin for Unix shell (-like) programming
 "
@@ -23,11 +22,11 @@
 " Avoid buffer reinclusion {{{2
 let s:cpo_save=&cpo
 set cpo&vim
-if exists('b:loaded_ftplug_sh_set_vim') && !exists('g:force_reload_sh_ftp')
+if exists('b:loaded_ftplugin_sh_set') && !exists('g:force_reload_ftplugin_sh_set')
   let &cpo=s:cpo_save
   finish
 endif
-let b:loaded_ftplug_sh_set_vim = 1
+let b:loaded_ftplugin_sh_set = 1
  
 " }}}2
 "------------------------------------------------------------------------
@@ -39,7 +38,7 @@ endif
 " Mappings {{{2
 " if {{{3
 Inoreabbr <buffer> <silent> if <C-R>=InsertSeq('if ',
-      \ '\<c-f\>if [ !cursorhere! ] ; then\n!mark!\nfi!mark!')<cr>
+      \ "\\<c-f\\>if [ !cursorhere! ] ; then\n!mark!\nfi!mark!")<cr>
 
 vnoremap <buffer> <silent> <localleader>if 
       \ <c-\><c-n>@=Surround('if [ !cursorhere! ] ; then', 'fi!mark!',
@@ -56,11 +55,11 @@ nmap <buffer> <LocalLeader><LocalLeader>if
 " Global definitions {{{1
 " ========================================================================
 " Avoid global reinclusion {{{2
-if exists("g:loaded_sh_set_vim") && !exists('g:force_reload_sh_ftp')
+if exists("g:loaded_sh_set") && !exists('g:force_reload_ftplugin_sh_set')
   let &cpo=s:cpo_save
   finish 
 endif
-let g:loaded_sh_set_vim = 1
+let g:loaded_sh_set = 1
 " Avoid global reinclusion }}}2
 "------------------------------------------------------------------------
 " Functions {{{2
