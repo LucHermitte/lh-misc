@@ -174,8 +174,12 @@ sub what_to_display
 ## The search       {{{2
 # constants {{{3
 my $color_normal = "\\\033[00m";
-my $color_blue   = "\\\033[00;34;34m";
 my $color_red    = "\\\033[00;31;31m";
+my $color_green  = "\\\033[00;32;32m";
+my $color_blue   = "\\\033[00;34;34m";
+
+my $color_match  = $color_red;
+my $color_file   = $color_green;
 
 # search() {{{3
 sub search
@@ -184,14 +188,14 @@ sub search
 
     # my $opt_pattern     = escape("@opt_pattern") ;
     my $opt_pattern     = "@opt_pattern" ;
-    my $opt_exclude_pat = escape("@opt_exclude_pat") ;
+    # my $opt_exclude_pat = escape("@opt_exclude_pat") ;
 
     # The trick with printf is required to surround each line with single
     # quotes in order to support file having spaces in their name
     my (@grep_options) = ();
     push(@grep_options, $opt1) if ($opt1);
     push(@grep_options, '-i')  if ($opt_insensitive);
-    push(@grep_options, '--color=always')  if ($opt_colorize && !$old_grep);
+    # push(@grep_options, '--color=always')  if ($opt_colorize && !$old_grep);
     # push(@grep_cmd, '"'.$opt_pattern.'"');
     push(@grep_options, "'".$opt_pattern."'");
     # push(@grep_cmd, $opt_pattern);
@@ -231,10 +235,11 @@ sub search
     }
 
     # excluded pattern
-    map( { push(@cmd, '|', 'egrep -v', "\"$_\"") } @opt_exclude_pat ) ;
+    map( { push(@cmd, '|', 'egrep -v', "'$_'") } @opt_exclude_pat ) ;
 
     # colorization
-    if ($old_grep && $opt_colorize) {
+    # This has to be done after removing excluded patterns
+    if ($opt_colorize) {
         if ($opt_insensitive) {
             $opt_pattern =~ s/[A-Za-z]/[\u$&\l$&]/g ;
         }
@@ -243,12 +248,10 @@ sub search
         # As sed(solaris) only supports Basic Regular Expression, we must loop
         # over the different extensions searched, hence map()
         map( { push(@cmd, '-e',
-            "s²\\^[-a-zA-Z0-9_/.+#\\'\\ ]*\\.$_\\\:²`printf \"$color_red&$color_normal\"`²")
-            #"s²\\^[a-zA-Z0-9_/-.]*\\.$_\\\:²`echo \"$color_red&$color_normal\"`²")
+            "s²\\^[-a-zA-Z0-9_/.+#\\'\\ ]*\\.$_\\\:²`printf \"$color_file&$color_normal\"`²")
         } @opt_extensions ) ;
         push(@cmd, '-e',
-            "s²\"$opt_pattern\"²`printf \"$color_blue&$color_normal\"`²g" );
-            #"s²\"$opt_pattern\"²`echo \"$color_blue&$color_normal\"`²g" );
+            "s²\"$opt_pattern\"²`printf \"$color_match&$color_normal\"`²g" );
     }
 
     # And finally execute the search
@@ -394,7 +397,7 @@ Luc Hermitte <luc.hermitte {at} free.fr>
 
 =head1 VERSION
 
-1.0.0
+1.0.1
 
 =cut
 
