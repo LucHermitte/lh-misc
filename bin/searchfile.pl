@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-#           <URL:http://code.google.com/p/lh-vim/>
+#           <URL:https://github.com/LucHermitte/lh-misc>
 # Purpose:	Easily search files matching a regex
 # Created:	Wed Sep 07 15:20:31 2005
 #
@@ -40,6 +40,7 @@ my @opt_pattern     = "" ;
 my $opt_colorize    = 0  ;
 my $opt_insensitive = 0  ;
 my @opt_exclude_pat = () ;
+my $old_grep        = 0  ; # if grep doesn't have --include
 
 # very-light substitute for pod2usage {{{3
 # sub pod2usage {
@@ -65,7 +66,7 @@ sub check_options
 {
     # Check the options {{{4
     Getopt::Long::Configure("no_auto_abbrev");
-    GetOptions ( 
+    GetOptions (
         "v|verbose:i"           => sub { $verbose = $_[1]; }
         ,"q|quiet"              => sub { $verbose = -1; }
         ,"h|help"               => \$opt_help
@@ -179,7 +180,6 @@ my $color_red    = "\\\033[00;31;31m";
 # search() {{{3
 sub search
 {
-    my (@find_params)   = ext2find(@opt_extensions) ;
     my ($opt1, $opt2)   = what_to_display($opt_filename, $opt_lines, $opt_lineno) ;
 
     # my $opt_pattern     = escape("@opt_pattern") ;
@@ -188,32 +188,53 @@ sub search
 
     # The trick with printf is required to surround each line with single
     # quotes in order to support file having spaces in their name
-    my (@grep_cmd)    = ( '|', 'sed', '-e', "s/.*/`printf \"'&'\"`/",  '|', 'xargs', 'grep' ) ;
-    push(@grep_cmd, $opt1) if ($opt1);
-    push(@grep_cmd, '-i')  if ($opt_insensitive);
+    my (@grep_options) = ();
+    push(@grep_options, $opt1) if ($opt1);
+    push(@grep_options, '-i')  if ($opt_insensitive);
+    push(@grep_options, '--color=always')  if ($opt_colorize && !$old_grep);
     # push(@grep_cmd, '"'.$opt_pattern.'"');
-    push(@grep_cmd, "'".$opt_pattern."'");
+    push(@grep_options, "'".$opt_pattern."'");
     # push(@grep_cmd, $opt_pattern);
-    my (@cmd) = ('find', $opt_path,
-        '\(', 
-        '-name', 'CVS', '-o',
-        '-name', '.svn', '-o',
-        '-name', '.git', '-o',
-        '-name', 'Generated', '-o',
-        # '-name', 'tu', '-o',
-        # '-name', 'tv', '-o',
-        '-name', 'SunWS_cache', '-o',
-        '-name', 'obj', # '-o',
-        # '-name', 'bin', '-o',
-        # '-name', 'lib',
-        '\)', '-prune', '-o',
-        @find_params, '-print', @grep_cmd);
+    my (@cmd) = ();
+    if ($old_grep)
+	{
+        my (@find_params)   = ext2find(@opt_extensions) ;
+        my (@grep_cmd)    = ( '|', 'sed', '-e', 's/.*/`printf \'"&"\'`/',  '|', 'xargs', 'grep' ) ;
+		push(@cmd,
+            'find', $opt_path,
+			'\(',
+			'-name', 'CVS', '-o',
+			'-name', '.svn', '-o',
+			'-name', '.git', '-o',
+			'-name', 'Generated', '-o',
+			# '-name', 'tu', '-o',
+			# '-name', 'tv', '-o',
+			'-name', 'SunWS_cache', '-o',
+			'-name', 'obj', # '-o',
+			# '-name', 'bin', '-o',
+			# '-name', 'lib',
+			'\)', '-prune', '-o',
+			@find_params, '-print', @grep_cmd, @grep_options);
+	}
+    else
+    {
+        map( {push(@grep_options, "--include='*.$_'") } @opt_extensions);
+		push(@cmd,
+            'grep', '-r',
+            '--exclude-dir', 'CVS',
+            '--exclude-dir', '.svn',
+            '--exclude-dir', '.git',
+            '--exclude-dir', 'SunWS_cache',
+            @grep_options,
+            '.'
+        );
+    }
 
     # excluded pattern
     map( { push(@cmd, '|', 'egrep -v', "\"$_\"") } @opt_exclude_pat ) ;
 
     # colorization
-    if ($opt_colorize) {
+    if ($old_grep && $opt_colorize) {
         if ($opt_insensitive) {
             $opt_pattern =~ s/[A-Za-z]/[\u$&\l$&]/g ;
         }
@@ -221,8 +242,8 @@ sub search
 
         # As sed(solaris) only supports Basic Regular Expression, we must loop
         # over the different extensions searched, hence map()
-        map( { push(@cmd, '-e', 
-            "s²\\^[-a-zA-Z0-9_/.]*\\.$_\\\:²`printf \"$color_red&$color_normal\"`²")
+        map( { push(@cmd, '-e',
+            "s²\\^[-a-zA-Z0-9_/.+#\\'\\ ]*\\.$_\\\:²`printf \"$color_red&$color_normal\"`²")
             #"s²\\^[a-zA-Z0-9_/-.]*\\.$_\\\:²`echo \"$color_red&$color_normal\"`²")
         } @opt_extensions ) ;
         push(@cmd, '-e',
@@ -282,7 +303,7 @@ to the list of filename extensions.
 Basic Regular Expression used to define the pattern to search in the files.
 See regex(5).
 
-=back 
+=back
 
 =head2 Optional parameters:
 
@@ -359,7 +380,9 @@ searchfile.pl B<--ext> F<h,cpp,fcf,inc,c> "due date" B<--noli> B<--noc> | xargs 
 
 =head1 NOTES
 
-CVS directories are implicitly excluded for the searched sub-directories.
+CVS, subversion and git directories are implicitly excluded for the searched sub-directories.
+
+If F<grep> complains about B<--color> flags, then edit this script and force $old_grep to 1
 
 =head1 SEE ALSO
 
@@ -371,7 +394,7 @@ Luc Hermitte <luc.hermitte {at} free.fr>
 
 =head1 VERSION
 
-0.2.0
+1.0.0
 
 =cut
 
