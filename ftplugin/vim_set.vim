@@ -50,13 +50,7 @@ endif
 
 " Stuff for mu-template
 let b:author_short='Luc Hermitte <hermitte {at} free {dot} fr>'
-let b:lhvim_url = 'http://github.com/LucHermitte/«»'
-if lh#vcs#is_git()
-  let repo = lh#vcs#decode_github_url(lh#vcs#get_url(expand('%:p:h')))
-  if !empty(repo)
-    let b:lhvim_url = 'http://github.com/'.repo[1].'/'.repo[2]
-  endif
-endif
+let b:lhvim_url = lh#vcs#as_http(expand('%:p:h'))
 let b:author        ="Luc Hermitte <EMAIL:".g:author_email.">\r" .
       \ '"'. "\<tab>\<tab><URL:".b:lhvim_url.">"
 "
@@ -153,6 +147,16 @@ xmap  <buffer> <silent> <M-i> <localleader>if
 xnoremap <buffer> <silent> <localleader>if
       \ <c-\><c-n>@=lh#map#surround('if !cursorhere!', 'endif!mark!',
       \ 1, 1, '', 1, 'if ')<cr>
+
+" Control statement: elif     {{{3
+inoreab  <buffer> <silent> elif
+      \ <C-R>=lh#map#insert_seq('elif', "elseif!cursorhere!")<CR>
+
+
+xmap  <buffer> <silent> <M-i> <localleader>elif
+xnoremap <buffer> <silent> <localleader>elif
+      \ <c-\><c-n>@=lh#map#surround('elif !cursorhere!', '!mark!',
+      \ 1, 1, '', 1, 'elif ')<cr>
 
 " Control statement: while    {{{3
 VIMHelp  "[i  ] <M-w>   <<while _ ^Mendwhile>>

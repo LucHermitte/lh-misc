@@ -479,44 +479,11 @@ command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
   vmap ,Stws :%s/  *$/_/g<C-M>
 "
 " Inserting time stamps {{{
-let g:EnsureEnglishDate = 1
-function! DateStamp()
-  let day   = strftime("%d")
-  let mod = day % 10
-  if (day / 10) == 1 | let th='th'      " 11, 12, 13
-  elseif mod == 1    | let th = 'st'
-  elseif mod == 2    | let th = 'nd'
-  elseif mod == 3    | let th = 'rd'
-  else               | let th = 'th'
-  endif
-  if g:EnsureEnglishDate == 1
-    if exists('v:lc_time')
-      let v_lang = v:lc_time
-    else
-      let a_save = @a
-      redir @a
-      silent! language time
-      redir END
-      let v_lang = matchstr(@a, '"\%(LC_TIME=\)\=\zs[a-zA-Z.0-9_-]*\ze.*"')
-      let @a = a_save
-    endif
-    silent! language time C
-    " let m = substitute(strftime("%m"), '^0', '', '')
-    " let month = strpart('jan feb mar apr may jun jul aug sep oct nov dec', 4*(m-1), 3)
-  endif
-  let month = strftime("%b")
-  if g:EnsureEnglishDate == 1
-    exe 'silent! language time '.v_lang
-  endif
-  let year  = strftime(" %Y")
-  return day . th . ' ' . month . year
-endfunction
 :VimrcHelp " ydate   = print the current date                                  [A+C]
-  iab ydate <C-R>=DateStamp()<cr>
-  command! -nargs=0 Ydate @=DateStamp()<cr>
+  iab ydate <C-R>=lh#time#date()<cr>
+  command! -nargs=0 Ydate @=lh#time#date()<cr>
 :VimrcHelp " ,last   = updates the 'Last Update:' field                        [N]
     if version >= 600
-      " nmap ,last 1G/\c\(last changes\=\\|last update\)\s*:\s*/e+1<CR>Cydate<ESC>
       nnoremap <silent> ,last gg
             \\|:silent let fdsave = &foldenable
             \\|:silent set nofoldenable
@@ -586,9 +553,9 @@ endfunction
   map ,\| 80\|F
 "
 "------ center the view on the current line
-:VimrcHelp "  ]].    : center the view on the current line                     [I]
+" :VimrcHelp "  ]].    : center the view on the current line                     [I]
    " nnoremap   ].      :let vc=virtcol('.')<cr>z.:exe "normal! ".vc."\|"<cr>
-   inoremap     ]].      <c-o>zz
+   " inoremap     ]].      <c-o>zz
 "
 "----- place le curseur au de'but du mot (lettre) sous (ou avant) le curseur
    noremap      ]!wb!   ylpmz?\<[a-zA-Z_]<CR>mx`zx`x
@@ -688,7 +655,10 @@ if &t_Co > 2 || has("gui_running")
   "set hlsearch " bof : don't like it => activation sur <F8>
   :VimrcHelp " <F8> activates or desactivates hight lighting on results from searchs
   set nohlsearch
-  noremap <F8> :set hlsearch!<CR>:set hlsearch?<CR>
+  nnoremap <silent> <F8> :set hlsearch!<bar>set hlsearch?<CR>
+  imap     <silent> <F8> <c-o><F8>
+  xmap     <silent> <F8> <c-\><c-n><F8>gv
+  smap     <silent> <F8> <c-\><c-n><F8>gv<c-g>
 endif
 " }}}
 
@@ -791,8 +761,9 @@ let g:marker_center                = 0
 " -- muTemplate {{{3
 " To override in some ftplugins if required.
 let g:url         = 'http://github.com/LucHermitte/«»'
+let g:author_name = "Luc Hermitte"
 let g:author_short= "Luc Hermitte"
-let g:author_email= "hermitte {at} gmail {dot} com"
+let g:author_email= "luc {dot} hermitte {at} gmail {dot} com"
 let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">"
 " let g:author_short="Luc Hermitte <hermitte at free.fr>"
 " let g:author      ="Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>\<c-m>" .
