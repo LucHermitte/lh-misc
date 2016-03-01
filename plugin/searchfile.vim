@@ -1,14 +1,14 @@
 "=============================================================================
-" File:		searchfile.vim                                           {{{1
-" Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"		<URL:http://code.google.com/p/lh-vim/>
+" File:         searchfile.vim                                           {{{1
+" Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
+"               <URL:http://code.google.com/p/lh-vim/>
 " License:      GPLv3
-" Version:	0.0.9
-" Created:	01st Feb 2006
-" Last Update:	12th Dec 2014
+" Version:      0.0.9
+" Created:      01st Feb 2006
+" Last Update:  12th Dec 2014
 "------------------------------------------------------------------------
-" Description:	Vim plugin wrapper for searchfile.pl
-" 
+" Description:  Vim plugin wrapper for searchfile.pl
+"
 "------------------------------------------------------------------------
 " Requirements:
 " - vim7+
@@ -24,10 +24,10 @@
 "=============================================================================
 " Avoid global reinclusion {{{1
 let s:k_version = 009
-if exists("g:loaded_searchfile") 
+if exists("g:loaded_searchfile")
       \ && (g:loaded_searchfile >= s:k_version)
       \ && !exists('g:force_reload_searchfile')
-  finish 
+  finish
 endif
 let g:loaded_searchfile = s:k_version
 let s:cpo_save=&cpo
@@ -35,12 +35,12 @@ set cpo&vim
 " Avoid global reinclusion }}}1
 "------------------------------------------------------------------------
 
-command! -nargs=+ 
+command! -nargs=+
       \ -complete=customlist,SFComplete
       \ Searchfile :call s:Search(<f-args>)
 
-nnoremap <expr> <silent> <F3>	(&diff ? "]c:call \<sid>NextDiff()\<cr>" : ":cn\<cr>")
-nnoremap <expr> <silent> <S-F3>	(&diff ? "[c" : ":cN\<cr>")
+nnoremap <expr> <silent> <F3>   (&diff ? "]c:call \<sid>NextDiff()\<cr>" : ":cn\<cr>")
+nnoremap <expr> <silent> <S-F3> (&diff ? "[c" : ":cN\<cr>")
 nnoremap <C-F3> :call <sid>Search(<sid>Extension(), escape(expand('<cword>'), '%#'))<cr>
 vnoremap <C-F3> :call <sid>Search(<sid>Extension(), escape(lh#visual#selection(), '%#'))<cr>
 nnoremap <C-S-F3> :call <sid>Search(<c-r>=string(<sid>Extension())<cr>, escape(<c-r>=string(expand('<cword>'))<cr>, '%#'))
@@ -69,7 +69,7 @@ function! s:NextDiff()
   " Assert: called just after a ]c or a [c
   " Forces the cursos to be synchronized in all synced windows
   " let diff_l = line()
-  try 
+  try
     let foldenable = &foldenable
     set nofoldenable
 
@@ -97,31 +97,31 @@ function! s:NextDiff()
       let crt_line = tLines[i].text
       let n = indices[i]
       if len(crt_line) == n
-	let found = 1
-	break
+        let found = 1
+        break
       endif
 
       let c2 = (len(crt_line) == n) ? 'EOL' : crt_line[n]
-      if empty(c) 
-	let c = c2
+      if empty(c)
+        let c = c2
       endif
 
       " checks match
       let n += 1
       if c =~ '\s'
-	if (c2 != c) && (ignore_blanks && c2 !~ '\s')
-	  let found = 1
-	  break
-	else " advance
-	  while ignore_blanks && (n == len(crt_line) || crt_line[n] =~ '\s')
-	    let n += 1
-	  endwhile
-	endif
+        if (c2 != c) && (ignore_blanks && c2 !~ '\s')
+          let found = 1
+          break
+        else " advance
+          while ignore_blanks && (n == len(crt_line) || crt_line[n] =~ '\s')
+            let n += 1
+          endwhile
+        endif
       else
-	if c2 != c
-	  let found = 1
-	  break
-	endif
+        if c2 != c
+          let found = 1
+          break
+        endif
       endif
       let next_idx += [n]
 
@@ -163,9 +163,9 @@ endfunction
 " Function: s:DoSearch() {{{3
 function! s:DoSearch(fileext, pattern, opt)
   let save_grepprg=&grepprg
-  try 
+  try
     let &grepprg = 'searchfile.pl -n -e '.a:fileext.a:opt
-    " <=> find {path} \( -name '*.h' -o -name '*.cpp' {-o prune CVS....} \) 
+    " <=> find {path} \( -name '*.h' -o -name '*.cpp' {-o prune CVS....} \)
     "       | xargs grep -n
     echo 'grep! '.a:pattern
     exe 'grep! '.a:pattern
@@ -196,7 +196,7 @@ function! s:Search(fileext, pattern, ...) abort
       let pattern_ready = (pattern[-1:] == pattern[0])
     elseif pattern[-1:] =~ '["' . "']"
       throw "SearchFile: Unbalanced quotes in ``".a:pattern.' '.join(a:000,'').'``'
-    else 
+    else
       let pattern_ready = 1
     endif
 
@@ -204,17 +204,17 @@ function! s:Search(fileext, pattern, ...) abort
     let i = 1
     while i <= a:0
       if ! pattern_ready
-	let pattern .= a:{i}
-	let pattern_ready = (pattern[-1:] == pattern[0])
-      elseif a:{i} == '-v' 
-	let opt .= ' -v'
-      elseif a:{i} == '-i' 
-	let opt .= ' -i'
-      elseif a:{i} == '-x' 
-	let i += 1
-	let opt .= ' -x '.a:{i}
+        let pattern .= a:{i}
+        let pattern_ready = (pattern[-1:] == pattern[0])
+      elseif a:{i} == '-v'
+        let opt .= ' -v'
+      elseif a:{i} == '-i'
+        let opt .= ' -i'
+      elseif a:{i} == '-x'
+        let i += 1
+        let opt .= ' -x '.a:{i}
       else
-	let opt .= ' -p '.a:{i}
+        let opt .= ' -p '.a:{i}
       endif
       let i += 1
     endwhile
@@ -237,17 +237,17 @@ function! SFComplete(ArgLead, CmdLine, CursorPos)
   let tmp = substitute(a:CmdLine, '\s*\S\+', 'Z', 'g')
   let pos = strlen(tmp)
   let lCmdLine = strlen(a:CmdLine)
-  let fromLast = strlen(a:ArgLead) + a:CursorPos - lCmdLine 
+  let fromLast = strlen(a:ArgLead) + a:CursorPos - lCmdLine
   " The argument to expand, but cut where the cursor is
   let ArgLead = strpart(a:ArgLead, 0, fromLast )
   if 0
     call confirm( "a:AL = ". a:ArgLead."\nAl  = ".ArgLead
-	  \ . "\nx=" . fromLast
-	  \ . "\ncut = ".strpart(a:CmdLine, a:CursorPos)
-	  \ . "\nCL = ". a:CmdLine."\nCP = ".a:CursorPos
-	  \ . "\ntmp = ".tmp."\npos = ".pos
-	  \ . "\ncmd = ".cmd
-	  \, '&Ok', 1)
+          \ . "\nx=" . fromLast
+          \ . "\ncut = ".strpart(a:CmdLine, a:CursorPos)
+          \ . "\nCL = ". a:CmdLine."\nCP = ".a:CursorPos
+          \ . "\ntmp = ".tmp."\npos = ".pos
+          \ . "\ncmd = ".cmd
+          \, '&Ok', 1)
   endif
 
   if cmd != 'Searchfile'

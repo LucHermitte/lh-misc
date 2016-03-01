@@ -1,8 +1,8 @@
 #!/usr/bin/perl
-# Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
+# Author:   Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 #           <URL:https://github.com/LucHermitte/lh-misc>
-# Purpose:	Easily search files matching a regex
-# Created:	Wed Sep 07 15:20:31 2005
+# Purpose:  Easily search files matching a regex
+# Created:  Wed Sep 07 15:20:31 2005
 #
 # @todo
 # - option: --pattern becomes optional => only find
@@ -201,36 +201,36 @@ sub search
     # push(@grep_cmd, $opt_pattern);
     my (@cmd) = ();
     if ($old_grep)
-	{
+    {
         my (@find_params)   = ext2find(@opt_extensions) ;
         my (@grep_cmd)    = ( '|', 'sed', '-e', 's/.*/`printf \'"&"\'`/',  '|', 'xargs', 'grep' ) ;
-		push(@cmd,
+        push(@cmd,
             'find', $opt_path,
-			'\(',
-			'-name', 'CVS', '-o',
-			'-name', '.svn', '-o',
-			'-name', '.git', '-o',
-			'-name', 'Generated', '-o',
-			# '-name', 'tu', '-o',
-			# '-name', 'tv', '-o',
-			'-name', 'SunWS_cache', '-o',
-			'-name', 'obj', # '-o',
-			# '-name', 'bin', '-o',
-			# '-name', 'lib',
-			'\)', '-prune', '-o',
-			@find_params, '-print', @grep_cmd, @grep_options);
-	}
+            '\(',
+            '-name', 'CVS', '-o',
+            '-name', '.svn', '-o',
+            '-name', '.git', '-o',
+            '-name', 'Generated', '-o',
+            # '-name', 'tu', '-o',
+            # '-name', 'tv', '-o',
+            '-name', 'SunWS_cache', '-o',
+            '-name', 'obj', # '-o',
+            # '-name', 'bin', '-o',
+            # '-name', 'lib',
+            '\)', '-prune', '-o',
+            @find_params, '-print', @grep_cmd, @grep_options);
+    }
     else
     {
         map( {push(@grep_options, "--include='*.$_'") } @opt_extensions);
-		push(@cmd,
+        push(@cmd,
             'grep', '-r',
             '--exclude-dir', 'CVS',
             '--exclude-dir', '.svn',
             '--exclude-dir', '.git',
             '--exclude-dir', 'SunWS_cache',
             @grep_options,
-            '.'
+            "$opt_path"
         );
     }
 
@@ -397,7 +397,7 @@ Luc Hermitte <luc.hermitte {at} free.fr>
 
 =head1 VERSION
 
-1.0.1
+1.0.2
 
 =cut
 
