@@ -2,10 +2,10 @@
 " File:         plugin/next-undisplayed-buffer.vim                {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} gmail {dot} com>
 "		<URL:http://github.com/LucHermitte/lh-misc>
-" Version:      0.0.1.
-let s:k_version = 001
+" Version:      0.0.2.
+let s:k_version = 002
 " Created:      29th Nov 2015
-" Last Update:
+" Last Update:  10th Mar 2016
 "------------------------------------------------------------------------
 " Description:
 "       Cycle to next undisplayed buffer
@@ -30,7 +30,7 @@ nnoremap <silent> <expr> <Plug>CycleToNextBuffer (&ft=='qf' ? ":cnewer" : <sid>C
 if !hasmapto('<Plug>CycleToNextBuffer', 'n')
   nmap <silent> <unique> <F12> <Plug>CycleToNextBuffer
 endif
-nnoremap <silent> <expr> <Plug>CycleToPreviousBuffer (&ft=='qf' ? ":colder" : <sid>CycleToPrevious('before'))."\<CR>"
+nnoremap <silent> <expr> <Plug>CycleToPreviousBuffer (&ft=='qf' ? ":colder" : <sid>CycleToNext('before'))."\<CR>"
 if !hasmapto('<Plug>CycleToPreviousBuffer', 'n')
   nmap <silent> <unique> <F11> <Plug>CycleToPreviousBuffer
 endif
