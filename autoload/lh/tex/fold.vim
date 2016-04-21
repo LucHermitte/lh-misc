@@ -108,7 +108,7 @@ function! lh#tex#fold#_text(lnum) abort
   let line0 = getline(lnum)
   if line0 =~ '\v\\(part|chapter|(sub){,2}section|(sub)=paragraph)'
     " TODO: print number of frames ?
-    return line0
+    return repeat('  ', s:TexFoldContextWithDepth(line0)-1) . '+- '.line0
   elseif line0 =~ '\v\\begin\{frame\}'
     " Search for title
     let title = line0
@@ -117,7 +117,7 @@ function! lh#tex#fold#_text(lnum) abort
       if line =~ '\v\\end\{frame\}'
         break
       elseif line =~ '\\frametitle'
-        let title = "Frame: ".matchstr(line, '\\frametitle{\zs.*\ze}')
+        let title = repeat('  ', foldlevel(a:lnum)). "+- Frame: ".matchstr(line, '\\frametitle{\zs.*\ze}')
       elseif line =~ '\\framesubtitle'
         let title .= ' -> ' . matchstr(line, '\\framesubtitle{\zs.*\ze}')
         return title " nothing more to add!
