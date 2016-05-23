@@ -4,7 +4,7 @@
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
 " URL: http://github.com/LucHermitte/lh-misc/tree/master/plugin/let-modeline.vim
-" Version:      1.10
+" Version:      1.11
 " Last Update:  05th Jan 2016
 "
 " Purpose:                        {{{2
@@ -173,7 +173,7 @@ endfunction
 " The main function {{{2
 function! s:FirstModeLine() abort
   if !&modeline | return | endif
-  let pos = getcurpos()
+  let pos = exists('getcurpos') ? getcurpos() : getpos('.')
   let e1 = 1+&modelines-1
   let b2 = line('$') - &modelines+1
   " call confirm('e1='.e1."\nb2=".b2, '&ok', 1)
