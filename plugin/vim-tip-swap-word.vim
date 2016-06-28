@@ -1,14 +1,13 @@
 "log: fixed exchanges with the first word of the line
 
-" $Id$
 " author: Luc Hermitte
-let s:k_version = 200
-if &cp || (exists('g:loaded_swap_words') 
+let s:k_version = 201
+if &cp || (exists('g:loaded_swap_words')
       \ && (g:loaded_swap_words >= s:k_version)
       \ && !exists('g:force_reload_vim_tip_swap_word'))
-  finish 
+  finish
 endif
-let g:swap_word_loaded = 1
+let g:swap_word_loaded = s:k_version
 
 " ======================================================================
 " Tip #329 -> gw
@@ -23,7 +22,7 @@ nnoremap <silent> gw :call <sid>SwapWithNext('follow', 'w')<cr>
 nnoremap <silent> gW :call <sid>SwapWithPrev('follow', 'w')<cr>
 
 " Swap the current word with the previous, keeping cursor on current word:
-" (This feels like "pushing" the word to the left.) 
+" (This feels like "pushing" the word to the left.)
 " nnoremap <silent> gl "_yiw?\w\+\_W\+\%#<CR>:PopSearch<cr>:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR>:PopSearch<cr><c-o><c-l>
 nnoremap <silent> gl :call <sid>SwapWithPrev('left', 'w')<cr>
 
@@ -39,16 +38,24 @@ nnoremap <silent> gr :call <sid>SwapWithNext('right', 'w')<cr>
 nnoremap <silent> gs :call <sid>SwapWithNext('follow', 'k')<cr>
 nnoremap <silent> gS :call <sid>SwapWithPrev('follow', 'k')<cr>
 
-" Then when you put the cursor on or in a word, press "gw", and 
-" the word will be swapped with the next word.  The words may 
-" even be separated by punctuation (such as "abc = def"). 
+" To keep some punctuation characters while swapping, like for instance
+" transforming:
+"    foo.bar = toto
+" into
+"    toto = foo.bar
+" We could define something like:
+"   nmap <silent> µ :let f=lh#on#exit().restore('&isk')<cr>:set isk+=.<cr>gs:call f.finalize()<cr>
+
+" Then when you put the cursor on or in a word, press "gw", and
+" the word will be swapped with the next word.  The words may
+" even be separated by punctuation (such as "abc = def").
 " gW will swap with previous word.
 
-" While we're talking swapping, here's a map for swapping characters: 
+" While we're talking swapping, here's a map for swapping characters:
 
-nnoremap <silent> gc    xph 
+nnoremap <silent> gc    xph
 
-" This hint was formed in a collaboration between 
+" This hint was formed in a collaboration between
 " Chip Campbell - Arun Easi - Benji Fisher
 "
 " ======================================================================
@@ -80,10 +87,10 @@ function! s:SwapVisualWithCut2()
     let line = getline(l)
 
     let line_2 = (v_s > 1 ? line[ : v_s-1] : '')
-	  \. deleted 
-	  \. line[v_e : c-1]
-	  \. line[v_s : v_e-1]
-	  \. line[c : ]
+          \. deleted
+          \. line[v_e : c-1]
+          \. line[v_s : v_e-1]
+          \. line[c : ]
     normal! u
     call setline(l, line_2)
     echomsg "spe"
@@ -110,10 +117,10 @@ function! s:SwapVisualWithCut3()
     let c = col("'.") - 1
 
     let line_2 = (v_s > 1 ? line[ : v_s[2]-1] : '')
-	  \. deleted 
-	  \. line[v_e[2] : c-1]
-	  \. line[v_s[2] : v_e[2]-1]
-	  \. line[c : ]
+          \. deleted
+          \. line[v_e[2] : c-1]
+          \. line[v_s[2] : v_e[2]-1]
+          \. line[c : ]
     normal! u
     call setline(d_s[1], line_2)
     echomsg "same line"
@@ -137,7 +144,7 @@ endfunction
 " 'right' : put the cursor at the start of the new right word
 " 'left' : put the cursor at the start of the new left word
 " todo: move to an autoplugin
-" todo: support \w or \k ...
+" todo: support things like "foo->bar" and "foo.bar" more easily
 
 
 let s:k_entity_pattern = {}
@@ -171,15 +178,15 @@ function! s:SwapWithNext(cursor_pos, type)
   let crt_word = s[crt_word_start : crt_word_end]
   let next_word = s[next_word_start : next_word_end]
 
-  " echo  '['.crt_word_start.','.crt_word_end.']='.crt_word 
+  " echo  '['.crt_word_start.','.crt_word_end.']='.crt_word
   " \   .'### ['.next_word_start.','.next_word_end.']='.next_word
   let s2 = (crt_word_start>0 ? s[:crt_word_start-1] : '')
         \ . next_word
         \ . s[crt_word_end+1 : next_word_start-1]
-        \ . crt_word 
+        \ . crt_word
         \ . (next_word_end==-1 ? '' : s[next_word_end+1 : -1])
   " echo s2
-  call setline(l, s2) 
+  call setline(l, s2)
   if     a:cursor_pos == 'keep'   | let c2 = c+1
   elseif a:cursor_pos == 'follow' | let c2 = c + strlen(next_word) + (next_word_start-crt_word_end)
   elseif a:cursor_pos == 'left'   | let c2 = crt_word_start+1
@@ -217,17 +224,17 @@ function! s:SwapWithPrev(cursor_pos, type)
   endif
   let prev_word = s[prev_word_start : prev_word_end]
 
-  " echo  '['.crt_word_start.','.crt_word_end.']='.crt_word 
+  " echo  '['.crt_word_start.','.crt_word_end.']='.crt_word
   " \   .'### ['.prev_word_start.','.prev_word_end.']='.prev_word
   let s2 = (prev_word_start>0 ? s[:prev_word_start-1] : '')
-        \ . crt_word 
+        \ . crt_word
         \ . s[prev_word_end+1 : crt_word_start-1]
         \ . prev_word
         \ . (crt_word_end==-1 ? '' : s[crt_word_end+1 : -1])
   " echo s2
-  call setline(l, s2) 
+  call setline(l, s2)
   if     a:cursor_pos == 'keep'   | let c2 = c+1
-  elseif a:cursor_pos == 'follow' | let c2 = prev_word_start + c - crt_word_start + 1 
+  elseif a:cursor_pos == 'follow' | let c2 = prev_word_start + c - crt_word_start + 1
   elseif a:cursor_pos == 'left'   | let c2 = prev_word_start+1
   elseif a:cursor_pos == 'right'  | let c2 = strlen(crt_word) + crt_word_start - prev_word_end + prev_word_start
   endif
