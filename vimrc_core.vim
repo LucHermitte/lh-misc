@@ -16,13 +16,9 @@ endif
 
 " ===================================================================
 " Runtime {{{1
-if version >= 600
-  "set runtimepath+=$VIMRUNTIME (<=> $VIM/vim60)
-  set runtimepath+=$VIM
-  set runtimepath+=$HOME/vimfiles/latexSuite
-else
-  let g:RT_runtimepath = expand("$VIM")
-endif
+"set runtimepath+=$VIMRUNTIME (<=> $VIM/vim60)
+set runtimepath+=$VIM
+set runtimepath+=$HOME/vimfiles/latexSuite
 " }}}1
 " ===================================================================
 " Help {{{1
@@ -108,11 +104,7 @@ endif
   set mousemodel=popup  " instead on extend
   set nonumber
   set nrformats-=octal
-  " if version <600
-    " set path=.,$VIMRUNTIME/syntax/,$VIMRUNTIME/settings/
-  " else
-    " set path=.,$VIMRUNTIME/syntax/,$HOME/vimfiles/ftplugin/
-  " endif
+  " set path=.,$VIMRUNTIME/syntax/,$HOME/vimfiles/ftplugin/
                         " The list of directories to search when you specify
                         " a file with an edit command.
                         " "$VIM/syntax" is where the syntax files are.
@@ -295,27 +287,11 @@ vmap <S-end> <end>
 " -------------------------------------------------------------------
 " Customizing the command line {{{
 " -------------------------------------------------------------------
-" Valid names for keys are:  <Up> <Down> <Left> <Right> <Home> <End>
-" <S-Left> <S-Right> <S-Up> <PageUp> <S-Down> <PageDown>  <LeftMouse>
-"
-:VimrcHelp "
-:VimrcHelp " Command line editing commands in emacs style:
-:VimrcHelp "   <C-A>      : home
-:VimrcHelp "   <C-F>      : right
-:VimrcHelp "   <C-B>      : left
-:VimrcHelp "   <ESC>b     : back word
-:VimrcHelp "   <ESC>f     : forward word
-:VimrcHelp "   <ESC><C-H> : <C-W>
-:VimrcHelp "   <C-U>      : Clear whole line
-:VimrcHelp "   <C-BS>     : Clear till the beginning of the line
-  cnoremap <C-A> <Home>
-  cnoremap <C-F> <Right>
-  cnoremap <C-B> <Left>
-  cnoremap <ESC>b <S-Left>
-  cnoremap <ESC>f <S-Right>
-  cnoremap <ESC><C-H> <C-W>
-  cnoremap <C-U> <End><C-U>
-  cnoremap <C-BS> <C-U>
+" Moved into plugin/cmdline-motions.vim
+
+" Searching while something is selected will restrict the search to the
+" current selection
+xnoremap / <esc>/\\%V
 " }}}
 " -------------------------------------------------------------------
 " My Customs mappins, windows, F-keys, etc {{{
@@ -483,17 +459,13 @@ command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
   iab ydate <C-R>=lh#time#date()<cr>
   command! -nargs=0 Ydate @=lh#time#date()<cr>
 :VimrcHelp " ,last   = updates the 'Last Update:' field                        [N]
-    if version >= 600
-      nnoremap <silent> ,last gg
-            \\|:silent let fdsave = &foldenable
-            \\|:silent set nofoldenable
-            \\|:silent if search('\clast \(changes\=\\|update\)\s*:\s*\zs')
-            \\|:silent! normal "_Cydate<ESC>
-            \\|:endif
-            \\|:silent let &foldenable = fdsave<cr>
-    else
-      nmap ,last 1G/[lL][Aa][Ss][Tt] [Uu][Pp][Dd][Aa][Tt][Ee]\s*:\s*/e+1<CR>Cydate<ESC>
-    endif
+  nnoremap <silent> ,last gg
+        \\|:silent let fdsave = &foldenable
+        \\|:silent set nofoldenable
+        \\|:silent if search('\clast \(changes\=\\|update\)\s*:\s*\zs')
+        \\|:silent! normal "_Cydate<ESC>
+        \\|:endif
+        \\|:silent let &foldenable = fdsave<cr>
 " }}}
 "
 " transforming a letter in lower case to a more open reg expr : o -> [oO]
@@ -625,8 +597,6 @@ endfunction
 " AutoCommands {{{1
 " ===================================================================
 "
-""source $VIMRUNTIME/../macros/let-modeline.vim
-
 " autocmd!
 " -------------------------------------------------------------------
 " Syntax files
@@ -641,11 +611,6 @@ let g:ft_ignore_pat = 'lst'
 " loads my own filetype definitions {{{
 " let myfiletypefile = "$VIM/myfiletypes.vim"
 let myfiletypefile = expand('<sfile>:p:h').'/myfiletypes.vim'
-
-" Activates filetype detection
-if version<600
-  filetype on
-endif
 " }}}
 
 " Switch syntax highlighting on, when the terminal has colors {{{
@@ -664,9 +629,7 @@ endif
 
 " Only do this part when compiled with support for autocommands. {{{
 if has("autocmd")
-  if version >=600
-    filetype plugin indent on
-  endif
+  filetype plugin indent on
 
   " Put these in an autocmd group, so that we can delete them easily.
   augroup vimrcEx
@@ -695,23 +658,10 @@ if has("autocmd")
   augroup END
 
   ""source $VIMRUNTIME/settings/gz.set
-  if version < 600
-    source $VIMRUNTIME/mysettingfile.vim
-  endif
 endif " has("autocmd")
 " }}}
 
-if version < 600 " {{{
-  source $VIMRUNTIME/macros/matchit.vim
-else
-  runtime macros/matchit.vim
-endif
-
-" Plugins
-if version < 600
-  Runtime! ../plugin/*.vim
-" else automatic ...
-endif
+runtime macros/matchit.vim
 " }}}
 
 " global variable used by Triggers.vim in order to determine if some echoing
@@ -724,7 +674,7 @@ augroup END
 
 " Folding {{{
 " I use Johannes Zellner's way to do it, and some of his files
-if (version >= 600) && has("autocmd") && has("folding")
+if has("autocmd") && has("folding")
     augroup folding
       au!
       au FileType * silent! runtime fold/<amatch>-fold.vim
