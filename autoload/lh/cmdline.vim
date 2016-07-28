@@ -50,7 +50,7 @@ endfunction
 "------------------------------------------------------------------------
 " ## Plugin functions {{{1
 
-" Function: lh#cmdline#move(dir) {{{3
+" Function: lh#cmdline#move(dir) {{{2
 function! lh#cmdline#move(dir) abort
   let cmd = getcmdline()
   let p = lh#cmdline#_new_pos(a:dir)
@@ -58,7 +58,7 @@ function! lh#cmdline#move(dir) abort
   return cmd
 endfunction
 
-" Function: lh#cmdline#CTRLW() {{{3
+" Function: lh#cmdline#CTRLW() {{{2
 function! lh#cmdline#CTRLW() abort
   let p = lh#cmdline#_new_pos('left')
   let cmd = getcmdline()
@@ -67,6 +67,36 @@ function! lh#cmdline#CTRLW() abort
   call setcmdpos(p)
   call s:Verbose("-> %1", cmd2)
   return cmd2
+endfunction
+
+" Function: lh#cmdline#clear_line_after() {{{2
+function! lh#cmdline#clear_line_after() abort
+  let cmd = getcmdline()
+  let p = getcmdpos()
+  let cmd = lh#encoding#strpart(cmd, 0, p)
+  return cmd
+endfunction
+
+" Function: lh#cmdline#swap_char() {{{2
+" With previous
+function! lh#cmdline#swap_char() abort
+  let cmd = getcmdline()
+  let p = getcmdpos()
+  let cmd = substitute(cmd, '\v(.)%'.p.'c(.)', '\2\1', '')
+  return cmd
+endfunction
+
+" Function: lh#cmdline#swap_word(dir) {{{3
+function! lh#cmdline#swap_word(dir) abort
+  " todo: move the cursor to the right position...
+  let cmd = getcmdline()
+  let p = getcmdpos()
+  if a:dir == 'right'
+    let cmd = substitute(cmd, '\v(\w*%'.p.'c\w+)(\W+)(\w+)', '\3\2\1', '')
+  elseif a:dir == 'left'
+    let cmd = substitute(cmd, '\v(\w+)(\W+)(\w*%'.p.'c\w+)', '\3\2\1', '')
+  endif
+  return cmd
 endfunction
 
 "------------------------------------------------------------------------
