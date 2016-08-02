@@ -15,8 +15,8 @@ let s:k_version = 001
 "   <C-B>           : left
 "   <C-K>           : clear line after cursor
 "   <C-T>           : Swap character
-"   <C-G>w          : Move currnt word right
-"   <C-G>W          : Move currnt word left
+"   <M-T>, <esc>T   : Move current word right
+"   <M-t>, <esc>t   : Move current word left
 "   <ESC>b          : back WORD
 "   <ESC>f          : forward WORD
 "   <ESC><C-H>      : <C-W>
@@ -28,7 +28,9 @@ let s:k_version = 001
 "
 "------------------------------------------------------------------------
 " History:      «history»
-" TODO:         «missing features»
+" TODO:
+" - use <plug>mappings
+" - auto-detect bindings from .inputrc/`bind -p`
 " }}}1
 "=============================================================================
 
@@ -54,13 +56,16 @@ set cpo&vim
   " cnoremap <C-BS> <C-U>
   cnoremap <C-K>     <c-\>elh#cmdline#clear_line_after()<cr>
   cnoremap <C-T>     <c-\>elh#cmdline#swap_char()<cr>
-  cnoremap <C-G>w    <c-\>elh#cmdline#swap_word('right')<cr>
-  cnoremap <C-G>W    <c-\>elh#cmdline#swap_word('left')<cr>
+  cnoremap <M-T>     <c-\>elh#cmdline#swap_word('right')<cr>
+  cnoremap <M-t>     <c-\>elh#cmdline#swap_word('left')<cr>
+  cnoremap <esc>T    <c-\>elh#cmdline#swap_word('right')<cr>
+  cnoremap <esc>t    <c-\>elh#cmdline#swap_word('left')<cr>
   cnoremap <M-w>     <c-\>elh#cmdline#CTRLW()<cr>
   cnoremap <M-b>     <c-\>elh#cmdline#move('left')<cr>
   cnoremap <M-f>     <c-\>elh#cmdline#move('right')<cr>
   cnoremap <M-left>  <c-\>elh#cmdline#move('left')<cr>
   cnoremap <M-right> <c-\>elh#cmdline#move('right')<cr>
+  cnoremap <esc>#    <c-\>elh#cmdline#toggle_comment()<cr>
 
 " Commands and Mappings }}}1
 "------------------------------------------------------------------------

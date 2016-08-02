@@ -86,23 +86,59 @@ function! lh#cmdline#swap_char() abort
   return cmd
 endfunction
 
-" Function: lh#cmdline#swap_word(dir) {{{3
+" Function: lh#cmdline#swap_word(dir) {{{2
 function! lh#cmdline#swap_word(dir) abort
-  " todo: move the cursor to the right position...
-  let cmd = getcmdline()
-  let p = getcmdpos()
-  if a:dir == 'right'
-    let cmd = substitute(cmd, '\v(\w*%'.p.'c\w+)(\W+)(\w+)', '\3\2\1', '')
-  elseif a:dir == 'left'
-    let cmd = substitute(cmd, '\v(\w+)(\W+)(\w*%'.p.'c\w+)', '\3\2\1', '')
-  endif
+  try
+    let cmd = getcmdline()
+    let p = getcmdpos()
+    if cmd !~ '\v\w+\W+\w+'
+      " only one word => abort!
+      return cmd
+    elseif cmd =~ '\v(\W+%'.p.'c\W+)'
+      " In the middle on non-word characters => swap around
+      let rgx = '\v(.{-})\zs<(\w+)>(\W+%'.p.'c\W+)(\w+)\ze(.*)'
+      let matches = matchlist(cmd, rgx)
+      let p += -lh#encoding#strlen(matches[2])+lh#encoding#strlen(matches[4])
+    elseif cmd =~ '\v(\w*%'.p.'c\w+|\w+%'.p.'c\w*)(\W*)$'
+      " On the last word => move left!
+      let rgx = '\v(.{-})\zs(\w+)(\W+)<(\w*%'.p.'c\w+|\w+%'.p.'c\w*)>\ze(\W*)$'
+      let matches = matchlist(cmd, rgx)
+      let p -= lh#encoding#strlen(matches[2].matches[3])
+    elseif a:dir == 'right'
+      let rgx = '\v(.{-})\zs<(\w*%'.p.'c\w+|\w+%'.p.'c\w*)>(\W+)(\w+)\ze(.*)'
+      let matches = matchlist(cmd, rgx)
+      let p += lh#encoding#strlen(matches[3].matches[4])
+    elseif a:dir == 'left'
+      let rgx = '\v(.{-})\zs(\w+)(\W+)<(\w*%'.p.'c\w+|\w+%'.p.'c\w*)>\ze(.*)'
+      let matches = matchlist(cmd, rgx)
+      let p -= lh#encoding#strlen(matches[2].matches[3])
+    endif
+    call setcmdpos(p)
+    let cmd = substitute(cmd, rgx, '\4\3\2', '')
+  catch /.*/
+      call s:Verbose('Splitting %1 around %2 -> %3 (w/ rgx: %4)', string(cmd), p, matches, string(rgx))
+
+  endtry
   return cmd
+endfunction
+
+" Function: lh#cmdline#toggle_comment() {{{2
+function! lh#cmdline#toggle_comment() abort
+  let cmd = getcmdline()
+  let p = matchend(cmd, '^\s*"\s*')
+  if p > 0
+    call setcmdpos(getcmdpos() - p)
+    return cmd[p : ]
+  else
+    call setcmdpos(getcmdpos() + 2)
+    return '" '.cmd
+  endif
 endfunction
 
 "------------------------------------------------------------------------
 " ## Internal functions {{{1
 
-" Function: lh#cmdline#_new_pos(dir) {{{3
+" Function: lh#cmdline#_new_pos(dir) {{{2
 function! lh#cmdline#_new_pos(dir) abort
   let cmd = getcmdline()
   let p = getcmdpos()
