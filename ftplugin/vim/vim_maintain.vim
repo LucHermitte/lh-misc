@@ -2,10 +2,10 @@
 " File:         ftplugin/vim/vim_maintain.vim                     {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Version:      0.0.5
-let s:k_version = 005
+" Version:      0.0.6
+let s:k_version = 006
 " Created:      07th May 2010
-" Last Update:  24th Nov 2015
+" Last Update:  05th Sep 2016
 "------------------------------------------------------------------------
 " Description:
 "       Commands and mapping to help maintaining VimL scripts
@@ -15,6 +15,7 @@ let s:k_version = 005
 "       Drop this file into {rtp}/ftplugin/vim
 "       Requires Vim7+
 " History:
+"       v0.0.6: Support functions moved to autoload plugin
 "       v0.0.5: Reload and Verbose moved to plugin
 "       v0.0.4: Reload works when the &isk contains ' or "
 "       v0.0.3 :Reload accept arguments (the same as :runtime), and argument
@@ -42,14 +43,12 @@ set cpo&vim
 "------------------------------------------------------------------------
 " Local mappings {{{2
 
-nnoremap <buffer> K :help <c-r>=<sid>CurrentHelpWord()<cr><cr>
+nnoremap <buffer> K :help <c-r>=lh#vim#maintain#_current_help_word()<cr><cr>
 vnoremap <buffer> K <c-\><c-n>:help <c-r>=lh#visual#selection()<cr><cr>
 
 "------------------------------------------------------------------------
 " Local commands {{{2
 
-
-" move function to autoload plugin
 
 "=============================================================================
 " Global Definitions {{{1
@@ -70,25 +69,7 @@ let g:loaded_ftplug_vim_maintain = s:k_version
 " loaded, like functions that help building a vim-menu for this
 " ftplugin.
 
-" Function: s:CurrentHelpWord() {{{3
-function! s:CurrentHelpWord()
-  try
-    let isk = &isk
-    set isk+=(,:,#,&
-    let w = expand('<cword>')
-  finally
-    let &isk = isk
-  endtry
-  let w = matchstr(w, '^[:&]\=\k\+(\=')
-  if w[-1:] == '('
-    let w .= ')'
-  elseif w[0] == '&'
-    let w = "'".w[1:]."'"
-  endif
-  return w
-endfunction
-
-" Functions }}}2
+" }}}1
 "------------------------------------------------------------------------
 let &cpo=s:cpo_save
 "=============================================================================

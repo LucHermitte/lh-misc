@@ -1,21 +1,22 @@
 "=============================================================================
-" $Id$
 " File:         plugin/vim_maintain.vim{{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"		<URL:http://code.google.com/p/lh-vim/>
-" Version:      0.0.5
+"               <URL:http://github.com/LucHermitte/lh-misc>
+" Version:      0.0.6
 " Created:      16th Sep 2014
-" Last Update:  $Date$
+" Last Update:  05th Sep 2016
 "------------------------------------------------------------------------
 " Description:
 "       Commands and mapping to help maintaining VimL scripts
 "       Designed for lh-vim-lib v2.2.1 (v2.2.1 #verbose policy)
-" 
+"
 "------------------------------------------------------------------------
 " Installation:
 "       Drop this file into {rtp}/plugin
 "       Requires Vim7+
-" History:      
+" History:
+"       v0.0.6: Verbose rewritten to support lh#*#verbose() only, and auto
+"       complete.
 "       v0.0.5: Reload and Verbose moved from ftplugin
 " TODO:         «missing features»
 " }}}1
@@ -35,7 +36,9 @@ set cpo&vim
 "------------------------------------------------------------------------
 " ## Commands and Mappings             {{{1
 command! -nargs=* -complete=custom,ReloadComplete Reload  call s:Reload(<f-args>)
-command! -nargs=? Verbose call s:Verbose(<f-args>)
+" call lh#{arg}#verbose(not_bang)
+command! -nargs=+ -bang -complete=customlist,lh#vim#maintain#_go_verbose_complete
+      \ Verbose call lh#vim#maintain#_go_verbose("<bang>", <f-args>)
 " Commands and Mappings }}}1
 "------------------------------------------------------------------------
 " ## Functions                         {{{1
@@ -81,7 +84,7 @@ endfunction
 
 " Function: s:Reload(...)                               {{{3
 function! s:Reload(...)
-  try 
+  try
     let s_isk = &isk
     set isk&vim
     if a:0 == 0
@@ -108,7 +111,7 @@ function! ReloadComplete(ArgLead, CmdLine, CursorPos)
   let tmp = substitute(a:CmdLine, '\s*\S\+', 'Z', 'g')
   let pos = strlen(tmp)
   let lCmdLine = strlen(a:CmdLine)
-  let fromLast = strlen(a:ArgLead) + a:CursorPos - lCmdLine 
+  let fromLast = strlen(a:ArgLead) + a:CursorPos - lCmdLine
   " The argument to expand, but cut where the cursor is
   let ArgLead = strpart(a:ArgLead, 0, fromLast )
   return s:FindMatchingFiles(&rtp, ArgLead)
@@ -148,41 +151,6 @@ function! s:FindMatchingFiles(pathsList, ArgLead)
 
   " Return the list of paths matching a:ArgLead
   return result
-endfunction
-
-" # Verbose functions  {{{2
-" Function: s:Verbose(...)                              {{{3
-function! s:Verbose(...)
-  " This feature expects autoload/foo/bar.vim to have a
-  " "foo#bar#verbose(...) : int" function that may change the local verbososity
-  " of the autoload plugin, and that always return that local verbosity.
-  " NB: mu-template autoload-plugin template-file automatically defines this
-  " function
-  let crt = s:CurrentScript()
-  if crt !~ '^autoload'
-    throw "Sorry, this command is dedicated at setting the verbose level of autoload plugins only"
-  endif
-  let scope = matchstr(crt, '^autoload.\zs.*\ze\.vim$')
-  let scope = substitute(scope, '[/\\]', '#', 'g')
-  let verbose_cmd = scope.'#'.'verbose'
-  if !exists('*'.verbose_cmd)
-    exe 'source '.expand('%:p')
-    if !exists('*'.verbose_cmd)
-      throw "Sorry, this autoload plugin does not provide a ".verbose_cmd." function."
-    endif
-  endif
-  if a:0 == 0
-    echo scope . ' verbosity is '.{verbose_cmd}()
-  else
-    call {verbose_cmd}(a:1)
-  endif
-endfunction
-
-" Function: s:CurrentScript()                           {{{3
-function! s:CurrentScript()
-  let crt = expand('%:p')
-  let crt = lh#path#strip_start(crt, &rtp)
-  return crt
 endfunction
 
 " Functions }}}1
