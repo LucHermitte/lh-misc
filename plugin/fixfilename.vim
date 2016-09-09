@@ -47,14 +47,16 @@ command! -nargs=0 FixFileName :call s:FixFilename()
 function! s:FixFilename() abort
   let orig = expand('%')
   let p = stridx(orig, ':')
-  let file = orig[ : p-1 ]
-  let lnum = orig[ p+1 : ]
-  " echomsg "Fixing ".orig
-  let lnum = matchstr(orig, ':\zs\d\+')
-  let bnum = bufnr('%')
-  call lh#buffer#jump(file, 'e')
-  silent exe 'bw '.bnum
-  exe lnum
+  if p >= 0
+    let file = orig[ : p-1 ]
+    let lnum = orig[ p+1 : ]
+    " echomsg "Fixing ".orig
+    let lnum = matchstr(orig, ':\zs\d\+')
+    let bnum = bufnr('%')
+    call lh#buffer#jump(file, 'e')
+    silent exe 'bw '.bnum
+    exe lnum
+  endif
 endfunction
 " Functions }}}1
 "------------------------------------------------------------------------
