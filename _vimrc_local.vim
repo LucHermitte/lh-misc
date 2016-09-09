@@ -1,15 +1,14 @@
 "=============================================================================
-" $Id$
 " File:		.vim/_vimrc_local.vim                             {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:	1.0.0
+" Version:	1.1.0
 " Created:	22nd Apr 2010
-" Last Update:	$Date$
+" Last Update:	08th Sep 2016
 "------------------------------------------------------------------------
-" Description:	
+" Description:
 "   My local vimrc for vim script edition
-" 
+"
 "------------------------------------------------------------------------
 " Installation:	«install details»
 " History:	«history»
@@ -17,7 +16,7 @@
 " }}}1
 "=============================================================================
 
-let s:k_version = 108
+let s:k_version = 131
 " Always loaded {{{1
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
@@ -36,13 +35,25 @@ set cpo&vim
 
 if expand('%:p:h') !~ 'tests/lh'
   let b:tags_dirname = expand('<sfile>:p:h')
-  let b:tags_options = ' --exclude=.svn --exclude=.git --exclude=tests --exclude="*.*sh" --exclude="*.bat" --exclude="*.php" --exclude="*.js" --exclude="Makefile*" --exclude="*.mak" --exclude="*.pl" --exclude="*.py*" --exclude="*.c*" --exclude="*.h*" --exclude="*.template" --exclude=cpo_save'
+  " Be sure tags are automatically updated on the current file
+  LetIfUndef b:tags_options.no_auto 0
+  " Declare the indexed filetypes
+  call lh#tags#add_indexed_ft('vim')
 else
   let b:tags_dirname = expand('%:p:h')
-  let b:tags_options = ' --exclude="*.vim"'
+  LetIfUndef b:tags_options.flags ' --exclude="*.vim"'
 endif
+" Update Vim &tags option w/ the tag file produced for the current project
+call lh#tags#update_tagfiles() " uses b:tags_dirname
 
-call lh#option#add('l:tags', b:tags_dirname . '/tags')
+try
+  let s:tags = glob( $HOME. '/.vim/**/tags', 1, 1)
+catch /.*/
+  let s:tags = split(glob( $HOME. '/.vim/**/tags'), "\n")
+endtry
+call filter(s:tags, 'v:val !~ "\\v\\.vim[/\\\\](flavors|bundle)>"')
+
+call lh#option#add('l:tags', s:tags)
 
 
 "=============================================================================

@@ -384,9 +384,11 @@ endif
   " backspace in Visual mode deletes selection
    vnoremap <BS> d
 
-:VimrcHelp " <C-PageUp> and <C-PageDown> Go to the next/previous windows and maximize it
-   nnoremap <silent> <C-PageUp> <c-w>W<c-w>_
-   nnoremap <silent> <C-PageDown> <c-w>w<c-w>_
+:VimrcHelp " <M-PageUp> and <M-PageDown> Go to the next/previous windows and maximize it
+" And leave <C-PageUp> to do the default tab next and prev
+   nnoremap <silent> <M-PageUp> <c-w>W<c-w>_
+   nnoremap <silent> <M-PageDown> <c-w>w<c-w>_
+
 
    nnoremap <silent> <Plug>ShowSyntax
          \ :echo synIDattr(synID(line("."), col("."), 1), "name")<cr>
@@ -731,6 +733,9 @@ let g:VS_aspell_add_directly_to_dict = 1
 
 " -- BTW {{{3
 let g:BTW_qf_position = 'bot'
+let g:BTW_autoscroll_background_compilation = 1
+" let g:BTW_make_in_background = 1
+" let g:BTW_make_multijobs = 1
 
 " -- SearchInRuntime {{{3
 let g:sir_goto_hsplit = "Hsplit"
