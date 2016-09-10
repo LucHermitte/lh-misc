@@ -46,7 +46,7 @@ command! -nargs=0 FixFileName :call s:FixFilename()
 " TODO: find the event that happens before BufEnter and that'll still trigger filetype detection and so on.
 function! s:FixFilename() abort
   let orig = expand('%')
-  let p = stridx(orig, ':')
+  let p = match(orig, ':\d')
   if p >= 0
     let file = orig[ : p-1 ]
     let lnum = orig[ p+1 : ]
