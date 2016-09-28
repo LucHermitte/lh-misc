@@ -16,7 +16,7 @@
 " }}}1
 "=============================================================================
 
-let s:k_version = 131
+let s:k_version = 132
 " Always loaded {{{1
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
@@ -62,7 +62,6 @@ call lh#option#add('l:tags', s:tags)
 if &cp || (exists("g:loaded__vim_vimrc_local")
       \ && (g:loaded__vim_vimrc_local > s:k_version)
       \ && !exists('g:force_reload__vim_vimrc_local'))
-  let &cpo=s:cpo_save
   finish
 endif
 let g:loaded__vim_vimrc_local = s:k_version
@@ -70,9 +69,5 @@ let g:loaded__vim_vimrc_local = s:k_version
 "------------------------------------------------------------------------
 " Functions {{{2
 " Functions }}}2
-let s:cpo_save=&cpo
-set cpo&vim
-"------------------------------------------------------------------------
-let &cpo=s:cpo_save
 "=============================================================================
 " vim600: set fdm=marker:
