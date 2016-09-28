@@ -16,7 +16,7 @@
 " }}}1
 "=============================================================================
 
-let s:k_version = 132
+let s:k_version = 134
 " Always loaded {{{1
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
@@ -34,17 +34,20 @@ set cpo&vim
 " Local options {{{2
 
 if expand('%:p:h') !~ 'tests/lh'
-  let b:tags_dirname = expand('<sfile>:p:h')
+  call lh#project#define(s:, {'name': 'Vim Scripts'})
+  call lh#let#to('p:tags_dirname', expand('<sfile>:p:h'))
   " Be sure tags are automatically updated on the current file
-  LetIfUndef b:tags_options.no_auto 0
+  LetIfUndef p:tags_options.no_auto 0
   " Declare the indexed filetypes
   call lh#tags#add_indexed_ft('vim')
+  LetIfUndef p:tags_options.flags ' --exclude="flavors/*" --exclude="bundle/*"'
 else
-  let b:tags_dirname = expand('%:p:h')
-  LetIfUndef b:tags_options.flags ' --exclude="*.vim"'
+  call lh#project#define(s:, {'name': 'Vim Tests'}, 'prj_tests')
+  LetTo p:tags_dirname = expand('%:p:h')
+  LetIfUndef p:tags_options.flags ' --exclude="*.vim"'
 endif
 " Update Vim &tags option w/ the tag file produced for the current project
-call lh#tags#update_tagfiles() " uses b:tags_dirname
+call lh#tags#update_tagfiles() " uses p:tags_dirname
 
 try
   let s:tags = glob( $HOME. '/.vim/**/tags', 1, 1)
