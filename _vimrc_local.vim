@@ -16,7 +16,7 @@
 " }}}1
 "=============================================================================
 
-let s:k_version = 134
+let s:k_version = 136
 " Always loaded {{{1
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
@@ -34,7 +34,8 @@ set cpo&vim
 " Local options {{{2
 
 if expand('%:p:h') !~ 'tests/lh'
-  call lh#project#define(s:, {'name': 'Vim Scripts'})
+  Project --define Vim\ Scripts
+  " call lh#project#define(s:, {'name': 'Vim Scripts'})
   call lh#let#to('p:tags_dirname', expand('<sfile>:p:h'))
   " Be sure tags are automatically updated on the current file
   LetIfUndef p:tags_options.no_auto 0
@@ -42,7 +43,8 @@ if expand('%:p:h') !~ 'tests/lh'
   call lh#tags#add_indexed_ft('vim')
   LetIfUndef p:tags_options.flags ' --exclude="flavors/*" --exclude="bundle/*"'
 else
-  call lh#project#define(s:, {'name': 'Vim Tests'}, 'prj_tests')
+  Project --define Vim\ Tests
+  " call lh#project#define(s:, {'name': 'Vim Tests'}, 'prj_tests')
   LetTo p:tags_dirname = expand('%:p:h')
   LetIfUndef p:tags_options.flags ' --exclude="*.vim"'
 endif
@@ -72,5 +74,6 @@ let g:loaded__vim_vimrc_local = s:k_version
 "------------------------------------------------------------------------
 " Functions {{{2
 " Functions }}}2
+" }}}1
 "=============================================================================
 " vim600: set fdm=marker:
