@@ -922,6 +922,7 @@ endf
 " ===================================================================
 " Load plugins {{{2
 function! s:ActivateAddons()
+  runtime addons/lh-vim-lib/autoload/lh/list.vim
   runtime addons/lh-vim-lib/autoload/lh/path.vim
   let vimfiles = lh#path#vimfiles()
   " echomsg "vimfiles: ".string(vimfiles)
