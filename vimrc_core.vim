@@ -989,6 +989,10 @@ let g:xml_jump_string = lh#marker#txt()
 "       whitelists
 runtime machine-specifics.vim
 
+" -- lh-vim-lib#project {{{3
+runtime plugin/let.vim
+LetTo g:lh#project.autochdir = 1
+
 " }}}1
 " ===================================================================
 
