@@ -461,7 +461,7 @@ command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
 :VimrcHelp " ydate   = print the current date                                  [A+C]
   iab ydate <C-R>=lh#time#date()<cr>
   command! -nargs=0 Ydate @=lh#time#date()<cr>
-:VimrcHelp " ,last   = updates the 'Last Update:' field                        [N]
+:VimrcHelp " ,last   = updates the 'Last Update:25th Oct 2016
   nnoremap <silent> ,last gg
         \\|:silent let fdsave = &foldenable
         \\|:silent set nofoldenable
@@ -992,7 +992,11 @@ runtime machine-specifics.vim
 
 " -- lh-vim-lib#project {{{3
 runtime plugin/let.vim
-LetTo g:lh#project.autochdir = 1
+LetIfUndef g:lh#project.auto_chdir  = 1
+LetIfUndef g:lh#project.auto_detect = 1
+
+" -- BTW {{{3
+LetIfUndef g:BTW.make_in_background = 1
 
 " }}}1
 " ===================================================================
