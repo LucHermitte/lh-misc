@@ -254,7 +254,8 @@ endif
   nnoremap <C-G> 2<C-G>
 
 :VimrcHelp " backspace in Visual mode deletes selection
-  vnoremap <BS> d
+  xnoremap <BS> d
+  snoremap <BS> <c-g>di
 
 nnoremap <S-right> v<right>
 inoremap <S-right> <c-o>v
