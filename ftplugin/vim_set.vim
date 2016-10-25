@@ -51,8 +51,10 @@ endif
 " Stuff for mu-template
 let b:author_short='Luc Hermitte <hermitte {at} free {dot} fr>'
 let b:lhvim_url = lh#vcs#as_http(expand('%:p:h'))
+if exists('b:lhvim_url')
 let b:author        ="Luc Hermitte <EMAIL:".g:author_email.">\r" .
       \ '"'. "\<tab>\<tab><URL:".b:lhvim_url.">"
+endif
 "
 " ------------------------------------------------------------------------
 " Help init {{{2
