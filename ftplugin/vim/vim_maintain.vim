@@ -2,10 +2,10 @@
 " File:         ftplugin/vim/vim_maintain.vim                     {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Version:      0.0.6
-let s:k_version = 006
+" Version:      0.0.7
+let s:k_version = 007
 " Created:      07th May 2010
-" Last Update:  05th Sep 2016
+" Last Update:  25th Oct 2016
 "------------------------------------------------------------------------
 " Description:
 "       Commands and mapping to help maintaining VimL scripts
@@ -15,6 +15,8 @@ let s:k_version = 006
 "       Drop this file into {rtp}/ftplugin/vim
 "       Requires Vim7+
 " History:
+"       v0.0.7: Auto-remove trailing whitespaces and update "Last Update" on
+"               saving
 "       v0.0.6: Support functions moved to autoload plugin
 "       v0.0.5: Reload and Verbose moved to plugin
 "       v0.0.4: Reload works when the &isk contains ' or "
@@ -62,9 +64,15 @@ endif
 let g:loaded_ftplug_vim_maintain = s:k_version
 " Avoid global reinclusion }}}2
 "------------------------------------------------------------------------
+" Autocommands {{{2
+augroup vim_on_save
+  au!
+  au BufWritePre *.vim call lh#vim#maintain#_save_pre_hook()
+augroup END
+
 " Functions {{{2
 " Note: most filetype-global functions are best placed into
-" autoload/«your-initials»/vim/«vim_maintain».vim
+" autoload/Â«your-initialsÂ»/vim/Â«vim_maintainÂ».vim
 " Keep here only the functions are are required when the ftplugin is
 " loaded, like functions that help building a vim-menu for this
 " ftplugin.

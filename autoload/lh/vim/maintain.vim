@@ -2,18 +2,20 @@
 " File:         autoload/lh/vim/maintain.vim                      {{{1
 " Author:       Luc Hermitte <EMAIL:luc {dot} hermitte {at} gmail {dot} com>
 "		<URL:http://github.com/LucHermitte/lh-misc>
-" Version:      0.0.6.
-let s:k_version = 006
+" Version:      0.0.7.
+let s:k_version = 007
 " Created:      05th Sep 2016
-" Last Update:  05th Sep 2016
+" Last Update:  25th Oct 2016
 "------------------------------------------------------------------------
 " Description:
 "       Support functions for ftplugin/vim/vim_maintain.vim
 "
 "------------------------------------------------------------------------
 " History:
+"       v0.0.7: Auto-remove trailing whitespaces and update "Last Update" on
+"               saving
 "       v0.0.6: Verbose rewritten to support lh#*#verbose() only, and auto
-"       complete.
+"               complete.
 " TODO:         «missing features»
 " }}}1
 "=============================================================================
@@ -102,6 +104,17 @@ function! lh#vim#maintain#_go_verbose_complete(ArgLead, CmdLine, CursorPos) abor
   let acceptable_values = filter(copy(lh_auto_plugins), 'v:val =~ a:ArgLead')
 
   return acceptable_values + ['--help']
+endfunction
+
+" Function: lh#vim#maintain#_save_pre_hook() {{{3
+function! lh#vim#maintain#_save_pre_hook() abort
+  :silent! %s/\s\+$//
+  let [l,c] = searchpos('\v\clast (changes|update)\s*:\s*\zs', 'n')
+  if [l,c] != [0,0]
+    let lin = getline(l)
+    let new = lin[: (c-2)].lh#time#date()
+    silent call setline(l, new)
+  endif
 endfunction
 
 "------------------------------------------------------------------------
