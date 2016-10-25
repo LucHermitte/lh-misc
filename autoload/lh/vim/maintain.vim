@@ -108,13 +108,21 @@ endfunction
 
 " Function: lh#vim#maintain#_save_pre_hook() {{{3
 function! lh#vim#maintain#_save_pre_hook() abort
-  :silent! %s/\s\+$//
-  let [l,c] = searchpos('\v\clast (changes|update)\s*:\s*\zs', 'n')
-  if [l,c] != [0,0]
-    let lin = getline(l)
-    let new = lin[: (c-2)].lh#time#date()
-    silent call setline(l, new)
-  endif
+  let pos = getpos('.')
+  let cleanup = lh#on#exit()
+        \.register('call setpos(".", '.string(pos).')')
+  try
+    :silent! %s/\s\+$//
+    cal cursor(0,0)
+    let [l,c] = searchpos('\v\clast (changes|update)\s*:\s*\zs', 'n')
+    if [l,c] != [0,0]
+      let lin = getline(l)
+      let new = lin[: (c-2)].lh#time#date()
+      silent call setline(l, new)
+    endif
+  finally
+    call cleanup.finalize()
+  endtry
 endfunction
 
 "------------------------------------------------------------------------
