@@ -1,8 +1,8 @@
 "=============================================================================
 " File:		.vim/_vimrc_local.vim                             {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"		<URL:http://code.google.com/p/lh-vim/>
-" Version:	1.1.0
+"		<URL:http://github.com/LucHermitte/lh-misc/>
+" Version:	2.0.0
 " Created:	22nd Apr 2010
 " Last Update:	08th Sep 2016
 "------------------------------------------------------------------------
@@ -10,13 +10,13 @@
 "   My local vimrc for vim script edition
 "
 "------------------------------------------------------------------------
-" Installation:	«install details»
-" History:	«history»
-" TODO:		«missing features»
+" Installation:	Â«install detailsÂ»
+" History:	Â«historyÂ»
+" TODO:		Â«missing featuresÂ»
 " }}}1
 "=============================================================================
 
-let s:k_version = 158
+let s:k_version = 174
 " Always loaded {{{1
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
@@ -32,17 +32,25 @@ set cpo&vim
 
 "------------------------------------------------------------------------
 " Local options {{{2
+let s:script_dir = expand('<sfile>:p:h')
+let s:script     = expand('<sfile>:p')
+
+let s:currently_edited_file = expand('%:p')
+if s:currently_edited_file =~ '^fugitive://'
+  call lh#log#this('Not a real source file, aborting')
+  finish
+endif
 
 silent! unlet b:crt_project
 if expand('%:p:h') !~ 'tests/lh'
   " Project --define Vim\ Scripts
   call lh#project#define(s:, { 'name': 'Vim Scripts', 'auto_discover_root':0 })
-  call lh#let#to('p:tags_dirname', expand('<sfile>:p:h'))
+  call lh#let#to('p:tags_dirname', s:script_dir)
   " Be sure tags are automatically updated on the current file
   LetIfUndef p:tags_options.no_auto 0
   " Declare the indexed filetypes
   call lh#tags#add_indexed_ft('vim')
-  LetIfUndef p:tags_options.flags ' --exclude="flavors/*" --exclude="bundle/*"'
+  LetTo p:tags_options.flags ' --exclude="flavors/*" --exclude="bundle/*" --exclude="lh-template" --exclude="lh-UT" --exclude="vim-UT" --exclude="lh-BTW"'
 
   " Project --define subproject_{name}
   let name = lh#path#strip_start(expand('%:p'), [lh#path#vimfiles().'/.addons', lh#path#vimfiles()])
@@ -73,6 +81,7 @@ call filter(s:tags, 'v:val !~ "\\v\\.vim[/\\\\](flavors|bundle)>"')
 call lh#option#add('l:tags', s:tags)
 
 
+call lh#menu#make('nic', '50.76', '&Project.Edit local &vimrc', '<localleader>le', '<buffer>', ':call lh#buffer#jump('.string(s:script).', "sp")<cr>' )
 "=============================================================================
 " Global Definitions {{{1
 " Avoid global reinclusion {{{2
