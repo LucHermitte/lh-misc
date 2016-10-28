@@ -23,7 +23,7 @@ au BufNewFile,BufRead *.html.?? set ft=html
 au BufNewFile,BufRead *.lst,*.pcc set ft=pcgen
 
 " xnews files
-au BufNewFile,BufRead __* 
+au BufNewFile,BufRead __*
        \ if expand('<afile>:p:h') =~? '\<xnews\>' |
        \   let g:aliases_file = '' |
        \   set ft=mail |
@@ -39,7 +39,7 @@ au BufNewFile,BufRead *.fcf set ft=dosini
 au BufNewFile,BufRead *.ce,*.cty,*.cct set ft=c
 
 " OTB C++ file extensions:
-au BufNewFile,BufRead *.cxx,*.txx,*.hxx set ft=cpp
+au BufNewFile,BufRead *.txx setf cpp
 
 " Understand Perl Check scripts
 au BufNewFile,BufRead *.upl set ft=perl
