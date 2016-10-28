@@ -2,7 +2,7 @@
 " File:         ftplugin/vim_set.vim
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Last Update:  24th Nov 2015
+" Last Update:  26th Oct 2016
 " Requirements: lh-vim-lib
 "
 " ========================================================================
@@ -49,11 +49,11 @@ endif
 " setlocal def=^function!\\=\\s*\\(s:\\)\\=
 
 " Stuff for mu-template
-let b:author_short='Luc Hermitte <hermitte {at} free {dot} fr>'
-let b:lhvim_url = lh#vcs#as_http(expand('%:p:h'))
-if exists('b:lhvim_url')
-let b:author        ="Luc Hermitte <EMAIL:".g:author_email.">\r" .
-      \ '"'. "\<tab>\<tab><URL:".b:lhvim_url.">"
+let b:author_short = 'Luc Hermitte <hermitte {at} free {dot} fr>'
+let b:lhvim_url    = lh#vcs#as_http(expand('%:p:h'))
+let b:author       = "Luc Hermitte <EMAIL:".g:author_email.">"
+if exists('b:lhvim_url') && lh#option#is_set(b:lhvim_url)
+  let b:author    .= "\r" .'"'. "\<tab>\<tab><URL:".b:lhvim_url.">"
 endif
 "
 " ------------------------------------------------------------------------
