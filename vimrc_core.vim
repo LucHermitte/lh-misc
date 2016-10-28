@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 18th Apr 2015
+" Last update   : 28th Oct 2016
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -732,11 +732,15 @@ let g:Tex_SmartKeyDot   = 1
 " -- lhVimSpell {{{3
 let g:VS_aspell_add_directly_to_dict = 1
 
+" -- local vimrc {{{3
+let g:local_vimrc = ['.config', '_vimrc_local.vim']
+
 " -- BTW {{{3
-let g:BTW_qf_position = 'bot'
-let g:BTW_autoscroll_background_compilation = 1
-" let g:BTW_make_in_background = 1
-" let g:BTW_make_multijobs = 1
+let g:BTW = get(g:, 'BTW', {})
+let g:BTW.qf_position = 'bot'
+let g:BTW.autoscroll_background_compilation = 1
+" let g:BTW.make_in_background = 1
+" let g:BTW.make_multijobs = 1
 
 " -- SearchInRuntime {{{3
 let g:sir_goto_hsplit = "Hsplit"
