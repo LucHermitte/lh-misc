@@ -2,10 +2,10 @@
 " File:         plugin/fixfilename.vim                            {{{1
 " Author:       Luc Hermitte <EMAIL:luc {dot} hermitte {at} gmail {dot} com>
 "		<URL:http://github.com/LucHermitte/lh-misc>
-" Version:      0.0.1.
-let s:k_version = 001
+" Version:      0.0.2.
+let s:k_version = 002
 " Created:      25th May 2016
-" Last Update:  25th May 2016
+" Last Update:  03rd Nov 2016
 "------------------------------------------------------------------------
 " Description:
 "       Have vim automagically translate filenames like "file:lnum"
@@ -30,7 +30,8 @@ set cpo&vim
 augroup auto_jump_to_line
   au!
   " au BufNewFile *:* echomsg "New bad file"
-  au BufCreate,BufNewFile *:* nested
+  " au BufCreate,BufNewFile *:* nested
+  au BufNewFile,BufWinEnter *:* nested
         \ call lh#event#register_for_one_execution_at('BufEnter', function('s:FixFilename'), 'auto_jump_to_line_1', expand('<afile>:t'))
 augroup END
 
@@ -53,9 +54,10 @@ function! s:FixFilename() abort
     " echomsg "Fixing ".orig
     let lnum = matchstr(orig, ':\zs\d\+')
     let bnum = bufnr('%')
-    call lh#buffer#jump(file, 'e')
+    call lh#buffer#jump(file, 'keepalt e')
     silent exe 'bw '.bnum
     exe lnum
+    filetype detect
   endif
 endfunction
 " Functions }}}1
