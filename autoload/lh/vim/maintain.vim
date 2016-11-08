@@ -2,16 +2,17 @@
 " File:         autoload/lh/vim/maintain.vim                      {{{1
 " Author:       Luc Hermitte <EMAIL:luc {dot} hermitte {at} gmail {dot} com>
 "		<URL:http://github.com/LucHermitte/lh-misc>
-" Version:      0.0.7.
-let s:k_version = 007
+" Version:      0.0.8.
+let s:k_version = 008
 " Created:      05th Sep 2016
-" Last Update:  25th Oct 2016
+" Last Update:  08th Nov 2016
 "------------------------------------------------------------------------
 " Description:
 "       Support functions for ftplugin/vim/vim_maintain.vim
 "
 "------------------------------------------------------------------------
 " History:
+"       v0.0.8: Less (undo-)intrusive timestamp insertion
 "       v0.0.7: Auto-remove trailing whitespaces and update "Last Update" on
 "               saving
 "       v0.0.6: Verbose rewritten to support lh#*#verbose() only, and auto
@@ -113,12 +114,16 @@ function! lh#vim#maintain#_save_pre_hook() abort
         \.register('call setpos(".", '.string(pos).')')
   try
     :silent! %s/\s\+$//
-    cal cursor(0,0)
-    let [l,c] = searchpos('\v\clast (changes|update)\s*:\s*\zs', 'n')
-    if [l,c] != [0,0]
-      let lin = getline(l)
-      let new = lin[: (c-2)].lh#time#date()
-      silent call setline(l, new)
+    if &modified
+      cal cursor(0,0)
+      let [l,c] = searchpos('\v\clast (changes|update)\s*:\s*\zs', 'n')
+      if [l,c] != [0,0]
+        let lin = getline(l)
+        if lin !~ lh#time#date()
+          let new = lin[: (c-2)].lh#time#date()
+          silent call setline(l, new)
+        endif
+      endif
     endif
   finally
     call cleanup.finalize()
