@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 28th Oct 2016
+" Last update   : 15th Nov 2016
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -162,13 +162,15 @@ set runtimepath+=$HOME/vimfiles/latexSuite
 
   set cpoptions-=C      " enable commands that continue on the next line
 
-" Is there a tags file? If so I'd like to use it's absolute path in case we
-" chdir later
-if filereadable("tags")
-    " exec "set tags+=" . $PWD . "/tags"
-    " $PWD => problem is there are spaces within the path name
-    exec "set tags+=" . escape(expand('%:p:h'),' ') . "/tags"
-endif
+  if 0
+    " Is there a tags file? If so I'd like to use it's absolute path in case we
+    " chdir later
+    if filereadable("tags")
+      " exec "set tags+=" . $PWD . "/tags"
+      " $PWD => problem is there are spaces within the path name
+      exec "set tags+=" . escape(expand('%:p:h'),' ') . "/tags"
+    endif
+  endif
 
 " Multi-byte support {{{2
 " Force utf-8 on windows in order to have airline display nice characters
@@ -461,7 +463,7 @@ command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
 :VimrcHelp " ydate   = print the current date                                  [A+C]
   iab ydate <C-R>=lh#time#date()<cr>
   command! -nargs=0 Ydate @=lh#time#date()<cr>
-:VimrcHelp " ,last   = updates the 'Last Update:25th Oct 2016
+:VimrcHelp " ,last   = updates the 'Last Update:03rd Nov 2016
   nnoremap <silent> ,last gg
         \\|:silent let fdsave = &foldenable
         \\|:silent set nofoldenable
@@ -864,6 +866,7 @@ let s:my_plugins = [
       \ 'lh-tags'            ,
       \ 'lh-dev'             ,
       \ 'mu-template@lh'     ,
+      \ 'alternate-lite'     ,
       \ 'lh-cpp'             ,
       \ 'lh-refactor'        ,
       \ 'search-in-runtime'  ,
