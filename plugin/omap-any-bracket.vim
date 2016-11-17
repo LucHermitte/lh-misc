@@ -1,11 +1,10 @@
 "=============================================================================
-" $Id$
 " File:         plugin/omap-any-bracket.vim                       {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"		<URL:http://code.google.com/p/lh-vim/>
+"               <URL:http://github.com/LucHermitte/lh-misc>
 " Version:      0.0.2
 " Created:      21st Dec 2010
-" Last Update:  $Date$
+" Last Update:  08th Nov 2016
 "------------------------------------------------------------------------
 " Description:
 "       Mappings for selecting the first enclosing bracket pair.
@@ -13,13 +12,13 @@
 "
 "       Answer to the question:
 "       <http://unix.stackexchange.com/questions/4882/block-motion-for-any-bracket-type>
-" 
+"
 "------------------------------------------------------------------------
 " Installation:
 "       Drop this file into {rtp}/plugin
 "       Requires Vim7+
-" 	- {rtp}/autoload/lh/position.vim (lh-vim-lib v2.2.4)
-" 	- {rtp}/autoload/lh/syntax.vim (lh-vim-lib)
+"       - {rtp}/autoload/lh/position.vim (lh-vim-lib v2.2.4)
+"       - {rtp}/autoload/lh/syntax.vim (lh-vim-lib)
 " History:      «history»
 " TODO:         «missing features»
 " }}}1
@@ -53,19 +52,20 @@ let s:k_pairs = {
       \ '(': ')',
       \ '[': ']',
       \ '{': '}',
-      \ '<': '>'
+      \ '<': '>',
+      \ '"': '"'
       \ }
 
-let s:k_begin = '[([{<]'
-let s:k_end   = '[)\]}>]'
-  
+let s:k_begin = '[([{<"]'
+let s:k_end   = '[)\]}>"]'
+
 function! s:SelectFirstPair(inner, visual)
   " In case we already are in visual mode, we may have to extend the current
   " zone if it selects a pair of brackets
   if a:visual
     let char_b = lh#position#char_at_mark("'<")
     if char_b =~ s:k_begin
-	  \ && s:k_pairs[char_b] == lh#position#char_at_mark("'>")
+          \ && s:k_pairs[char_b] == lh#position#char_at_mark("'>")
       call search('.', 'bW') " previous char
     elseif a:inner
       " handle case the case "vi%i%i%"
@@ -80,11 +80,11 @@ function! s:SelectFirstPair(inner, visual)
       let char_e = lh#position#char_at_pos(pos_e)
       " echomsg "chars = ".char_b.char_e
       if char_b =~ s:k_begin
-	    \ && s:k_pairs[char_b] == char_e
-	call setpos('.', pos_b) " restore start_pos
-	call search('.', 'bW') " previous char
+            \ && s:k_pairs[char_b] == char_e
+        call setpos('.', pos_b) " restore start_pos
+        call search('.', 'bW') " previous char
       else
-	call setpos('.', current_pos) " restore init_pos
+        call setpos('.', current_pos) " restore init_pos
       endif
     endif
   endif
