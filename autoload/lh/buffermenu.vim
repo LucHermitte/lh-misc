@@ -5,7 +5,7 @@
 " Version:      2.0.0
 let s:k_version = 2.0.0
 " Created:      16th Nov 2016
-" Last Update:  16th Nov 2016
+" Last Update:  17th Nov 2016
 "------------------------------------------------------------------------
 " Description:
 "       See comments in plugin/buffermenu.vim
@@ -570,7 +570,9 @@ function! s:UnloadBuffer(bid) abort
   if exists('s:menus_'.bid)
     unlet s:menus_{bid}
   endif
-  unlet s:buffers_list[bid]
+  if has_key(s:buffers_list, bid)
+    unlet s:buffers_list[bid]
+  endif
 endfunction
 
 " Autocommands to unload and restore buffer-menus {{{3
