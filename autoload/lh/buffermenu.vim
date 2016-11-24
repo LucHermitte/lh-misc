@@ -5,7 +5,7 @@
 " Version:      2.0.0
 let s:k_version = 2.0.0
 " Created:      16th Nov 2016
-" Last Update:  17th Nov 2016
+" Last Update:  24th Nov 2016
 "------------------------------------------------------------------------
 " Description:
 "       See comments in plugin/buffermenu.vim
@@ -565,7 +565,7 @@ endfunction
 
 " Function: UnloadBuffer() : unloads all information related to no-longer existing buffer {{{3
 function! s:UnloadBuffer(bid) abort
-  let bid = bufnr(a:bid)
+  let bid = a:bid
   call s:Verbose("UnloadBuffer a:bid: %1", bid)
   if exists('s:menus_'.bid)
     unlet s:menus_{bid}
@@ -581,7 +581,7 @@ aug MRGBufferMenuEnter
   au!
   au BufEnter   * call s:RestoreMenus()
   au BufLeave   * call s:UnloadMenus()
-  au BufUnload  * call s:UnloadBuffer(expand('<afile>'))
+  au BufUnload  * call s:UnloadBuffer(expand('<abuf>'))
 aug END
 
 " }}}1
