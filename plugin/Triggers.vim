@@ -114,11 +114,6 @@ endfunction
 " }}}
 
 let s_path = expand('<sfile:p:h>')
-if !CheckDeps('*EnsurePath', 'ensure_path.vim', s_path,
-      \               'system_utils.vim')
-  finish
-endif
-
 " }}}
 "---------------------------------------------------------------------------
 "---------------------------------------------------------------------------
@@ -402,12 +397,12 @@ function! Trigger_FileName(funcname)
     let where =  lh#path#to_regex($HOME.'/').'\(vimfiles\|.vim\)'
     let path = lh#path#find(&rtp, where). '/.triggers/'
     " call confirm('pathv6 = '.path, 'ok')
-    call EnsurePath(lh#path#fix(path, 1))
+    call lh#system#EnsurePath(lh#path#fix(path, 1))
     " }}}
   else " VIM 5.x {{{
     let path = expand("$VIMRUNTIME") . "/.triggers/"
     call input('pathv5 = '.path)
-    if 1 != EnsurePath(path)
+    if 1 != lh#system#EnsurePath(path)
       let path = expand("$HOME")
       if filereadable(path.'/.vim')
         let path = path . "/.vim/"
@@ -418,7 +413,7 @@ function! Trigger_FileName(funcname)
       endif
       let path = path . '/.triggers/'
       " call input('pathv5bis = '.path)
-      call EnsurePath(path)
+      call lh#system#EnsurePath(path)
     endif
     " }}}
   endif
