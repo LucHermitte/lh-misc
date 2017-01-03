@@ -12,13 +12,14 @@
 "                creation of the file on gvim-win32 launched from windows
 "                shell. Will break with Vim 5.x that does not define :silent
 "      the v1.15 relies less on system-tools.
+"      the v1.16 relies on lh#path functions
 "===========================================================================
 " Vim script file
 "
-" File:         Triggers.vim -- v1.15
+" File:         Triggers.vim -- v1.16
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"               <URL:http://code.google.com/p/lh-vim/>
-" Last Update:  19th Apr 2015
+"               <URL:http://github.com/LucHermitte/lh-misc>
+" Last Update:  03rd Jan 2017
 "
 " Purpose:      Help to map a sequence of keys to activate and desactivate
 "               either a mapping, a setting or an abbreviation.
@@ -61,6 +62,7 @@
 "      call Trigger_Define( '<M-w>',
 "       \ 'nnoremap <silent> <C-W> :call Window_CTRL_W()<cr>')
 "     won't work.
+" (*) Move functions to an autoload plugin
 " }}}
 "---------------------------------------------------------------------------
 " Defines the following functions: {{{
@@ -112,8 +114,7 @@ endfunction
 " }}}
 
 let s_path = expand('<sfile:p:h>')
-if !CheckDeps('*IsFileUpToDate', 'fileuptodate.vim', s_path,'')
-      \ || !CheckDeps('*EnsurePath', 'ensure_path.vim', s_path,
+if !CheckDeps('*EnsurePath', 'ensure_path.vim', s_path,
       \               'system_utils.vim')
   finish
 endif
@@ -523,7 +524,7 @@ function! Trigger_Function(...)
   ""if !filereadable( filename )
   " let g:p1 = a:3
   " let g:p2 = filename
-  if !IsFileUpToDate( a:3, filename )
+  if !lh#path#is_up_to_date( a:3, filename )
     " Then build it !
     if Trigger_RebuildFile( a:2, a:3 ) != ""
       echo "Trigger_RebuildFile(".a:2.",".a:3.") failed."
