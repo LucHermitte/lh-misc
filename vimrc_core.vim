@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 15th Nov 2016
+" Last update   : 04th Jan 2017
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -954,6 +954,8 @@ function! s:ActivateAddons()
   call vam#ActivateAddons(['viewdoc'])
   call vam#ActivateAddons([ 'vim-airline' ])
   call vam#ActivateAddons([ 'xmledit' ])
+  call vam#ActivateAddons([ 'github:rickhowe/diffchar.vim' ])
+  call vam#ActivateAddons([ 'Mark%2666' ]) " Ingo Karkat's fork of mark.vim
   if has('python')
     call vam#ActivateAddons([ 'vim-jira-complete' ])
   endif
