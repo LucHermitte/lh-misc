@@ -4,7 +4,7 @@
 "		<URL:http://github.com/LucHermitte/lh-misc/>
 " Version:	2.0.0
 " Created:	22nd Apr 2010
-" Last Update:	08th Sep 2016
+" Last Update:	25th Nov 2016
 "------------------------------------------------------------------------
 " Description:
 "   My local vimrc for vim script edition
@@ -16,7 +16,7 @@
 " }}}1
 "=============================================================================
 
-let s:k_version = 174
+let s:k_version = 175
 " Always loaded {{{1
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
@@ -44,7 +44,9 @@ endif
 silent! unlet b:crt_project
 if expand('%:p:h') !~ 'tests/lh'
   " Project --define Vim\ Scripts
-  call lh#project#define(s:, { 'name': 'Vim Scripts', 'auto_discover_root':0 })
+  if lh#option#is_unset(lh#project#define(s:, { 'name': 'Vim Scripts', 'auto_discover_root':0 }))
+    finish
+  endif
   call lh#let#to('p:tags_dirname', s:script_dir)
   " Be sure tags are automatically updated on the current file
   LetIfUndef p:tags_options.no_auto 0
@@ -61,7 +63,9 @@ if expand('%:p:h') !~ 'tests/lh'
     " This _vimrc_local.vim file!
     let opt.auto_discover_root = {'value': expand('%:p:h')}
   endif
-  call lh#project#define(s:, opt, 'subproject_'.name)
+  if lh#option#is_unset(lh#project#define(s:, opt, 'subproject_'.name))
+    finish
+  endif
 else
   Project --define Vim\ Tests
   " call lh#project#define(s:, {'name': 'Vim Tests'}, 'prj_tests')
