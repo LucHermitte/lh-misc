@@ -2,7 +2,7 @@
 " File:         ftplugin/vim_set.vim
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Last Update:  26th Oct 2016
+" Last Update:  13th Jan 2017
 " Requirements: lh-vim-lib
 "
 " ========================================================================
@@ -65,6 +65,7 @@ if exists("*BuildHelp")
   command! -buffer -nargs=1 VIMHelp :call BuildHelp('VIM', <q-args>)
    noremap <buffer> <C-F1> :call ShowHelp('VIM')<cr>
   inoremap <buffer> <C-F1> <ESC>:call ShowHelp('VIM')<cr>a
+  call ClearHelp('VIM')
 else
   command! -buffer -nargs=1 VIMHelp
 endif

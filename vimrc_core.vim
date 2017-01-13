@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 04th Jan 2017
+" Last update   : 10th Jan 2017
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -354,9 +354,9 @@ endif
 "
 :VimrcHelp " <F7>    : toggle autoindent                                       [I+N]
    set ai
-if ! strlen(maparg('<F7>'))
+if ! empty(maparg('<F7>'))
    nnoremap <F7> :set ai!<CR>:set ai?<CR>
-      imap <F7> <SPACE><ESC><F7>a<BS>
+      imap <F7> <c-o><F7>
 endif
 "
 :VimrcHelp " <F9>    : toggle on and off the bracketing shortcuts              [I+N]
@@ -377,8 +377,8 @@ endif
   "nnoremap <expr> <F12> (&ft=='qf' ? ":cnewer" : ":bnext")."\<cr>"
 "
 :VimrcHelp " <C-Del> and <C-S-Del> Delete a whole word till its end            [I+N]
-   noremap  <C-Del> dw
-   noremap  <C-S-Del> dW
+   noremap <C-Del> dw
+   noremap <C-S-Del> dW
   inoremap <C-Del> <space><esc>ce
   inoremap <C-S-Del> <esc>lcW
 "
@@ -463,7 +463,7 @@ command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
 :VimrcHelp " ydate   = print the current date                                  [A+C]
   iab ydate <C-R>=lh#time#date()<cr>
   command! -nargs=0 Ydate @=lh#time#date()<cr>
-:VimrcHelp " ,last   = updates the 'Last Update:03rd Nov 2016
+:VimrcHelp " ,last   = updates the 'Last Update:04th Jan 2017
   nnoremap <silent> ,last gg
         \\|:silent let fdsave = &foldenable
         \\|:silent set nofoldenable
@@ -748,6 +748,18 @@ let g:BTW.autoscroll_background_compilation = 1
 let g:sir_goto_hsplit = "Hsplit"
 let g:sir_goto_vsplit = "Vsplit"
 
+" -- Mark.vim {{{3
+" Prevent mark.vim to map anything to numpad keys
+nmap <leader>sm1 <Plug>MarkSearchGroup1Next
+nmap <leader>sm2 <Plug>MarkSearchGroup2Next
+nmap <leader>sm3 <Plug>MarkSearchGroup3Next
+nmap <leader>sm4 <Plug>MarkSearchGroup4Next
+nmap <leader>sm5 <Plug>MarkSearchGroup5Next
+nmap <leader>sm6 <Plug>MarkSearchGroup6Next
+nmap <leader>sm7 <Plug>MarkSearchGroup7Next
+nmap <leader>sm8 <Plug>MarkSearchGroup8Next
+nmap <leader>sm9 <Plug>MarkSearchGroup9Next
+
 " -- Johannes Zellner's Man <http://www.zellner.org/> {{{3
 let g:man_vim_only = 1
 
@@ -944,9 +956,9 @@ function! s:ActivateAddons()
     " call vam#ActivateAddons(['vim-latex'])
   endif
   " script #3361
-  call vam#ActivateAddons(['Indent_Guides'])
+  call vam#ActivateAddons(['Indent_Guides']) " not autoloaded
   call vam#ActivateAddons(['stakeholders'])
-  call vam#ActivateAddons(['vcscommand'])
+  call vam#ActivateAddons(['vcscommand']) " not autoloaded
   call vam#ActivateAddons(['Splice'])
   call vam#ActivateAddons(['fugitive']) " required by gitv
   call vam#ActivateAddons(['gitv'])
