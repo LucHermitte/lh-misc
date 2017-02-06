@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 10th Jan 2017
+" Last update   : 17th Jan 2017
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -430,7 +430,7 @@ function! s:OpenVimrc()
 endfunction
 " }}}
 " -------------------------------------------------------------------
-" Commands: {{{
+" Commands: {{{1
 if ! exists(':Make')
   command! -nargs=* -complete=file Make cd %:p:h | make <args>
   command! -nargs=* -complete=file MAKE cd %:p:h | make <args>
@@ -439,6 +439,8 @@ command! -nargs=0                CD     cd %:p:h
 command! -nargs=0                LCD    lcd %:p:h
 " http://vim.wikia.com/wiki/Reverse_selected_text
 command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
+
+command! WTF call lh#exception#say_what()
 " }}}
 " -------------------------------------------------------------------
 " }}}1
@@ -463,7 +465,7 @@ command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
 :VimrcHelp " ydate   = print the current date                                  [A+C]
   iab ydate <C-R>=lh#time#date()<cr>
   command! -nargs=0 Ydate @=lh#time#date()<cr>
-:VimrcHelp " ,last   = updates the 'Last Update:04th Jan 2017
+:VimrcHelp " ,last   = updates the 'Last Update:03rd Feb 2017
   nnoremap <silent> ,last gg
         \\|:silent let fdsave = &foldenable
         \\|:silent set nofoldenable
@@ -471,6 +473,8 @@ command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
         \\|:silent! normal "_Cydate<ESC>
         \\|:endif
         \\|:silent let &foldenable = fdsave<cr>
+" <m-r> -> return
+  inoremap <m-r> return
 " }}}
 "
 " transforming a letter in lower case to a more open reg expr : o -> [oO]
