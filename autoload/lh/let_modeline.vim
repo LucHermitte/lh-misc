@@ -54,7 +54,7 @@ endfunction
 " Constants {{{2
 let s:re_var   = '\s\+\([[:alnum:]:_$]\+\)'
 " beware the comments ending characters
-let s:re_val   = '\(\%(' . "'[^']*'" . '\|"[^"]*"\|[-a-zA-Z0-9:_.&$]\)\+\)$'
+let s:re_val   = '\(\%(' . "'[^']*'" . '\|"[^"]*"\|[-a-zA-Z0-9:_.&$]\+\)\)$'
 let s:re_other = '^\(.\{-}\)'
 let s:re_sub   = s:re_other . s:re_var . '\s*=\s*' . s:re_val
 
@@ -71,6 +71,7 @@ function! lh#let_modeline#_parse_line(mtch) abort
     call s:Verbose("vari : `%1`", vari)
     call s:Verbose("valu : `%1`", valu)
     if (vari !~ '^[[:alnum:]:_$]\+$') || (valu !~ s:re_val)
+      call s:Verbose('Invalid var=value format: %1=%2', vari, valu)
       return
     endif
     " Check : no function !
@@ -87,6 +88,7 @@ function! lh#let_modeline#_parse_line(mtch) abort
       if res == 1 | return | endif
     endif
     " Else
+    let valu = s:unstring(valu)
     call lh#let#to(vari, valu)
   endwhile
 endfunction
@@ -99,6 +101,12 @@ function! s:FindFunctionCall(value_str) abort
   let str = substitute(a:value_str, '"[^"]*"', '', 'g')
   let str = substitute(str, "'[^']*'", '', 'g')
   return match(str, '(.*)') != -1
+endfunction
+
+function! s:unstring(value) abort " {{{2
+  " Don't use `eval()`  is order to not open the box to unwanted evaluations
+  let res = substitute(a:value, '\v([''"])(.*)\1', '\2', '')
+  return res
 endfunction
 
 "------------------------------------------------------------------------
