@@ -1,11 +1,11 @@
 " example -> VIM: let b:toto="foo" g:tata=4 g:egal="t=y".&tw
 " ===========================================================================
-" File:         let-modeline.vim {{{1
+" File:         plugin/let-modeline.vim {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
 " URL: http://github.com/LucHermitte/lh-misc/tree/master/plugin/let-modeline.vim
 " Version:      1.11
-" Last Update:  05th Jan 2016
+" Last Update:  15th Feb 2017
 "
 " Purpose:                        {{{2
 "       Defines the function : FirstModeLine() that extends the VIM modeline
@@ -65,6 +65,7 @@
 "
 " Installation:                   {{{2
 "       (*) Drop the file into your {rtp}/plugin/ folder.
+"           And autoload/lh/let-modeline.vim accordingly
 "
 " Remarks:                        {{{2
 "       (*) The only way to call a function is through the callback feature.
@@ -74,6 +75,8 @@
 "           uppercase letters
 "
 " Changes:                        {{{2
+"       v2.0.0  Move functions to autoload plugin
+"               Restore command, named `:LetModeLine` this time
 "       v1.10   Code simplified, lh-vim-lib 3.5.0 required
 "       v1.9:   @/ is preserved
 "       v1.8:   autocommands moved to the plugin
@@ -100,74 +103,22 @@
 if exists("g:loaded_let_modeline") && ! exists('g:force_reload_let_modeline') | finish | endif
 let g:loaded_let_modeline = 1
 
-" Internal function dedicated to the recognition of function calls {{{2
-function! s:FindFunctionCall(value_str) abort
-  let str = substitute(a:value_str, '"[^"]*"', '', 'g')
-  let str = substitute(str, "'[^']*'", '', 'g')
-  return match(str, '(.*)') != -1
-endfunction
-
-
-let s:re_var   = '\s\+\([[:alnum:]:_$]\+\)'
-" beware the comments ending characters
-let s:re_val   = '\(\%(' . "'[^']*'" . '\|"[^"]*"\|[-a-zA-Z0-9:_.&$]\)\+\)$'
-let s:re_other = '^\(.\{-}\)'
-let s:re_sub   = s:re_other . s:re_var . '\s*=\s*' . s:re_val
-
-" Internal function dedicated to the parsing of a line {{{2
-function! s:FML_parse_line(mtch) abort
-  " call confirm('Find:'.a:mtch, '&ok', 1)
-  if a:mtch !=""
-    let mtch  = a:mtch
-    while strlen(mtch) != 0
-      let vari = substitute( mtch, s:re_sub, '\2', '' )
-      let valu = substitute( mtch, s:re_sub, '\3', '' )
-      " call confirm('regex: '.s:re_sub."\nmtch: <<".mtch.">>\nvar: ".vari."\nval: ".valu, '&ok', 1)
-      if (vari !~ '^[[:alnum:]:_$]\+$') || (valu !~ s:re_val)
-        return
-      endif
-      " Check : no function !
-      if s:FindFunctionCall(valu)
-        echohl ErrorMsg
-        echo "Found a function call in the assignement: let " . vari . " = " . valu
-        echohl None
-        return
-      endif
-      let mtch = substitute( mtch, s:re_sub, '\1', '' )
-      ""echo vari . " = " . valu . " --- " . mtch . "\n"
-      " call confirm('vari: '.vari.' = '.valu." --- " . mtch, '&Ok', 1)
-      if exists("b:ModeLine_CallBack")
-        exe 'let res = '. b:ModeLine_CallBack . '("'.vari.'","'.valu.'")'
-        if res == 1 | return | endif
-      endif
-      " Else
-      execute "let " . vari . " = " . valu
-    endwhile
-  endif
-endfunction
-
 " Internal function dedicated searching the matching lines {{{2
 " let s:modeline_pat = '[vV][iI][mM]\d*:\s*let\s*\zs.*$'
 let s:modeline_pat = '[vV][iI][mM]\d*:\s*let\zs.*$'
 function! s:Do_it_on_range(first, last) abort
   if &verbose >= 2 " {{{
     echo "\n->"a:first.','.a:last. 'g/'.s:modeline_pat.
-          \ '/:call s:FML_parse_line(matchstr(getline("."),"'.
+          \ '/:call lh#let_modeline#_parse_line(matchstr(getline("."),"'.
           \ escape(s:modeline_pat, '\\') .'"))'
   endif " }}}
-  let cleanup = lh#on#exit()
-        \.restore('&foldenable')
-        \.restore('@/')
-  try
-    set nofoldenable
-    silent execute a:first.','.a:last. 'g/'.s:modeline_pat.
-          \ '/:call s:FML_parse_line(matchstr(getline("."),"'.
-          \ escape(s:modeline_pat, '\\') .'"))'
-    " Purge the history for the search pattern just used.
-    call histdel('search', -1)
-  finally
-    call cleanup.finalize()
-  endtry
+
+  let lines = getline(a:first, a:last)
+  call filter(lines, 'v:val =~ s:modeline_pat')
+  call map(lines, 'matchstr(v:val, s:modeline_pat)')
+  for line in lines
+    call lh#let_modeline#_parse_line(line)
+  endfor
 endfunction
 
 " The main function {{{2
@@ -192,6 +143,9 @@ function! s:FirstModeLine() abort
 endfunction
 
 " }}}2
+
+" command {{{2
+command! -nargs=0 LetModeLine call s:FirstModeLine()
 
 " autocommand {{{2
 aug LetModeline
