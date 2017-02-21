@@ -2,7 +2,7 @@
 " File:         ftplugin/vim_set.vim
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Last Update:  13th Jan 2017
+" Last Update:  21st Feb 2017
 " Requirements: lh-vim-lib
 "
 " ========================================================================
@@ -108,11 +108,11 @@ inoremap  <buffer> <M-p>
 inoremap  <buffer> <M-r> return
 
 " TODO: support multilines
-xnoremap <buffer> <c-l>e <c-\><c-n>:echo <c-r>=lh#visual#selection()<cr><cr>gv
-xnoremap <buffer> <c-l>d <c-\><c-n>:debug echo <c-r>=lh#visual#selection()<cr><cr>gv
-xnoremap <buffer> <c-l>x <c-\><c-n>:exe lh#visual#selection()<cr>gv
+xnoremap <silent><buffer> <c-l>e <c-\><c-n>:echo lh#object#to_string(<c-r>=lh#visual#selection()<cr>)<cr>gv
+xnoremap <silent><buffer> <c-l>d <c-\><c-n>:debug echo <c-r>=lh#visual#selection()<cr><cr>gv
+xnoremap <silent><buffer> <c-l>x <c-\><c-n>:exe lh#visual#selection()<cr>gv
 
-nnoremap <buffer> <c-l>x :exe getline('.')<cr>
+nnoremap <silent><buffer> <c-l>x :exe getline('.')<cr>
 
 " Loads MapNoContext()
 ""so $VIMRUNTIME/macros/misc_map.vim
