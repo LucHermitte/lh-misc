@@ -5,7 +5,7 @@
 " Version:      0.0.7
 let s:k_version = 007
 " Created:      07th May 2010
-" Last Update:  25th Oct 2016
+" Last Update:  21st Feb 2017
 "------------------------------------------------------------------------
 " Description:
 "       Commands and mapping to help maintaining VimL scripts
@@ -46,7 +46,7 @@ set cpo&vim
 " Local mappings {{{2
 
 nnoremap <buffer> K :help <c-r>=lh#vim#maintain#_current_help_word()<cr><cr>
-vnoremap <buffer> K <c-\><c-n>:help <c-r>=lh#visual#selection()<cr><cr>
+xnoremap <buffer> K <c-\><c-n>:help <c-r>=lh#visual#selection()<cr><cr>
 
 "------------------------------------------------------------------------
 " Local commands {{{2
