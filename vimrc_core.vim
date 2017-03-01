@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 17th Jan 2017
+" Last update   : 15th Feb 2017
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -96,6 +96,7 @@ set runtimepath+=$HOME/vimfiles/latexSuite
   set laststatus=2      " show status line?  Yes, always!
                         " Even for only one buffer.
   set lazyredraw        " [VIM5];  do not update screen while executing macros
+  let g:mapleader=' '   " Let's go spacemacs/vim's way!
   set magic             " Use some magic in search patterns?  Certainly!
   set modeline          " Allow the last line to be a modeline - useful when
                         " the last line in sig gives the preferred textwidth
@@ -465,7 +466,7 @@ command! WTF call lh#exception#say_what()
 :VimrcHelp " ydate   = print the current date                                  [A+C]
   iab ydate <C-R>=lh#time#date()<cr>
   command! -nargs=0 Ydate @=lh#time#date()<cr>
-:VimrcHelp " ,last   = updates the 'Last Update:03rd Feb 2017
+:VimrcHelp " ,last   = updates the 'Last Update:28th Feb 2017
   nnoremap <silent> ,last gg
         \\|:silent let fdsave = &foldenable
         \\|:silent set nofoldenable
@@ -845,8 +846,8 @@ set completeopt+=menuone
 
 " -- no mark ring/preview word {{{3
 let g:loaded_markring = 1000
-imap <m-p> <Plug>PreviewWord
-nmap <m-p> <Plug>PreviewWord
+" imap <m-p> <Plug>PreviewWord
+" nmap <m-p> <Plug>PreviewWord
 
 " -- diffchar {{{3
 nmap ]<f7> <Plug>ToggleDiffCharAll
