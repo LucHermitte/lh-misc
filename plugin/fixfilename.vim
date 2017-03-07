@@ -5,7 +5,7 @@
 " Version:      0.0.2.
 let s:k_version = 002
 " Created:      25th May 2016
-" Last Update:  03rd Nov 2016
+" Last Update:  07th Mar 2017
 "------------------------------------------------------------------------
 " Description:
 "       Have vim automagically translate filenames like "file:lnum"
@@ -27,16 +27,6 @@ let s:cpo_save=&cpo
 set cpo&vim
 " Avoid global reinclusion }}}1
 "------------------------------------------------------------------------
-augroup auto_jump_to_line
-  au!
-  " au BufNewFile *:* echomsg "New bad file"
-  " au BufCreate,BufNewFile *:* nested
-  au BufNewFile,BufWinEnter *:* nested
-        \ call lh#event#register_for_one_execution_at('BufEnter', function('s:FixFilename'), 'auto_jump_to_line_1', expand('<afile>:t'))
-augroup END
-
-command! -nargs=0 FixFileName :call s:FixFilename()
-
 "------------------------------------------------------------------------
 " Functions {{{1
 " Note: most functions are best placed into
@@ -45,7 +35,7 @@ command! -nargs=0 FixFileName :call s:FixFilename()
 " like functions that help building a vim-menu for this plugin.
 "
 " TODO: find the event that happens before BufEnter and that'll still trigger filetype detection and so on.
-function! s:FixFilename() abort
+function! s:FixFilename() abort " {{{2
   let orig = expand('%')
   let p = match(orig, ':\d')
   if p >= 0
@@ -60,7 +50,28 @@ function! s:FixFilename() abort
     filetype detect
   endif
 endfunction
-" Functions }}}1
+
+" s:getSNR([func_name]) {{{2
+function! s:getSNR(...)
+  if !exists("s:SNR")
+    let s:SNR=matchstr(expand('<sfile>'), '<SNR>\d\+_\zegetSNR$')
+  endif
+  return s:SNR . (a:0>0 ? (a:1) : '')
+endfunction
+
+"------------------------------------------------------------------------
+" Commands {{{1
+augroup auto_jump_to_line
+  au!
+  " au BufNewFile *:* echomsg "New bad file"
+  " au BufCreate,BufNewFile *:* nested
+  au BufNewFile,BufWinEnter *:* nested
+        \ call lh#event#register_for_one_execution_at('BufEnter', function(s:getSNR('FixFilename')), 'auto_jump_to_line_1', expand('<afile>:t'))
+augroup END
+
+command! -nargs=0 FixFileName :call s:FixFilename()
+
+" }}}1
 "------------------------------------------------------------------------
 let &cpo=s:cpo_save
 "=============================================================================
