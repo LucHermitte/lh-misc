@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 15th Feb 2017
+" Last update   : 07th Mar 2017
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -742,6 +742,11 @@ let g:VS_aspell_add_directly_to_dict = 1
 " -- local vimrc {{{3
 let g:local_vimrc = ['.config', '_vimrc_local.vim']
 
+" -- lh-vim-lib#project {{{3
+let g:lh#project = get(g:, 'lh#project', {})
+let g:lh#project.auto_chdir  = get(g:lh#project, 'auto_chdir', 1)
+let g:lh#project.auto_detect = get(g:lh#project, 'auto_detect', 1)
+
 " -- BTW {{{3
 let g:BTW = get(g:, 'BTW', {})
 let g:BTW.qf_position = 'bot'
@@ -1015,11 +1020,6 @@ let g:xml_jump_string = lh#marker#txt()
 "       and personal projects are stored, ...). Used to configure local_vimrc
 "       whitelists
 runtime machine-specifics.vim
-
-" -- lh-vim-lib#project {{{3
-runtime plugin/let.vim
-LetIfUndef g:lh#project.auto_chdir  = 1
-LetIfUndef g:lh#project.auto_detect = 1
 
 " -- BTW {{{3
 LetIfUndef g:BTW.make_in_background = 1
