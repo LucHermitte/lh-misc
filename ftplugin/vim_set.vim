@@ -2,7 +2,7 @@
 " File:         ftplugin/vim_set.vim
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Last Update:  21st Feb 2017
+" Last Update:  09th Mar 2017
 " Requirements: lh-vim-lib
 "
 " ========================================================================
@@ -110,7 +110,7 @@ inoremap  <buffer> <M-r> return
 " TODO: support multilines
 xnoremap <silent><buffer> <c-l>e <c-\><c-n>:echo lh#object#to_string(<c-r>=lh#visual#selection()<cr>)<cr>gv
 xnoremap <silent><buffer> <c-l>d <c-\><c-n>:debug echo <c-r>=lh#visual#selection()<cr><cr>gv
-xnoremap <silent><buffer> <c-l>x <c-\><c-n>:exe lh#visual#selection()<cr>gv
+xnoremap <silent><buffer> <c-l>x <c-\><c-n>:for ___line in <sid>PrepareMultilines(lh#visual#selection()) <bar> exe ___line <bar> endfor<cr>gv
 
 nnoremap <silent><buffer> <c-l>x :exe getline('.')<cr>
 
@@ -202,6 +202,12 @@ VIMHelp  "
 " ========================================================================
 if !exists("s:ftplugin_loaded") || exists('g:force_reload_vim_set')
   let s:ftplugin_loaded = 1
+
+  function! s:PrepareMultilines(selection) abort
+    let lines = split(a:selection, '\v'."\n".'(\s*\\)@!')
+    call map(lines, 'substitute(v:val, "\\v\\n\\s*\\", "", "g")')
+    return lines
+  endfunction
 
   " MapMenu {{{2
   function! s:MapMenu(code,text,binding, tex_cmd, ...)
