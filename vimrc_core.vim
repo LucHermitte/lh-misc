@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 07th Mar 2017
+" Last update   : 31st Mar 2017
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -466,7 +466,7 @@ command! WTF call lh#exception#say_what()
 :VimrcHelp " ydate   = print the current date                                  [A+C]
   iab ydate <C-R>=lh#time#date()<cr>
   command! -nargs=0 Ydate @=lh#time#date()<cr>
-:VimrcHelp " ,last   = updates the 'Last Update:28th Feb 2017
+:VimrcHelp " ,last   = updates the 'Last Update'
   nnoremap <silent> ,last gg
         \\|:silent let fdsave = &foldenable
         \\|:silent set nofoldenable
@@ -952,6 +952,7 @@ endf
 " ===================================================================
 " Load plugins {{{2
 function! s:ActivateAddons()
+  runtime addons/lh-vim-lib/autoload/lh/has.vim
   runtime addons/lh-vim-lib/autoload/lh/list.vim
   runtime addons/lh-vim-lib/autoload/lh/path.vim
   let vimfiles = lh#path#vimfiles()
@@ -1019,6 +1020,7 @@ let g:xml_jump_string = lh#marker#txt()
 "       Specific configuration for the current machine (i.e. where corporate
 "       and personal projects are stored, ...). Used to configure local_vimrc
 "       whitelists
+runtime plugin/let.vim
 runtime machine-specifics.vim
 
 " -- BTW {{{3
