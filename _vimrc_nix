@@ -13,8 +13,10 @@ if has("unix")
   let shell='tcsh'
 endif
 if has('gui_gtk')
+  " TODO: detect Xterminal properties to select the best font
   " set gfn=Luxi\ Mono\ 10
   set gfn=DejaVu\ Sans\ Mono\ for\ Powerline\ 7
+  " set gfn=DejaVu\ Sans\ Mono\ for\ Powerline\ 10
 else
   set gfn=-*-Fixed-medium-r-semiCondensed-*-13-120-*-*-C-*-iso8859-1
 endif
@@ -176,19 +178,19 @@ if &term =~ 'vt100\|teraterm' " with putty
   map! [20~ <F9>
   map  [33~ <S-F9>
   map! [33~ <S-F9>
-  "   
+  "
   "HINT:  F10
   map  [10~ <F10>
   map! [10~ <F10>
   map  [34~ <S-F10>
   map! [34~ <S-F10>
-  "   
+  "
   "HINT:  F11
   "map  [23~ <F11>
   "map! [23~ <F11>
   "map  [23~ <S-F11>
   "map! [23~ <S-F11>
-  "   
+  "
   "HINT:  F12
   "map  [24~ <F12>
   "map! [24~ <F12>
@@ -225,7 +227,7 @@ endif
 " }}}
 " -------------------------------------------------------------------
 "  Some Remappings for inaccessible keys (meta chars) {{{
-if 
+if
       \ (version >= 600) &&
       \ (!has('gui_running') || ($HOST != $REMOTEHOST))
   " \ (!has('gui_running') || ($HOST != $REMOTEHOST) || ($TERM !~ '^xterm\|^rxvt'))
@@ -260,7 +262,7 @@ if
   " -- BTW
   let g:BTW_key_config = '<C-F7>'
 
-  " -- 
+  " --
 endif
 
 if has('mac')
@@ -310,20 +312,20 @@ function! s:RunBrowser(url)
   silent exe ':!'.<sid>Browser().url.'&'
 endfunction
 
-nnoremap <silent> <C-L>e 
+nnoremap <silent> <C-L>e
       \ :call <sid>RunBrowser(
-      \    matchstr(escape(expand('<cWORD>'), '#'), 
+      \    matchstr(escape(expand('<cWORD>'), '#'),
       \    '\%(.\{-}\zs\%(news:\\|mailto:\\|ftp://\\|https\=://\)\)\=[^:;,<>]\+'
       \ ))<CR>
 
 " Problem with urls ending in .html
-" nnoremap <silent> <C-L>m 
+" nnoremap <silent> <C-L>m
 " \ :exe ':!start rundll32 url.dll,FileProtocolHandler '.
-" \    matchstr(expand('<cWORD>'), 
+" \    matchstr(expand('<cWORD>'),
 " \    '\%(.\{-}\zs\%(news:\\|mailto:\\|ftp://\\|https\=://\)\)\=[^:;,<>]\+'
 " \ )<CR>
 
-vnoremap <silent> <C-L>e 
+vnoremap <silent> <C-L>e
       \ :call <sid>RunBrowser(lh#visual#selection())<cr>
 
 
