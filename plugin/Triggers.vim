@@ -13,13 +13,14 @@
 "                shell. Will break with Vim 5.x that does not define :silent
 "      the v1.15 relies less on system-tools.
 "      the v1.16 relies on lh#path functions
+"      the v1.17 relies on lh#path functions
 "===========================================================================
 " Vim script file
 "
-" File:         Triggers.vim -- v1.16
+" File:         Triggers.vim -- v1.17
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Last Update:  03rd Jan 2017
+" Last Update:  31st May 2017
 "
 " Purpose:      Help to map a sequence of keys to activate and desactivate
 "               either a mapping, a setting or an abbreviation.
