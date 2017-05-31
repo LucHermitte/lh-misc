@@ -215,7 +215,7 @@ function! Trigger_BuildInv4Set( action )
       elseif sign =~ "+="
         let opp = opp . " ". var . "-=" . val
       elseif sign =~ "-="
-        let opp = opp . " ". var . "-=" . val
+        let opp = opp . " ". var . "+=" . val
       else
         exe "let val2 = &" .var
         let opp = opp . " ". var . "=" . val2
