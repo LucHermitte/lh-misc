@@ -4,7 +4,7 @@
 "		<URL:http://github.com/LucHermitte/lh-misc/>
 " Version:	2.0.0
 " Created:	22nd Apr 2010
-" Last Update:	03rd Mar 2017
+" Last Update:	14th Apr 2017
 "------------------------------------------------------------------------
 " Description:
 "   My local vimrc for vim script edition
@@ -16,7 +16,7 @@
 " }}}1
 "=============================================================================
 
-let s:k_version = 179
+let s:k_version = 189
 " Always loaded {{{1
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
@@ -57,6 +57,10 @@ if expand('%:p:h') !~ 'tests/lh'
     " This _vimrc_local.vim file!
     let opt.auto_discover_root = {'value': expand('%:p:h')}
   endif
+
+  " Update Vim &tags option w/ the tag file produced for the current project
+  call lh#tags#update_tagfiles() " uses p:tags_dirname
+
   if lh#option#is_unset(lh#project#define(s:, opt, 'subproject_'.name))
     finish
   endif
@@ -65,16 +69,19 @@ else
   " call lh#project#define(s:, {'name': 'Vim Tests'}, 'prj_tests')
   LetTo p:tags_dirname = expand('%:p:h')
   LetIfUndef p:tags_options.flags ' --exclude="*.vim"'
-endif
-" Update Vim &tags option w/ the tag file produced for the current project
-call lh#tags#update_tagfiles() " uses p:tags_dirname
 
-try
+  " Update Vim &tags option w/ the tag file produced for the current project
+  call lh#tags#update_tagfiles() " uses p:tags_dirname
+endif
+
+" TODO: only compute this once -> for parent project
+if lh#has#patch('patch-7.3.465')
   let s:tags = glob( $HOME. '/.vim/**/tags', 1, 1)
-catch /.*/
+else
   let s:tags = split(glob( $HOME. '/.vim/**/tags'), "\n")
-endtry
-call filter(s:tags, 'v:val !~ "\\v\\.vim[/\\\\](flavors|bundle)>"')
+endif
+" Filter out non VAM managed plugins, doc, tests
+call filter(s:tags, 'v:val !~ "\\v\\.vim[/\\\\](flavors|bundle|(.*[/\\\\])=(doc|tests))>"')
 
 call lh#option#add('l:tags', s:tags)
 
