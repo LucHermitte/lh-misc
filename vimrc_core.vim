@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 31st Mar 2017
+" Last update   : 12th Jun 2017
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME

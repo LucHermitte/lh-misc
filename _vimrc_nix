@@ -15,8 +15,8 @@ endif
 if has('gui_gtk')
   " TODO: detect Xterminal properties to select the best font
   " set gfn=Luxi\ Mono\ 10
-  set gfn=DejaVu\ Sans\ Mono\ for\ Powerline\ 7
-  " set gfn=DejaVu\ Sans\ Mono\ for\ Powerline\ 10
+  " set gfn=DejaVu\ Sans\ Mono\ for\ Powerline\ 7
+  set gfn=DejaVu\ Sans\ Mono\ for\ Powerline\ 10
 else
   set gfn=-*-Fixed-medium-r-semiCondensed-*-13-120-*-*-C-*-iso8859-1
 endif
