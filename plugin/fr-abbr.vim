@@ -1,8 +1,8 @@
 " File:		fr-abbr.vim
 " Author:	Luc Hermitte <hermitte at free.fr>
 " 		<URL:http://hermitte.free.fr/vim>
-" Last Update:	12th feb 2003
-" Purpose:	Abbréviations et corrections automatiques pour documents en
+" Last Update:	28th Jun 2017
+" Purpose:	AbbrÃ©viations et corrections automatiques pour documents en
 " 		francais.
 " Dependencies: words_tools.vim & Triggers.vim
 "
@@ -12,47 +12,48 @@
 "* Loading and triggering stuff
 "**********************************************************************
 "
-if !exists("g:FRupdateLoaded")
-  let g:FRupdateLoaded = 1
+if !exists('g:force_reload_fr_abbr') && get(g:, "FRupdateLoaded", 0) | finish | endif
 
-  " let s:this = $VIM . '/plugin/fr-abbr.vim'
-  if !exists('*Trigger_RebuildFile')
-    if exists(':runtime')
-      runtime macros/Triggers.vim plugin/Triggers.vim
-    elseif exists(':Runtime')
-      Runtime macros/Triggers.vim plugin/Triggers.vim
-    elseif filereadable(expand('<sfile>:p:h').'/Triggers.vim')
-      so <sfile>:p:h/Triggers.vim
-    endif
+let g:FRupdateLoaded = 1
+
+" let s:this = $VIM . '/plugin/fr-abbr.vim'
+if !exists('*Trigger_RebuildFile')
+  if exists(':runtime')
+    runtime macros/Triggers.vim plugin/Triggers.vim
+  elseif exists(':Runtime')
+    Runtime macros/Triggers.vim plugin/Triggers.vim
+  elseif filereadable(expand('<sfile>:p:h').'/Triggers.vim')
+    so <sfile>:p:h/Triggers.vim
   endif
-  if exists('*Trigger_RebuildFile')
-    let s:s_this = expand("%:p")
-    function! FRupdate()
-      unlet g:FRupdateLoaded
-      exe "so " . s:s_this
-      call Trigger_RebuildFile( 'FRabbrInit', s:s_this )
-    endfunction
-  else
-    command! -nargs=+ TRIGGER :echo "<args>" 
-  endif
-  
+endif
+if exists('*Trigger_RebuildFile')
+  let s:s_this = expand("%:p")
+  function! FRupdate()
+    unlet g:FRupdateLoaded
+    exe "so " . s:s_this
+    call Trigger_RebuildFile( 'FRabbrInit', s:s_this )
+  endfunction
+else
+  command! -nargs=+ TRIGGER :echo "<args>"
+endif
+
 
 "===========================================================================
 " complete/expand some words/abbreviation that end with 't'
 function! WordIn_ment()
   let prev = GetPreviousWord()
   ""echo '-'.prev . "-\n"
-    ""let i = input('1')
+  ""let i = input('1')
   if prev =~? 'm$'
     return "ent"
   elseif prev ==? 'communemen'
-    return "\<esc>\<S-left>\<right>cwommunément"
+    return "\<esc>\<S-left>\<right>cwommunÃ©ment"
   elseif prev ==? 'notamen'
     return "\<BS>\<BS>ment"
-  elseif prev =~? 'pr[ée]c[ée]demen'
+  elseif prev =~? 'pr[Ã©e]c[Ã©e]demen'
     return "\<BS>\<BS>ment"
-  elseif prev =~? 'extr[eéè]m\+emen'
-    return "\<esc>\<S-left>\<right>cwxtrêmement"
+  elseif prev =~? 'extr[eÃ©Ã¨]m\+emen'
+    return "\<esc>\<S-left>\<right>cwxtrÃªmement"
   elseif prev ==? 'incidamen'
     return "\<BS>\<BS>\<BS>\<BS>emment"
   elseif prev ==? 'cpd'
@@ -61,28 +62,28 @@ function! WordIn_ment()
     return "\<BS>endant"
   elseif prev ==? 'sv'
     return "\<BS>ouvent"
-  else 
+  else
     return "t"
   endif
 endfunction
 
 "===========================================================================
 function! FRisk()
-  " set isk += àâçéèêëîïôöüûù
-  set isk+=à
-  set isk+=â
-  set isk+=ç
-  set isk+=é
-  set isk+=è
-  set isk+=ê
-  set isk+=ë
-  set isk+=î
-  set isk+=ï
-  set isk+=ô
-  set isk+=ö
-  set isk+=ü
-  set isk+=û
-  set isk+=ù
+  " set isk += Ã Ã¢Ã§Ã©Ã¨ÃªÃ«Ã®Ã¯Ã´Ã¶Ã¼Ã»Ã¹
+  set isk+=Ã 
+  set isk+=Ã¢
+  set isk+=Ã§
+  set isk+=Ã©
+  set isk+=Ã¨
+  set isk+=Ãª
+  set isk+=Ã«
+  set isk+=Ã®
+  set isk+=Ã¯
+  set isk+=Ã´
+  set isk+=Ã¶
+  set isk+=Ã¼
+  set isk+=Ã»
+  set isk+=Ã¹
 endfunction
 
 function! FRabbrInit()
@@ -97,8 +98,8 @@ function! FRabbrInit()
   iab Qd   Quand
   iab dc   donc
   iab Dc   Donc
-  "iab csq  conséquence
-  inoremap csq conséquence
+  "iab csq  consÃ©quence
+  inoremap csq consÃ©quence
   iab lrsq lorsque
   iab ds   dans
   iab Ds   Dans
@@ -122,20 +123,20 @@ function! FRabbrInit()
   ""inoremap tt<tab>    tout
   ""inoremap ts<tab>    tous
   iab chx   choix
-  iab vav  vis-à-vis
-  iab cad  c'est à dire
-  iab Cad  C'est à dire
-  iab Malgrè  Malgré
-  iab Malgrès Malgré
-  iab Malgrés Malgré
-  iab Malgre  Malgré
-  iab malgrè  malgré
-  iab malgrès malgré
-  iab malgrés malgré
-  iab malgre  malgré
+  iab vav  vis-Ã -vis
+  iab cad  c'est Ã  dire
+  iab Cad  C'est Ã  dire
+  iab MalgrÃ¨  MalgrÃ©
+  iab MalgrÃ¨s MalgrÃ©
+  iab MalgrÃ©s MalgrÃ©
+  iab Malgre  MalgrÃ©
+  iab malgrÃ¨  malgrÃ©
+  iab malgrÃ¨s malgrÃ©
+  iab malgrÃ©s malgrÃ©
+  iab malgre  malgrÃ©
 
-  inoremap ^m   même
-  inoremap ^M   Même
+  inoremap ^m   mÃªme
+  inoremap ^M   MÃªme
   inoremap ^c   comme
   inoremap ^C   Comme
   iab pr   pour
@@ -147,36 +148,36 @@ function! FRabbrInit()
   ""inoremap tn<tab>   tion
 
   "===========================================================================
-  " mots bien récurrents dans mon cas
-  iab pb   problème
-  iab Pb   Problème
+  " mots bien rÃ©currents dans mon cas
+  iab pb   problÃ¨me
+  iab Pb   ProblÃ¨me
   iab fn   fonction
-  iab syst système
+  iab syst systÃ¨me
   iab ens ensemble
 
-  inoremap vcl véhicule
+  inoremap vcl vÃ©hicule
   inoremap bcl boucle
   inoremap carrouf carrefour
   inoremap Carrouf Carrefour
-  inoremap ctrl contrôle
-  inoremap Ctrl Contrôle
+  inoremap ctrl contrÃ´le
+  inoremap Ctrl ContrÃ´le
   inoreab cmd commande
   inoreab cong congestion
   inoremap cpl couple
   inoremap rm<tab> remarque
   inoremap alg<tab> algorithme
-  inoremap xp<tab> expérience
-  inoremap Xp<tab> Expérience
-  inoremap XP<tab> Expérience
-  inoremap don<tab> données
-  inoreab déf définition
+  inoremap xp<tab> expÃ©rience
+  inoremap Xp<tab> ExpÃ©rience
+  inoremap XP<tab> ExpÃ©rience
+  inoremap don<tab> donnÃ©es
+  inoreab dÃ©f dÃ©finition
   inoreab BA base d'apprentissage
   inoreab BAs bases d'apprentissage
 
   iab pex par exemple
   iab Pex Par exemple
 
-  " neural est relatif au système nerveu. Neuronal au neurone !!!
+  " neural est relatif au systÃ¨me nerveu. Neuronal au neurone !!!
   inoremap neura neurona
   inoremap Neura Neurona
 
@@ -185,16 +186,16 @@ function! FRabbrInit()
   " Corrections
   inoremap raffic rafic
 
-  inoremap reseau réseau
-  inoremap Reseau Réseau
-  inoremap couteu coûteu
+  inoremap reseau rÃ©seau
+  inoremap Reseau RÃ©seau
+  inoremap couteu coÃ»teu
 
-  inoremap ontrole ontrôle
+  inoremap ontrole ontrÃ´le
 
-  inoremap facon façon
+  inoremap facon faÃ§on
 
-  inoremap video vidéo
-  inoremap Video Vidéo
+  inoremap video vidÃ©o
+  inoremap Video VidÃ©o
 
   inoremap t <c-r>=WordIn_ment()<cr>
   inoremap permanante permanente
@@ -203,7 +204,7 @@ function! FRabbrInit()
   iab LE Le
   iab LEs Les
   iab LA La
-  iab tres très
+  iab tres trÃ¨s
   iab JE Je
 
   iab plsu plus
@@ -214,24 +215,20 @@ function! FRabbrInit()
 
   inoreab ,, ,
 
-  TRIGGER "echo 'Abbréviations activées'", "echo 'Abbréviations désactivées'"
+  TRIGGER "echo 'AbbrÃ©viations activÃ©es'", "echo 'AbbrÃ©viations dÃ©sactivÃ©es'"
   let &isk = s_isk
 endfunction
 
 "===========================================================================
-  if exists('*Trigger_Function')
-    call Trigger_Function('<leader>a', 'FRabbrInit', expand('<sfile>:p'), 0, 0 ) 
-    if &cmdheight < 2
-      " because of the echo... Don't show it
-      imap <F3> <SPACE><ESC><leader>aa<BS>
-    else
-      " Have the room the show the echo
-      imap <F3> <C-O><leader>a
-    endif
+if exists('*Trigger_Function')
+  call Trigger_Function('<Plug>(do-toggle-fr-abbreviations)', 'FRabbrInit', expand('<sfile>:p'), 0, 0 )
 
-    " <C-F3> reload the abbreviations
-    " nnoremap <C-F3> :call FRupdate()<CR>
-    " exe "nnoremap <S-F3> :sp ".expand("<sfile>:p")."\<CR>"
+  nmap <Plug>(toggle-fr-abbreviations) <Plug>(do-toggle-fr-abbreviations)
+  if !hasmapto('<Plug>(toggle-fr-abbreviations)', 'n')
+    nmap <silent> <unique> <leader>tfa <Plug>(toggle-fr-abbreviations)
   endif
-  
+
+  " <C-F3> reload the abbreviations
+  " nnoremap <C-F3> :call FRupdate()<CR>
+  " exe "nnoremap <S-F3> :sp ".expand("<sfile>:p")."\<CR>"
 endif
