@@ -14,13 +14,14 @@
 "      the v1.15 relies less on system-tools.
 "      the v1.16 relies on lh#path functions
 "      the v1.17 relies on lh#path functions
+"      the v1.18 Modernize parts of the code
 "===========================================================================
 " Vim script file
 "
-" File:         Triggers.vim -- v1.17
+" File:         Triggers.vim -- v1.18
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Last Update:  31st May 2017
+" Last Update:  28th Jun 2017
 "
 " Purpose:      Help to map a sequence of keys to activate and desactivate
 "               either a mapping, a setting or an abbreviation.
@@ -84,11 +85,32 @@
 "
 "---------------------------------------------------------------------------
 " Avoid reinclusion
-if exists('g:do_load_Triggers') || !exists('g:Triggers_loaded')
-  let g:Triggers_loaded = 1
-  let cpop = &cpoptions
-  set cpoptions-=C
-"
+if ! get(g:, 'force_reload_Triggers', 0) && exists('g:Triggers_loaded')
+  finish
+endif
+
+let g:Triggers_loaded = 1
+let cpop = &cpoptions
+set cpoptions-=C
+
+let s:verbose = get(s:, 'verbose', 0)
+function! Trigger_Verbose(...)
+  if a:0 > 0 | let s:verbose = a:1 | endif
+  return s:verbose
+endfunction
+
+function! s:Log(...)
+  call call('lh#log#this', a:000)
+endfunction
+
+function! s:Verbose(...)
+  if s:verbose && exists("g:loaded_vimrc")
+    call call('s:Log', a:000)
+  endif
+endfunction
+
+
+
 function! CheckDeps(func,file,path,or) " {{{
   if !exists(a:func)
     if version < 600
@@ -105,7 +127,7 @@ function! CheckDeps(func,file,path,or) " {{{
   if !exists(a:func)
     echohl ErrorMsg
     echo "<Triggers.vim> needs '".a:func."()' defined in <".a:file.">".
-            \ ((''!=a:or) ? ' or in <'.a:or.'>' : '')
+          \ ((''!=a:or) ? ' or in <'.a:or.'>' : '')
     echo "   Please check for it on <http://hermitte.free.fr/vim/>\n"
     echohl None
     return 0
@@ -157,6 +179,7 @@ command! TRIGGER call TRIGGER(<args>)
 " the very end of your .vimrc.
 " }}}
 function! Trigger_DoSwitch( ... )
+  call s:Verbose('Trigger_DoSwitch(%1)', a:000)
   if (a:0 < 3) || (a:0 > 5)
     echohl ErrorMsg
     echo "Trigger_DoSwitch(keys, action, opposite [,verbose [,execute] ] )? ".
@@ -175,18 +198,24 @@ function! Trigger_DoSwitch( ... )
   let a1 = substitute( a:1, '<.\{-}>', '<c-v>\0', 1)
   let a2 = substitute( a:2, '<.\{-}>', '<c-v>\0', 2)
   let a3 = substitute( a:3, '<.\{-}>', '<c-v>\0', 3)
+
+  let cmd = {}
+  let cmd.mode = 'n'
+  let cmd.nore = 1
+  let cmd.lhs  = a:1
   if l_exec == 1
-    exe "noremap ".a:1." :call Trigger_DoSwitch('".a1."','".
-          \     a3."','".a2."',".l_verb.",1)<CR>"
+    let cmd.rhs  = ':call Trigger_DoSwitch('.string(a:1).', '.string(a:3).', '.string(a:2). ', '.string(l_verb).', 1)<cr>'
+    call s:Verbose('%1', a:2)
     exe a:2
-    if (l_verb==1) && exists("g:loaded_vimrc")
-      echo a:2
-    endif
   else
     " delay the execution
-    exe "noremap ".a:1." :call Trigger_DoSwitch('".a1."','".
-          \     a2."','".a3."',".l_verb.",1)<CR>"
+    let cmd.rhs  = ':call Trigger_DoSwitch('.string(a:1).', '.string(a:2).', '.string(a:3). ', '.string(l_verb).', 1)<cr>'
   endif
+  " TODO: find a way to keep <leader> as <leader>, and don't it to anything
+  " else, in particulary, don't change it in a space (when leader is space)
+  " Unfortunatelly, in `:map µ :echo "<leader>a"`, the leader is changed!
+  let cmd.rhs = substitute(cmd.rhs, "'<leader>", "mapleader.'", 'g')
+  call lh#mapping#define(cmd)
 endfunction
 " }}}
 "---------------------------------------------------------------------------
@@ -212,14 +241,14 @@ function! Trigger_BuildInv4Set( action )
       let sets = substitute( sets, pattern_set, '\7', '')
       "echo var . sign . val . "-- " . sets
       if val == ""
-        let opp = opp . ' ' . var . "!"
+        let opp .=  ' ' . var . "!"
       elseif sign =~ "+="
-        let opp = opp . " ". var . "-=" . val
+        let opp .=  " ". var . "-=" . val
       elseif sign =~ "-="
-        let opp = opp . " ". var . "+=" . val
+        let opp .=  " ". var . "+=" . val
       else
         exe "let val2 = &" .var
-        let opp = opp . " ". var . "=" . val2
+        let opp .=  " ". var . "=" . val2
       endif
       if sets == ""
         break
@@ -361,6 +390,7 @@ endfunction
 " Ex: Trigger_Define( '<F4>', 'set hlsearch' )
 "
 function! Trigger_Define( ... )
+  call s:Verbose('Trigger_Define(%1)', a:000)
   if (a:0 < 2) || (a:0 > 3)
     echohl ErrorMsg
     echo '?Trigger_Define(keys, action [,verbose] )? '.
@@ -373,11 +403,12 @@ function! Trigger_Define( ... )
     return
     "return a:2
   else
-    if a:0 == 2
-      call Trigger_DoSwitch( a:1, a:2, opp )
-    elseif a:0 == 3
-      call Trigger_DoSwitch( a:1, a:2, opp, a:3 )
-    endif
+    call call('Trigger_DoSwitch', [a:1, a:2, opp] + a:000[2:])
+    " if a:0 == 2
+      " call Trigger_DoSwitch( a:1, a:2, opp )
+    " elseif a:0 == 3
+      " call Trigger_DoSwitch( a:1, a:2, opp, a:3 )
+    " endif
   endif
 endfunction
 " }}}
@@ -391,10 +422,10 @@ function! Trigger_FileName(funcname)
   " call confirm('RT ='.$VIMRUNTIME, 'ok')
   if (version >= 600) " {{{
     " let path = matchstr(
-          " \      lh#path#fix(&runtimepath,1),
-          " \      substitute(lh#path#fix(expand('$HOME'),1), '\\', '.', 'g')
-          " \         .'.\(vimfiles\|\.vim\)',
-          " \    ) . '/.triggers/'
+    " \      lh#path#fix(&runtimepath,1),
+    " \      substitute(lh#path#fix(expand('$HOME'),1), '\\', '.', 'g')
+    " \         .'.\(vimfiles\|\.vim\)',
+    " \    ) . '/.triggers/'
     let where =  lh#path#to_regex($HOME.'/').'\(vimfiles\|.vim\)'
     let path = lh#path#find(&rtp, where). '/.triggers/'
     " call confirm('pathv6 = '.path, 'ok')
@@ -406,13 +437,13 @@ function! Trigger_FileName(funcname)
     if 1 != lh#system#EnsurePath(path)
       let path = expand("$HOME")
       if filereadable(path.'/.vim')
-        let path = path . "/.vim/"
+        let path .=  "/.vim/"
       elseif filereadable(path.'/vimfiles')
-        let path = path . "/vimfiles/"
+        let path .=  "/vimfiles/"
       else
-        let path = path . "/vimfiles/"
+        let path .=  "/vimfiles/"
       endif
-      let path = path . '/.triggers/'
+      let path .=  '/.triggers/'
       " call input('pathv5bis = '.path)
       call lh#system#EnsurePath(path)
     endif
@@ -436,58 +467,61 @@ endfunction
 function! Trigger_File(funcname,inputfilename, outputfilename)
   "0- Change some settings
   " Don't report changes for :substitute, there will be many of them.
-  let old_title = &title
-  let old_icon = &icon
-  let old_report = &report
-  let old_search = @/
-  let old_magic = &magic
+  let cleanup = lh#on#exit()
+        \.restore('&title')
+        \.restore('&icon')
+        \.restore('&report')
+        \.restore('&magic')
+        \.restore('@/')
+        \.restore('&isk')
   set notitle noicon
   set report=1000000
   set magic
   set modifiable
+  set isk&vim
+  try
+    " 1- Load a:inputfilename
+    %delete _
+    :exe '0r '.a:inputfilename
 
-  " 1- Load a:inputfilename
-  %delete _
-  :exe '0r '.a:inputfilename
+    "   disable folding
+    if version >= 600 | normal! zn
+    endif
 
-  "   disable folding
-  if version >= 600 | normal! zn
-  endif
+    "2- Extract the function only
+    call s:Verbose('%1', '0,/^\s*fu\%[nction]!\=\s*' . a:funcname . '\s*()/delete _')
+    exe '0,/^\s*fu\%[nction]!\=\s*' . a:funcname . '\s*()/delete _'
+    normal! gg
+    call s:Verbose('%1', '/^\s*endf\%[function]/+1,$delete _')
+    /^\s*endf\%[function]/+1,$delete _
 
-  "2- Extract the function only
-  exe '0,/^\s*fu\%[nction]!\=\s*' . a:funcname . '\s*()/delete _'
-  normal! gg
-  /^\s*endf\%[function]/+1,$delete _
+    "3- Apply Trigger_DoSwitch() on all the corresponding lines
+    let p_set   = '\%(set\)'
+    let p_abbrv = '\([ic]\=\(nore\)\=ab\%[br]\=\)'
+    let p_map   = '\(!\=[nvoic]\=\(nore\)\=map\)'
+    let pattern = '^\s*\('.p_abbrv.'\|'.p_map.'\|'.p_set.'\)'
+    exe 'g/'.pattern.'/ call setline(line("."),Trigger_BuildInv(getline(line(".")), 0))'
+    let p_trig  = '^\(\s*TRIGGER\s*\)\([^,]*\)\s*,\s*\([^,]*\)'
+    " call append("$", "TRIGGER 1 , 2")
+    " No warning about a pattern not found in :%s ; changed to silent!
+    silent! exe '%s/'.p_trig.'/\1\3, \2/'
+    " $delete _
+    call append( "0", 'function! Switched_' . a:funcname . '()' )
 
-  "3- Apply Trigger_DoSwitch() on all the corresponding lines
-  let p_set   = '\%(set\)'
-  let p_abbrv = '\([ic]\=\(nore\)\=ab\%[br]\=\)'
-  let p_map   = '\(!\=[nvoic]\=\(nore\)\=map\)'
-  let pattern = '^\s*\('.p_abbrv.'\|'.p_map.'\|'.p_set.'\)'
-  exe 'g/'.pattern.'/ call setline(line("."),Trigger_BuildInv(getline(line(".")), 0))'
-  let p_trig  = '^\(\s*TRIGGER\s*\)\([^,]*\)\s*,\s*\([^,]*\)'
-  " call append("$", "TRIGGER 1 , 2")
-  " No warning about a pattern not found in :%s ; changed to silent!
-  silent! exe '%s/'.p_trig.'/\1\3, \2/'
-  " $delete _
-  call append( "0", 'function! Switched_' . a:funcname . '()' )
+    "4- And wq!
+    " Reindent
+    if (&indentexpr == 'GetVimIndent()') && exists('g:loaded_matchit')
+      normal =%
+    endif
+    " Force fileformat to unix
+    set ff=unix
+    " save
+    exe "silent w! " . a:outputfilename | bd
 
-  "4- And wq!
-  " Reindent
-  if (&indentexpr == 'GetVimIndent()') && exists('g:loaded_matchit')
-    normal =%
-  endif
-  " change fileformat to unix
-  set ff=unix
-  " save
-  exe "silent w! " . a:outputfilename | bd
-
-  "5- Restore old settings
-  let &report = old_report
-  let &title = old_title
-  let &icon = old_icon
-  let &magic = old_magic
-  let @/ = old_search
+    "5- Restore old settings
+  finally
+    call cleanup.finalize()
+  endtry
 endfunction
 " }}}
 "---------------------------------------------------------------------------
@@ -500,20 +534,26 @@ endfunction
 " <$VIMRUNTIME/.triggers/"funcname".switch>. If the file does not
 " exists, it is build thanks to Trigger_File().
 " }}}
-function! Trigger_Function(...)
+function! Trigger_Function(...) abort
+  call s:Verbose('Trigger_Function(%1)', a:000)
   if (a:0 < 3) || (a:0 > 5)
     echohl ErrorMsg
     echo "?Trigger_Function(keys, funcname, fileassoc [,verbose [,execute]])? ".
           \      "incorrect number of arguments..."
     let p="(" | let i=1
     while i < a:0
-      exe "let p = p . a:".i.".', '"
-      let i = i + 1
+      exe "let p .=  a:".i.".', '"
+      let i +=  1
     endwhile
     echo p.")"
     echohl None
     return
   endif
+  call lh#assert#value(a:1).not().empty("Keybinding expected as 1st parameter")
+  call lh#assert#value(a:2).not().empty("Function name expected as 2nd parameter")
+  call lh#assert#value(len(lh#command#matching_askvim('function', a:2.'('))).eq(1, 'Function name expected as 2nd parameter')
+  call lh#assert#value(a:3).not().empty("File expected as 3rd parameter")
+  call lh#assert#value(a:3).verifies('filereadable', [], "File expected as 3rd parameter")
   "1- Checks wheither the function has already been computed to its opposite
   "or not.
   let filename = Trigger_FileName(a:2)
@@ -548,7 +588,7 @@ endfunction
 " let g:Triggers_this = expand("<sfile>:p")
 "---------------------------------------------------------------------------
 function! Trigger_RebuildFile(funcname, fileassoc) " {{{
-  echo "executing: Trigger_RebuildFile(".a:funcname.",".a:fileassoc.")."
+  call s:Verbose('Trigger_RebuildFile(%1, %2)', a:funcname, a:fileassoc)
   ""let this     = $VIMRUNTIME . '/macros/Triggers.vim'
   " -e -s => silent, no gvim
   let filename = Trigger_FileName(a:funcname)
@@ -565,6 +605,5 @@ endfunction
 "---------------------------------------------------------------------------
 " Avoid reinclusion
 let &cpoptions = cpop
-endif
 "===========================================================================
 " vim600: set fdm=marker:
