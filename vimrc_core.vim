@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 12th Jun 2017
+" Last update   : 16th Jun 2017
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -940,6 +940,9 @@ fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_n
           " When accessing through a proxy with corkcrew
           let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'ssh://ssh.\1/\2', '')
           let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git@\(bitbucket.org\)[/:]\(.*\)', 'ssh://git@\1/\2', '')
+        elseif exists('$https_proxy')
+          let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'https://\1/\2', '')
+          let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git@\(bitbucket.org\)[/:]\(.*\)', 'https://git@\1/\2', '')
         else
           " When every thing works
           let a:plugin_sources[k]['url'] = substitute(a:plugin_sources[k]['url'], 'git://\(github.com\)/\(.*\)', 'git@\1:\2', '')
