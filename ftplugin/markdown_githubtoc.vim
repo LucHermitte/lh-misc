@@ -2,10 +2,10 @@
 " File:         ftplugin/markdown_githubtoc.vim                   {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} gmail {dot} com>
 "		<URL:http://github.com/LucHermitte/lh-misc>
-" Version:      0.0.1.
-let s:k_version = 001
+" Version:      0.0.2
+let s:k_version = 002
 " Created:      24th Nov 2015
-" Last Update:
+" Last Update:  10th Jul 2017
 "------------------------------------------------------------------------
 " Description:
 "       Generate TOC for a github markdown file
@@ -35,7 +35,7 @@ set cpo&vim
 "------------------------------------------------------------------------
 " Local commands {{{2
 
-command! -b -nargs=0 -range=% Toc <line1>,<line2>call s:Toc()
+command! -b -nargs=0 -range=% Toc <line1>,<line2>call lh#markdown#toc#_generate()
 
 "=============================================================================
 " Global Definitions {{{1
@@ -55,22 +55,6 @@ let g:loaded_ftplug_markdown_githubtoc = s:k_version
 " Keep here only the functions are are required when the ftplugin is
 " loaded, like functions that help building a vim-menu for this
 " ftplugin.
-
-" Function: s:Toc() {{{3
-function! s:Toc() abort range
-  let lines = getline(a:firstline, a:lastline)
-  call filter(lines, 'v:val =~ "^#"')
-  let titles = map(copy(lines), "split(v:val, '^\\v#+\\zs\\s+\\ze')")
-  call map(titles, 'v:val + [v:val[-1]]')
-  call lh#list#map_on(titles, 1, 'substitute(v:val, "\\v[^-A-Za-z-1-9_ ]", "", "g")' )
-  call lh#list#map_on(titles, 1, 'substitute(v:val, "\\v\\s+", "-", "g")' )
-  call lh#list#map_on(titles, 1, 'tolower(v:val)' )
-  call lh#list#map_on(titles, 0, 'substitute(v:val, "\\v.*", "\\=strlen(submatch(0))", "")' )
-  let level_min = min(lh#list#get(titles, 0)) - 1
-  let t2 = lh#list#map_on(deepcopy(titles), 0, 'repeat("  ", v:val -'.level_min.') . "* "')
-  let toc = map(copy(t2), 'v:val[0]."[".v:val[2]."](#".v:val[1].")"')
-  put=toc
-endfunction
 
 " Functions }}}2
 "------------------------------------------------------------------------
