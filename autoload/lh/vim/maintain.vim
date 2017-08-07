@@ -5,7 +5,7 @@
 " Version:      0.0.8.
 let s:k_version = 008
 " Created:      05th Sep 2016
-" Last Update:  08th Nov 2016
+" Last Update:  07th Aug 2017
 "------------------------------------------------------------------------
 " Description:
 "       Support functions for ftplugin/vim/vim_maintain.vim
@@ -108,13 +108,26 @@ function! lh#vim#maintain#_go_verbose_complete(ArgLead, CmdLine, CursorPos) abor
 endfunction
 
 " Function: lh#vim#maintain#_save_pre_hook() {{{3
+if exists('*undotree')
+  function! s:must_update_time_stamp() abort
+    let ut = undotree()
+    return ut.save_last < ut.save_cur
+  endfunction
+else
+  function! s:must_update_time_stamp() abort
+    return &modified
+  endfunction
+endif
+
 function! lh#vim#maintain#_save_pre_hook() abort
   let pos = getpos('.')
   let cleanup = lh#on#exit()
         \.register('call setpos(".", '.string(pos).')')
   try
-    :silent! %s/\s\+$//
-    if &modified
+    if lh#option#get('vim_maintain.remove_trailing', 1)
+      :silent! %s/\s\+$//
+    endif
+    if s:must_update_time_stamp()
       cal cursor(0,0)
       let [l,c] = searchpos('\v\clast (changes|update)\s*:\s*\zs', 'n')
       if [l,c] != [0,0]
