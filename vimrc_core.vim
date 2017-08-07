@@ -60,9 +60,7 @@ set runtimepath+=$HOME/vimfiles/latexSuite
   set noequalalways     " don't resize windows after splitting or closing a window
   set noerrorbells      " damn this beep!  ;-)
   set esckeys           " allow usage of curs keys within isrt mode
-  if &modifiable
-  set fileformat=unix   " ALWAYS !!!!!"
-  endif
+  set fileformats=unix,dos " Give the priority to UNIX, always.
   set formatoptions=cqrt
                         " Options for the "txt format" cmd ("gq")
                         " I need all those options (but 'o')!
