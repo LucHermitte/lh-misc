@@ -896,8 +896,12 @@ let s:my_plugins = [
       \ 'lh-misc'            ,
       \ 'lh-cmake'           ,
       \ 'dirdiff-svn'        ,
-      \ 'vim-clang@lh'
       \]
+
+if has('python')
+  let s:my_plugins += ['vim-clang@lh']
+endif
+
 let g:vim_addon_manager = get(g:, 'vim_addon_manager', {})
 let g:vim_addon_manager['plugin_sources'] = {}
 let g:vim_addon_manager['plugin_sources']['vim-jira-complete'] = { 'type': 'git', 'url': 'ssh://ssh.github.com/LucHermitte/vim-jira-complete'}
