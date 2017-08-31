@@ -16,7 +16,7 @@
 " }}}1
 "=============================================================================
 
-let s:k_version = 189
+let s:k_version = 190
 " Always loaded {{{1
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
@@ -69,6 +69,7 @@ else
   " call lh#project#define(s:, {'name': 'Vim Tests'}, 'prj_tests')
   LetTo p:tags_dirname = expand('%:p:h')
   LetIfUndef p:tags_options.flags ' --exclude="*.vim"'
+  LetTo p:vim_maintain.remove_trailing = 0
 
   " Update Vim &tags option w/ the tag file produced for the current project
   call lh#tags#update_tagfiles() " uses p:tags_dirname
