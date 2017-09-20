@@ -5,7 +5,7 @@
 " Version:      0.0.8.
 let s:k_version = 008
 " Created:      05th Sep 2016
-" Last Update:  07th Aug 2017
+" Last Update:  20th Sep 2017
 "------------------------------------------------------------------------
 " Description:
 "       Support functions for ftplugin/vim/vim_maintain.vim
@@ -111,7 +111,8 @@ endfunction
 if exists('*undotree')
   function! s:must_update_time_stamp() abort
     let ut = undotree()
-    return ut.save_last < ut.save_cur
+    call s:Verbose("must_update_time_stamp: %1 < %2 ? %3 (%4)", ut.save_last, ut.save_cur, ut.save_last < ut.save_cur, ut)
+    return ut.save_last <= ut.save_cur
   endfunction
 else
   function! s:must_update_time_stamp() abort
