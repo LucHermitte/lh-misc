@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 16th Jun 2017
+" Last update   : 21st Sep 2017
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -25,7 +25,7 @@ set runtimepath+=$HOME/vimfiles/latexSuite
   runtime plugin/help.vim
   if exists("*BuildHelp")
     command! -nargs=1 VimrcHelp :call BuildHelp("vimrc", <q-args>)
-     noremap <S-F1> :call ShowHelp('vimrc')<cr>
+    nnoremap <S-F1> :call ShowHelp('vimrc')<cr>
     inoremap <S-F1> <c-o>:call ShowHelp('vimrc')
     call ClearHelp("vimrc")
   else
@@ -226,11 +226,13 @@ endif
 " Don't use Ex mode, use Q for formatting
 :VimrcHelp " Q : formatting key
   nnoremap Q gq
-  vnoremap Q gq
-  noremap  gQ Q         " Garde le mode EX disponible
+  xnoremap Q gq
+  nnoremap gQ Q         " Garde le mode EX disponible
+  xnoremap gQ Q         " Garde le mode EX disponible
 "
 :VimrcHelp " Y : yank till the end of the line
-  noremap Y y$
+  nnoremap Y y$
+  xnoremap Y y$
 " Disable the command 'K' (keyword lookup) by mapping it
 " to an "empty command".  (thanks, Lawrence! :-):
 " map K :<CR>
@@ -239,13 +241,14 @@ endif
 :VimrcHelp "  Disable the suspend for ^Z ; call shell
 " I use Vim under "screen" where a suspend would lose the
 " connection to the " terminal - which is what I want to avoid.
-  map <C-Z> :shell
+  nnoremap <C-Z> :shell
 "
 :VimrcHelp " Make CTRL-^ rebound to the *column* in the previous file
   noremap <C-^> <C-^>`"
 "
 :VimrcHelp " Make 'gf' rebound to last cursor position (line *and* column)
-  noremap gf gf`"
+  nnoremap gf gf`"
+  xnoremap gf gf`"
 "
 :VimrcHelp " The command {number}CTRL-G show the current buffer number, too.
 " This is yet another feature that vi does not have.
@@ -335,6 +338,7 @@ endif
 :VimrcHelp " <F4>    : run grep                                                [N]
 :VimrcHelp " <F5>    : toggle winaltkeys option                                [N]
    set winaltkeys=no
+   "TODO: use lh#menu#def_toggle
        map <F5> ]!wakyes!
    noremap ]!wakyes! :map <F5> ]!wakmenu!<CR>:set winaltkeys=yes<CR>
    noremap ]!wakmenu! :map <F5> ]!wakno!<CR>:set winaltkeys=menu<CR>
@@ -342,14 +346,18 @@ endif
 "
 :VimrcHelp " <F6>    : capitalize the previous/current word                    [I+N]
  inoremap <F6> <c-o>gUiw
-  noremap <F6> gUiw
+ nnoremap <F6> gUiw
+ xnoremap <F6> gUiw
  inoremap <S-F6> <c-o>gUiW
-  noremap <S-F6> gUiW
+ nnoremap <S-F6> gUiW
+ xnoremap <S-F6> gUiW
 
  inoremap <C-F6> <c-o>guiw
-  noremap <C-F6> guiw
+ nnoremap <C-F6> guiw
+ xnoremap <C-F6> guiw
  inoremap <C-S-F6> <c-o>guiW
-  noremap <C-S-F6> guiW
+ nnoremap <C-S-F6> guiW
+ xnoremap <C-S-F6> guiW
 "
 :VimrcHelp " <F7>    : toggle autoindent                                       [I+N]
    set ai
@@ -364,9 +372,9 @@ endif
 :VimrcHelp " <F10>   : EXIT                                                    [I+N]
 :VimrcHelp " <S-F10> : EXIT!                                                   [I+N]
   inoremap <F10> <esc>:q<cr>
-   noremap <F10> :q<cr>
+  nnoremap <F10> :q<cr>
   inoremap <S-F10> <esc>:q!<cr>
-   noremap <S-F10> :q!<cr>
+  nnoremap <S-F10> :q!<cr>
 "
 :VimrcHelp " <F11>   : Previous Buffer                                         [I+N]
   inoremap <F11> <esc>:bprev<CR>
@@ -384,7 +392,7 @@ endif
 " map <backspace>
     noremap <BS> X
   " backspace in Visual mode deletes selection
-   vnoremap <BS> d
+   xnoremap <BS> d
 
 :VimrcHelp " <M-PageUp> and <M-PageDown> Go to the next/previous windows and maximize it
 " And leave <C-PageUp> to do the default tab next and prev
@@ -453,12 +461,12 @@ command! WTF call lh#exception#say_what()
 :VimrcHelp " ,Sws    = Make whitespace visible:                                [N+V]
 "     Sws = show whitespace
   nmap ,Sws :%s/ /_/g<C-M>
-  vmap ,Sws :%s/ /_/g<C-M>
+  xmap ,Sws :%s/ /_/g<C-M>
 "
 "     Sometimes you just want to *see* that trailing whitespace:
 :VimrcHelp " Stws    = show trailing whitespace                                [N+V]
   nmap ,Stws :%s/  *$/_/g<C-M>
-  vmap ,Stws :%s/  *$/_/g<C-M>
+  xmap ,Stws :%s/  *$/_/g<C-M>
 "
 " Inserting time stamps {{{
 :VimrcHelp " ydate   = print the current date                                  [A+C]
@@ -530,7 +538,8 @@ endfunction
   iab   YFILE <C-R>=expand("%:t")<cr>
 "
 :VimrcHelp " ,|      : jump to the last space before the 80th column           [N]
-  map ,\| 80\|F
+  nnoremap ,\| 80\|F
+  xnoremap ,\| 80\|F
 "
 "------ center the view on the current line
 " :VimrcHelp "  ]].    : center the view on the current line                     [I]
@@ -538,16 +547,19 @@ endfunction
    " inoremap     ]].      <c-o>zz
 "
 "----- place le curseur au de'but du mot (lettre) sous (ou avant) le curseur
-   noremap      ]!wb!   ylpmz?\<[a-zA-Z_]<CR>mx`zx`x
+   nnoremap      ]!wb!   ylpmz?\<[a-zA-Z_]<CR>mx`zx`x
+   xnoremap      ]!wb!   ylpmz?\<[a-zA-Z_]<CR>mx`zx`x
 "-----  place dans "y <count> fois le motif @x
 "
 "-----  Place N fois @x dans "y
 "-----  Ne deplace pas le curseur
-   noremap      ]!count!        i@x<esc>a <esc>BiX<esc>/@x<CR>"ydEhmzlBx`zx
+   nnoremap      ]!count!        i@x<esc>a <esc>BiX<esc>/@x<CR>"ydEhmzlBx`zx
+   xnoremap      ]!count!        i@x<esc>a <esc>BiX<esc>/@x<CR>"ydEhmzlBx`zx
 "
 "------ supprime la ligne courante si elle ne contient que des blancs
 "------ l'intervalle [  ] contient un espace et une tabulation
-   noremap      ]!erase!        :.g/^[  ]*$/-j<CR>$
+   nnoremap      ]!erase!        :.g/^[  ]*$/-j<CR>$
+   xnoremap      ]!erase!        :.g/^[  ]*$/-j<CR>$
 "
 "------
 " :VimrcHelp "  #      : toggle the 'number' option
@@ -592,7 +604,7 @@ endfunction
 "
 :VimrcHelp " ,rev    : invert lines order                                      [N+V]
 " From the vim mailing list, Bob Hiestand's solution.
- vnoremap ,rev <esc>:execute "'<,'>g/^/m" line("'<")-1<cr>
+ xnoremap ,rev <esc>:execute "'<,'>g/^/m" line("'<")-1<cr>
  nnoremap ,rev :execute "%g/^/m" 0<cr>
 "
 " :digraph oe 156
@@ -795,7 +807,8 @@ hi User3 ctermfg=yellow ctermbg=black guifg=lightyellow guibg=black
 
 " -- Dr Chip Campbell's hiLink {{{3
 " don't map <S-F10>'
-map <Leader>hlt <Plug>HiLinkTrace
+nmap <Leader>hlt <Plug>HiLinkTrace
+xmap <Leader>hlt <Plug>HiLinkTrace
 
 " -- William Lee's DirDiff {{{3
 let g:DirDiffExcludes = '*.gz,*.bz2,*.7z,*.vba,*.rss,CVS,SunWS_cache,ir.out,.*.state,exe,bin,obj,*.o,*.os,tags,lib,.svn,.git,html,*.a,*.so'.&wildignore
@@ -984,6 +997,7 @@ function! s:ActivateAddons()
   call vam#ActivateAddons([ 'xmledit' ])
   call vam#ActivateAddons([ 'github:rickhowe/diffchar.vim' ])
   call vam#ActivateAddons([ 'Mark%2666' ]) " Ingo Karkat's fork of mark.vim
+  call vam#ActivateAddons([ 'editorconfig-vim' ]) " used to test my plugins
   if has('python')
     call vam#ActivateAddons([ 'vim-jira-complete' ])
   endif
@@ -1035,7 +1049,7 @@ LetIfUndef g:BTW.make_in_background = 1
 " ===================================================================
 
 " Pr?dac
-vnoremap <silent> µ <esc>:echo strftime('%c', lh#visual#selection())<cr>
+xnoremap <silent> µ <esc>:echo strftime('%c', lh#visual#selection())<cr>
 nnoremap <silent> µ :echo strftime('%c', matchstr(getline('.'), 'FRAME \zs\d\+\ze\d\{3}'))<cr>
 " ===================================================================
 " vim600: set fdm=marker:

@@ -60,8 +60,8 @@ nnoremap <silent> gc    xph
 "
 " ======================================================================
 " Tip #470 : Piet Delport & Anthony (ad_scriven)
-vnoremap <silent> g" <esc>:call <sid>SwapVisualWithCut()<cr>
-vnoremap <silent> g' <esc>:call <sid>SwapVisualWithCut2()<cr>
+xnoremap <silent> g" <esc>:call <sid>SwapVisualWithCut()<cr>
+xnoremap <silent> g' <esc>:call <sid>SwapVisualWithCut2()<cr>
 
 function! s:SwapVisualWithCut()
   normal! `.``
