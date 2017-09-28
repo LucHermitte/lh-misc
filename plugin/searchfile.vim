@@ -3,9 +3,9 @@
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://code.google.com/p/lh-vim/>
 " License:      GPLv3
-" Version:      0.0.9
+" Version:      0.1.0
 " Created:      01st Feb 2006
-" Last Update:  12th Dec 2014
+" Last Update:  28th Sep 2017
 "------------------------------------------------------------------------
 " Description:  Vim plugin wrapper for searchfile.pl
 "
@@ -151,11 +151,12 @@ endfunction
 " Function: s:Extension() {{{3
 function! s:Extension()
   if exists('b:searchfile_ext')    | return b:searchfile_ext
+  elseif !empty(&suffixesadd)      | return join(map(split(&suffixesadd, ','), 'v:val[1:]'), ',')
   elseif &ft == 'c'                | return 'h,c'
   elseif &ft == 'cpp'              | return 'h,cpp,hpp'
-  elseif &ft =~ 'xslt\|javascript' | return 'xsl,js'
-  elseif &ft =~ 'vim\|help'        | return 'vim,txt,template'
   elseif &ft =~ 'python'           | return 'py'
+  elseif &ft =~ 'vim\|help'        | return 'vim,txt,template'
+  elseif &ft =~ 'xslt\|javascript' | return 'xsl,js'
   else                             | return &ft
   endif
 endfunction
