@@ -2,7 +2,7 @@
 " File:         ftplugin/vim_set.vim
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Last Update:  09th Mar 2017
+" Last Update:  28th Sep 2017
 " Requirements: lh-vim-lib
 "
 " ========================================================================
@@ -29,15 +29,11 @@ let b:loaded_vim_set = 202
 " ------------------------------------------------------------------------
 "
 setlocal comments=\:\"
-setlocal fo=tcroq
 setlocal notimeout
 setlocal ai
 setlocal smartindent
 setlocal smarttab
 setlocal sw=2
-setlocal tw=79
-" autoload plugins use # in function identifiers
-setlocal isk+=#
 if &modifiable
   setlocal ff=unix
 endif
