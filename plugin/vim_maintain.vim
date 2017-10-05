@@ -2,9 +2,9 @@
 " File:         plugin/vim_maintain.vim{{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Version:      0.0.6
+" Version:      0.1.0
 " Created:      16th Sep 2014
-" Last Update:  05th Sep 2016
+" Last Update:  05th Oct 2017
 "------------------------------------------------------------------------
 " Description:
 "       Commands and mapping to help maintaining VimL scripts
@@ -15,8 +15,10 @@
 "       Drop this file into {rtp}/plugin
 "       Requires Vim7+
 " History:
+"       v0.1.0: Support scripts using the single
+"               `:let loaded_{pluginname} = 1`  scheme
 "       v0.0.6: Verbose rewritten to support lh#*#verbose() only, and auto
-"       complete.
+"               complete.
 "       v0.0.5: Reload and Verbose moved from ftplugin
 " TODO:         «missing features»
 " }}}1
@@ -66,15 +68,24 @@ function! s:ReloadOneScript(crt)
       let l = match(lines, re_reload)
       " let l = search(re_reload, 'n')
       if l > 0
-        " let ll = getline(l)
         let ll = lines[l]
         let reload = matchstr(ll, re_reload)
         let g:{reload} = 1
         echomsg "Reloading ".a:crt." (with ".reload."=1)"
         exe 'so '.a:crt
       else
-        throw "Sorry, there is no ".re_reload.' variable to set in order to reload this plugin'
-        " todo: find the other pattern like did_ftplugin, etc
+        let re_loaded = '\<loaded\i*'.substitute(fnamemodify(a:crt, ':t:r'), '\(\W\|_\)\+', '_', 'g').'\>'
+        let l = match(lines, re_loaded)
+        if l > 0
+          let ll = lines[l]
+          let loaded = matchstr(ll, re_loaded)
+          unlet g:{loaded}
+          echomsg "Reloading ".a:crt." (with unlet ".loaded.")"
+          exe 'so '.a:crt
+        else
+          throw "Sorry, there is no ".re_reload.' variable to set in order to reload this plugin'
+          " todo: find the other pattern like did_ftplugin, etc
+        endif
       endif
     finally
       let &isk = isk_save
