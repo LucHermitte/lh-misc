@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 21st Sep 2017
+" Last update   : 06th Dec 2017
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -25,7 +25,7 @@ set runtimepath+=$HOME/vimfiles/latexSuite
   runtime plugin/help.vim
   if exists("*BuildHelp")
     command! -nargs=1 VimrcHelp :call BuildHelp("vimrc", <q-args>)
-    nnoremap <S-F1> :call ShowHelp('vimrc')<cr>
+    nnoremap <S-F1> :<c-u>call ShowHelp('vimrc')<cr>
     inoremap <S-F1> <c-o>:call ShowHelp('vimrc')
     call ClearHelp("vimrc")
   else
@@ -241,7 +241,7 @@ endif
 :VimrcHelp "  Disable the suspend for ^Z ; call shell
 " I use Vim under "screen" where a suspend would lose the
 " connection to the " terminal - which is what I want to avoid.
-  nnoremap <C-Z> :shell
+  nnoremap <C-Z> :<c-u>shell
 "
 :VimrcHelp " Make CTRL-^ rebound to the *column* in the previous file
   noremap <C-^> <C-^>`"
@@ -313,12 +313,12 @@ endif
 :VimrcHelp " <S-F1>  : Display this help                                       [N]
 "
 :VimrcHelp " <C-s>   : Save a file                                             [I+N]
-  nnoremap <C-s> :update<CR>
+  nnoremap <C-s> :<c-u>update<CR>
   inoremap <C-s> <c-o>:update<CR>
   vnoremap <C-s> <c-c>:update<CR>gv
 "
 :VimrcHelp " <F2>    : Save a file                                             [I+N]
-  nnoremap <F2> :update<CR>
+  nnoremap <F2> :<c-u>update<CR>
   inoremap <F2> <c-o>:update<CR>
   vnoremap <F2> <c-c>:update<CR>gv
 "
@@ -362,7 +362,7 @@ endif
 :VimrcHelp " <F7>    : toggle autoindent                                       [I+N]
    set ai
 if ! empty(maparg('<F7>'))
-   nnoremap <F7> :set ai!<CR>:set ai?<CR>
+   nnoremap <F7> :<c-u>set ai!<CR>:set ai?<CR>
       imap <F7> <c-o><F7>
 endif
 "
@@ -372,9 +372,9 @@ endif
 :VimrcHelp " <F10>   : EXIT                                                    [I+N]
 :VimrcHelp " <S-F10> : EXIT!                                                   [I+N]
   inoremap <F10> <esc>:q<cr>
-  nnoremap <F10> :q<cr>
+  nnoremap <F10> :<c-u>q<cr>
   inoremap <S-F10> <esc>:q!<cr>
-  nnoremap <S-F10> :q!<cr>
+  nnoremap <S-F10> :<c-u>q!<cr>
 "
 :VimrcHelp " <F11>   : Previous Buffer                                         [I+N]
   inoremap <F11> <esc>:bprev<CR>
@@ -407,15 +407,15 @@ endif
 " Tags Browsing macros {{{
 :VimrcHelp " <M-Left> & <M-Right> works like in internet browers, but for tags [N]
 nnoremap <M-Left> <C-T>
-nnoremap <M-Right> :tag<cr>
+nnoremap <M-Right> :<c-u>tag<cr>
 :VimrcHelp " <M-up> show the current tags stack                                [N]
-nnoremap <M-Up> :tags<cr>
+nnoremap <M-Up> :<c-u>tags<cr>
 :VimrcHelp " <M-down> go to the definition of the tag under the cursor         [N]
 nnoremap <M-Down> <C-]>
 
-nnoremap <M-C-Up> :ts<cr>
-nnoremap <M-C-Right> :tn<cr>
-nnoremap <M-C-Left> :tp<cr>
+nnoremap <M-C-Up> :<c-u>ts<cr>
+nnoremap <M-C-Right> :<c-u>tn<cr>
+nnoremap <M-C-Left> :<c-u>tp<cr>
 " Tags Browsing }}}
 " -------------------------------------------------------------------
 " VIM - Editing and updating the vimrc: {{{
@@ -423,9 +423,9 @@ nnoremap <M-C-Left> :tp<cr>
 " to start editing it and also update it:
   let vimrc=expand('<sfile>:p')
 :VimrcHelp '     ,vu = "update" by reading this file                           [N]
-  nnoremap ,vu :source <C-R>=vimrc<CR><CR>
+  nnoremap ,vu :<c-u>source <C-R>=vimrc<CR><CR>
 :VimrcHelp "     ,ve = vimrc editing (edit this file)                          [N]
-  nnoremap ,ve :call <sid>OpenVimrc()<cr>
+  nnoremap ,ve :<c-u>call <sid>OpenVimrc()<cr>
 
 function! s:OpenVimrc()
   if (0==strlen(bufname('%'))) && (1==line('$')) && (0==strlen(getline('$')))
@@ -460,12 +460,12 @@ command! WTF call lh#exception#say_what()
 "
 :VimrcHelp " ,Sws    = Make whitespace visible:                                [N+V]
 "     Sws = show whitespace
-  nmap ,Sws :%s/ /_/g<C-M>
+  nmap ,Sws :<c-u>%s/ /_/g<C-M>
   xmap ,Sws :%s/ /_/g<C-M>
 "
 "     Sometimes you just want to *see* that trailing whitespace:
 :VimrcHelp " Stws    = show trailing whitespace                                [N+V]
-  nmap ,Stws :%s/  *$/_/g<C-M>
+  nmap ,Stws :<c-u>%s/  *$/_/g<C-M>
   xmap ,Stws :%s/  *$/_/g<C-M>
 "
 " Inserting time stamps {{{
@@ -516,7 +516,7 @@ command! WTF call lh#exception#say_what()
 :VimrcHelp "           inserting ellipsis and «filling space»                  [N]
   nmap ,,,  ,,1,,2
   nmap ,,1  a...X...<ESC>FXr<CR>lmaky$o<CC-R>"<ESC>
-  nmap ,,2  :s/./ /g<C-M>3X0"yy$dd`a"yP
+  nmap ,,2  :<c-u>s/./ /g<C-M>3X0"yy$dd`a"yP
 
 : VimrcHelp " [N],mc = move to col number [N]
   nnoremap ,mc :<c-u>call <sid>MoveToCol()<cr>
@@ -543,7 +543,7 @@ endfunction
 "
 "------ center the view on the current line
 " :VimrcHelp "  ]].    : center the view on the current line                     [I]
-   " nnoremap   ].      :let vc=virtcol('.')<cr>z.:exe "normal! ".vc."\|"<cr>
+   " nnoremap   ].      :<c-u>let vc=virtcol('.')<cr>z.:exe "normal! ".vc."\|"<cr>
    " inoremap     ]].      <c-o>zz
 "
 "----- place le curseur au de'but du mot (lettre) sous (ou avant) le curseur
@@ -605,7 +605,7 @@ endfunction
 :VimrcHelp " ,rev    : invert lines order                                      [N+V]
 " From the vim mailing list, Bob Hiestand's solution.
  xnoremap ,rev <esc>:execute "'<,'>g/^/m" line("'<")-1<cr>
- nnoremap ,rev :execute "%g/^/m" 0<cr>
+ nnoremap ,rev :<c-u>execute "%g/^/m" 0<cr>
 "
 " :digraph oe 156
 " :digraph OE 140
@@ -640,7 +640,7 @@ if &t_Co > 2 || has("gui_running")
   "set hlsearch " bof : don't like it => activation sur <F8>
   :VimrcHelp " <F8> activates or desactivates hight lighting on results from searchs
   set nohlsearch
-  nnoremap <silent> <F8> :set hlsearch!<bar>set hlsearch?<CR>
+  nnoremap <silent> <F8> :<c-u>set hlsearch!<bar>set hlsearch?<CR>
   imap     <silent> <F8> <c-o><F8>
   xmap     <silent> <F8> <c-\><c-n><F8>gv
   smap     <silent> <F8> <c-\><c-n><F8>gv<c-g>
@@ -818,7 +818,7 @@ let g:DirDiffAddArgs  = "-b"
 " -- VCS commands.vim {{{3
 let VCSCommandDisableMappings = 1
 augroup VCSCommand
-  au User VCSBufferCreated silent! nmap <unique> <buffer> q :bwipeout<cr>
+  au User VCSBufferCreated silent! nmap <unique> <buffer> q :<c-u>bwipeout<cr>
 augroup END
 
 " -- clang_indexer@lh {{{3
@@ -879,7 +879,7 @@ let g:ycm_server_log_level = 'debug'
 let g:ycm_server_use_vim_stdout = 1
 
 " -- Unite              {{{3
-nnoremap <C-p> :Unite file_rec/async<cr>
+nnoremap <C-p> :<c-u>Unite file_rec/async<cr>
 augroup LhUnite
   au!
   autocmd FileType unite call s:unite_my_settings()
@@ -1050,6 +1050,6 @@ LetIfUndef g:BTW.make_in_background = 1
 
 " Pr?dac
 xnoremap <silent> µ <esc>:echo strftime('%c', lh#visual#selection())<cr>
-nnoremap <silent> µ :echo strftime('%c', matchstr(getline('.'), 'FRAME \zs\d\+\ze\d\{3}'))<cr>
+nnoremap <silent> µ :<c-u>echo strftime('%c', matchstr(getline('.'), 'FRAME \zs\d\+\ze\d\{3}'))<cr>
 " ===================================================================
 " vim600: set fdm=marker:
