@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 06th Dec 2017
+" Last update   : 05th Jan 2018
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -260,6 +260,15 @@ endif
 :VimrcHelp " backspace in Visual mode deletes selection
   xnoremap <BS> d
   snoremap <BS> <c-g>di
+  nnoremap <BS> X
+
+:VimrcHelp " <C-Del> and <C-S-Del> Delete a whole word till its end            [I+N]
+   noremap <C-Del> dw
+   noremap <C-S-Del> dW
+  inoremap <C-Del> <space><esc>ce
+  inoremap <C-S-Del> <esc>lcW
+
+
 
 nnoremap <S-right> v<right>
 inoremap <S-right> <c-o>v
@@ -383,17 +392,6 @@ endif
   inoremap <F12> <esc>:bnext<CR>
   "nnoremap <expr> <F12> (&ft=='qf' ? ":cnewer" : ":bnext")."\<cr>"
 "
-:VimrcHelp " <C-Del> and <C-S-Del> Delete a whole word till its end            [I+N]
-   noremap <C-Del> dw
-   noremap <C-S-Del> dW
-  inoremap <C-Del> <space><esc>ce
-  inoremap <C-S-Del> <esc>lcW
-"
-" map <backspace>
-    noremap <BS> X
-  " backspace in Visual mode deletes selection
-   xnoremap <BS> d
-
 :VimrcHelp " <M-PageUp> and <M-PageDown> Go to the next/previous windows and maximize it
 " And leave <C-PageUp> to do the default tab next and prev
    nnoremap <silent> <M-PageUp> <c-w>W<c-w>_
