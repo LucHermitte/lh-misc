@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 05th Jan 2018
+" Last update   : 16th Feb 2018
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -145,6 +145,12 @@ set runtimepath+=$HOME/vimfiles/latexSuite
   set nottybuiltin      "
   set ttyscroll=0       " turn off scrolling -> faster!
 " set ttytype=rxvt
+
+  if has("persistent_undo")
+    set undodir=~/.undodir/
+    set undofile
+  endif
+
   set viminfo='50,<100,:1000,n~/.viminfo
                         " What info to store from an editing session
                         " in the viminfo file;  can be used at next session.
@@ -223,6 +229,10 @@ endif
 " -------------------------------------------------------------------
 " Adjustments {{{
 " -------------------------------------------------------------------
+:VimrcHelp " ¤iz : work on current fold (viz, diz, yiz...)
+  onoremap iz :<c-u>normal! [zV]z<cr>
+  xnoremap iz [zo]z
+
 " Don't use Ex mode, use Q for formatting
 :VimrcHelp " Q : formatting key
   nnoremap Q gq
@@ -996,6 +1006,8 @@ function! s:ActivateAddons()
   call vam#ActivateAddons([ 'github:rickhowe/diffchar.vim' ])
   call vam#ActivateAddons([ 'Mark%2666' ]) " Ingo Karkat's fork of mark.vim
   call vam#ActivateAddons([ 'editorconfig-vim' ]) " used to test my plugins
+  call vam#ActivateAddons([ 'editorconfig-vim' ]) " used to test my plugins
+  call vam#ActivateAddons([ 'undotree' ])
   if has('python')
     call vam#ActivateAddons([ 'vim-jira-complete' ])
   endif
