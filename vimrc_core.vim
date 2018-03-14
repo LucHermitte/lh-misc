@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 16th Feb 2018
+" Last update   : 14th Mar 2018
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -926,7 +926,16 @@ endif
 let g:vim_addon_manager = get(g:, 'vim_addon_manager', {})
 let g:vim_addon_manager['plugin_sources'] = {}
 let g:vim_addon_manager['plugin_sources']['vim-jira-complete'] = { 'type': 'git', 'url': 'ssh://ssh.github.com/LucHermitte/vim-jira-complete'}
+let g:vim_addon_manager['scms'] = {
+      \  'git': {'clone': ['VAM_git_proxy_checkout', []],
+      \         'update': ['vam#utils#RunShell', ['cd $p && git pull'        ]],
+      \          'wdrev': ['vam#utils#System',   ['git --git-dir=$p/.git rev-parse HEAD']],
+      \            'log': ['vam#utils#System',   ['git --git-dir=$2p/.git log $1 $[3]..$[4]', '--pretty=format:%s%n']],
+      \           'supports_shallow_clone': 'auto',
+      \          }
+      \ }
 
+" TODO: check whether we still need this X() function thanks to VAM_git_proxy_checkout()
 fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_name)
   " run default:
   call vam_known_repositories#MergeSources(a:plugin_sources, a:www_vim_org, a:scm_plugin_sources, a:patch_function, a:snr_to_name)
@@ -975,6 +984,28 @@ fun! X(plugin_sources, www_vim_org, scm_plugin_sources, patch_function, snr_to_n
   endif
 endf
 
+function! VAM_git_proxy_checkout(repository, targetDir) abort
+    " Convert git URL to something compatible with the proxy used
+    call vam#Log(string(a:repository), 'None')
+    " assert: a:repository.type == 'git'
+    let url = a:repository.url
+    if executable('corkscrew')
+        " When accessing through a proxy with corkcrew
+        let url = substitute(url, 'git://\(github.com\)/\(.*\)', 'ssh://ssh.\1/\2', '')
+        let url = substitute(url, 'git@\(bitbucket.org\)[/:]\(.*\)', 'ssh://git@\1/\2', '')
+    elseif exists('$https_proxy') && !empty('$https_proxy')
+        let url = substitute(url, 'git://\(github.com\)/\(.*\)', 'https://\1/\2', '')
+        let url = substitute(url, 'git@\(bitbucket.org\)[/:]\(.*\)', 'https://git@\1/\2', '')
+    else
+        let url = substitute(url, 'git://\(github.com\)/\(.*\)', 'git@\1:\2', '')
+    endif
+    let a:repository.url = url
+
+    call vam#Log('git repo for '.(a:repository.name).' used '.(a:repository.url), 'None')
+    " TODO: handle filename escaping for windows...
+    call vam#vcs#GitCheckoutFixDepth(a:repository, a:targetDir)
+endfunction
+
 " ===================================================================
 " Load plugins {{{2
 function! s:ActivateAddons()
@@ -1001,15 +1032,14 @@ function! s:ActivateAddons()
   call vam#ActivateAddons(['gitv'])
   call vam#ActivateAddons(['vim-addon-json-encoding'])
   call vam#ActivateAddons(['viewdoc'])
-  call vam#ActivateAddons([ 'vim-airline' ])
-  call vam#ActivateAddons([ 'xmledit' ])
-  call vam#ActivateAddons([ 'github:rickhowe/diffchar.vim' ])
-  call vam#ActivateAddons([ 'Mark%2666' ]) " Ingo Karkat's fork of mark.vim
-  call vam#ActivateAddons([ 'editorconfig-vim' ]) " used to test my plugins
-  call vam#ActivateAddons([ 'editorconfig-vim' ]) " used to test my plugins
-  call vam#ActivateAddons([ 'undotree' ])
+  call vam#ActivateAddons(['vim-airline'])
+  call vam#ActivateAddons(['xmledit'])
+  call vam#ActivateAddons(['github:rickhowe/diffchar.vim'])
+  call vam#ActivateAddons(['Mark%2666']) " Ingo Karkat's fork of mark.vim
+  call vam#ActivateAddons(['editorconfig-vim']) " used to test my plugins
+  call vam#ActivateAddons(['undotree'])
   if has('python')
-    call vam#ActivateAddons([ 'vim-jira-complete' ])
+    call vam#ActivateAddons(['vim-jira-complete'])
   endif
   let g:airline_powerline_fonts = 1
   let g:airline_theme = 'lh_dark'
