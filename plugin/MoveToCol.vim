@@ -2,7 +2,7 @@
 " File:		plugin/MoveToCol.vim                                           {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://github.com/LucHermitte/lh-misc/>
-" Version:	2.0.0
+" Version:	2.0.1
 " Created:	02nd Mar 2005
 " Last Update:	21st Sep 2017
 "------------------------------------------------------------------------
