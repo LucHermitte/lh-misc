@@ -1,25 +1,25 @@
 "=============================================================================
-" $Id$
-" File:		plugin/rotate_substitute.vim                      {{{1
-" Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"		<URL:http://code.google.com/p/lh-vim/>
-" Version:	1.0.3
-" Created:	27th Nov 2009
-" Last Update:	$Date$
+" File:         plugin/rotate_substitute.vim                      {{{1
+" Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
+"               <URL:http://github.com/LucHermitte/lh-misc>
+" Version:      1.0.3
+" Created:      27th Nov 2009
+" Last Update:  13th Mar 2018
 "------------------------------------------------------------------------
-" Description:	
+" Description:
 "   CycleSubstitute: <http://stackoverflow.com/questions/1809571/how-do-i-substitute-from-a-list-of-strings-in-vim>
 "   Tr:              <http://stackoverflow.com/a/25665554/15934>
-" 
+"   See Also:        <https://vi.stackexchange.com/a/15546/626>
+"
 "------------------------------------------------------------------------
-" Installation:	
+" Installation:
 " Drop the file into {rtp}/plugin
-" History:	
+" History:
 "       v1.0.3:
 "       * +:Translate
 "       v1.0.2:
 "       * CycleSubstitute fixed to support: CycleSubstitute/title/subtitle
-" TODO:		«missing features»
+" TODO:         «missing features»
 " }}}1
 "=============================================================================
 
@@ -52,9 +52,9 @@ function! s:CycleSubstitute(bang, repl_arg) range
   " prepare the :substitute command
   let args = [join(fields, '\|'), action ]
   let cmd = a:firstline . ',' . a:lastline . 's'
-	\. sep . join(fields, '\|')
-	\. sep . action
-	\. sep . 'g'
+        \. sep . join(fields, '\|')
+        \. sep . action
+        \. sep . 'g'
   " echom cmd
   " and run it
   exe cmd
@@ -86,14 +86,14 @@ function! s:RotateSubstitute(bang, repl_arg) range
       let br = matchstr(d, '\d\+')
       " echo '##'.(br+0).'##'.type(0) ." ~~ " . type(br+0)
       if !empty(br) && (0+br) > max_back_ref
-	let max_back_ref = br
+        let max_back_ref = br
       endif
     endfor
   endfor
   " echo "max back-ref=".max_back_ref
   let sm = ''
   for i in range(0, max_back_ref)
-    let sm .= ','. 'submatch('.i.')' 
+    let sm .= ','. 'submatch('.i.')'
     " call add(sm,)
   endfor
 
