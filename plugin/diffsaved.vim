@@ -5,7 +5,7 @@ function! s:DiffWithSaved()
   diffthis
   vnew | r # | 1delete_
   diffthis
-  exe "setlocal bt=nofile bh=wipe nobl noswf ro ft=" . filetype
+  exe "setlocal bt=nofile bh=wipe nobl noswf ft=" . filetype." ro"
   " clear diffmode when wiping out/unloading the diff buffer
   augroup DiffSaved
     au!
