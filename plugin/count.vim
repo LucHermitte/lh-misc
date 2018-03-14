@@ -5,11 +5,11 @@
 "		<URL:http://code.google.com/p/lh-vim/>
 " Version:      «0.0.1»
 " Created:      28th Sep 2010
-" Last Update:  $Date$
+" Last Update:  08th Mar 2018
 "------------------------------------------------------------------------
 " Description:
 "       «description»
-" 
+"
 "------------------------------------------------------------------------
 " Installation:
 "       Drop this file into {rtp}/plugin
@@ -34,6 +34,8 @@ set cpo&vim
 "------------------------------------------------------------------------
 " Commands and Mappings {{{1
 command! -nargs=1 -bang -range Count <line1>,<line2>call s:Count("<bang>", <f-args>)
+" command! -nargs=1 -range=% Count2 echo eval(join(map(getline(<line1>,<line2>), 'count(v:val, "<args>")'), '+'))
+" command! -nargs=1 -range=% Count2 keeppattern <line1>,<line2>s/<args>//gn
 " Commands and Mappings }}}1
 "------------------------------------------------------------------------
 " Functions {{{1
@@ -42,7 +44,7 @@ function! s:Count(bang, param) range abort
   let inverse = a:bang == '!'
   let cmd = inverse ? 'v' : 'g'
   let s:c = 0
-  try 
+  try
     exe a:firstline.','.a:lastline.cmd.'#'.escape(a:param, '#').'#let s:c += 1'
   finally
     call setpos('.', pos)
