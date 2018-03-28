@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 14th Mar 2018
+" Last update   : 28th Mar 2018
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -278,6 +278,10 @@ endif
   inoremap <C-Del> <space><esc>ce
   inoremap <C-S-Del> <esc>lcW
 
+" By default, <CR> will delete spaces before the cursor when hit => to keep
+" trailling whitespaces to a minimum
+" It can be neutralized with (bpg):trim_trailing_whitespace
+inoremap <expr> <cr> lh#ft#option#get('trim_trailing_whitespace', &ft, 1)?repeat("<bs>", len(matchstr(getline('.')[: col('.')-2], '\s*$')))."<cr>":"<cr>"
 
 
 nnoremap <S-right> v<right>
@@ -318,7 +322,7 @@ vmap <S-end> <end>
 xnoremap / <esc>/\\%V
 " }}}
 " -------------------------------------------------------------------
-" My Customs mappins, windows, F-keys, etc {{{
+" My Customs mappings, windows, F-keys, etc {{{
 " -------------------------------------------------------------------
 "
 if has("unix")
