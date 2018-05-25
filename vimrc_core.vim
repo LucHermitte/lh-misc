@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 28th Mar 2018
+" Last update   : 17th May 2018
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -281,7 +281,21 @@ endif
 " By default, <CR> will delete spaces before the cursor when hit => to keep
 " trailling whitespaces to a minimum
 " It can be neutralized with (bpg):trim_trailing_whitespace
-inoremap <expr> <cr> lh#ft#option#get('trim_trailing_whitespace', &ft, 1)?repeat("<bs>", len(matchstr(getline('.')[: col('.')-2], '\s*$')))."<cr>":"<cr>"
+function! s:trim_ws_on_the_fly()
+  let line = getline('.')
+  " TODO: set and reset &bs
+  if line =~ '^\s*$'
+    let nb = (virtcol('.') + 2*&sw-2) / &sw - 1
+    " echomsg "remove "virtcol('.').'/'.&sw.' -> '.nb
+  else
+    let nb = len(matchstr(line[: col('.')-2], '\s*$'))
+    let line = ''
+  endif
+  return repeat("\<bs>", nb)."\<cr>".line
+endfunction
+inoremap <expr> <cr> lh#ft#option#get('trim_trailing_whitespace', &ft, 1)?<sid>trim_ws_on_the_fly():"<cr>"
+" inoremap <expr> <cr> lh#ft#option#get('trim_trailing_whitespace', &ft, 1)?repeat("<bs>", len(matchstr(getline('.')[: col('.')-2], '\S\zs\s*$')))."<cr>":"<cr>"
+" inoremap <expr> <cr> lh#ft#option#get('trim_trailing_whitespace', &ft, 1)?repeat("<bs>", len(matchstr(getline('.')[: col('.')-2], '\s*$')))."<cr>":"<cr>"
 
 
 nnoremap <S-right> v<right>
@@ -440,7 +454,7 @@ nnoremap <M-C-Left> :<c-u>tp<cr>
   nnoremap ,ve :<c-u>call <sid>OpenVimrc()<cr>
 
 function! s:OpenVimrc()
-  if (0==strlen(bufname('%'))) && (1==line('$')) && (0==strlen(getline('$')))
+  if empty(bufname('%')) && (1==line('$')) && empty(getline('$'))
     " edit in place
     exe "e ".g:vimrc
   else
