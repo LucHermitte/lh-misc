@@ -7,7 +7,7 @@
 " Version:      0.0.1.
 let s:k_version = 001
 " Created:      25th May 2018
-" Last Update:  25th May 2018
+" Last Update:  28th May 2018
 "------------------------------------------------------------------------
 " Description:
 "       Utilities to modify arrays
@@ -36,7 +36,7 @@ set cpo&vim
 "------------------------------------------------------------------------
 " Local commands {{{2
 
-command! -b -nargs=+ -complete=customlist,lh#markdown#array#_complete -range=%
+command! -b -nargs=* -complete=customlist,lh#markdown#array#_complete -range=%
       \ Array
       \ call lh#markdown#array#_command(<line1>, <line2>, <f-args>)
 
