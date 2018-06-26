@@ -2,7 +2,7 @@
 " File:         ftplugin/vim_set.vim
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Last Update:  28th Sep 2017
+" Last Update:  26th Jun 2018
 " Requirements: lh-vim-lib
 "
 " ========================================================================
@@ -119,19 +119,19 @@ VIMHelp  "[i v] <M-f>   <<function! _() ^Mendfunction>>
 "abbreviations.
 inoremap  <buffer> <silent> <M-f>
       \ <C-R>=lh#map#insert_seq('<M-f>',
-      \ "function! !cursorhere!(!mark!)\n!mark!\nendfunction!mark!")<CR>
+      \ "function! !cursorhere!(!mark!) abort\n!mark!\nendfunction!mark!")<CR>
 inoreab  <buffer> <silent>  fun
       \ <C-R>=<sid>InsertIfNotAfter('fun',
-      \ "function!!cursorhere!(!mark!)\n!mark!\nendfunction!mark!",
+      \ "function!!cursorhere!(!mark!) abort\n!mark!\nendfunction!mark!",
       \ '\S')<CR>
 inoreab  <buffer> <silent>  function
       \ <C-R>=<sid>InsertIfNotAfter('function',
-      \ "function!!cursorhere!(!mark!)\n!mark!\nendfunction!mark!",
+      \ "function!!cursorhere!(!mark!) abort\n!mark!\nendfunction!mark!",
       \ '\S')<CR>
 
 xmap  <buffer> <silent> <M-f> <localleader>fun
 xnoremap <buffer> <silent> <localleader>fun
-      \ <c-\><c-n>@=lh#map#surround('function! !cursorhere!(!mark!)', 'endfunction',
+      \ <c-\><c-n>@=lh#map#surround('function! !cursorhere!(!mark!) abort', 'endfunction',
       \ 1, 1, '``!jump-and-del!', 1, 'fun ')<cr>
 
 " Control statement: if       {{{3
