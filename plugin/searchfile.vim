@@ -1,11 +1,12 @@
 "=============================================================================
 " File:         searchfile.vim                                           {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"               <URL:http://code.google.com/p/lh-vim/>
+"               <URL:http://github.com/LucHermitte/lh-misc>
 " License:      GPLv3
-" Version:      0.1.0
+" Version:      0.2.0
+let s:k_version = 020
 " Created:      01st Feb 2006
-" Last Update:  28th Sep 2017
+" Last Update:  29th Jun 2018
 "------------------------------------------------------------------------
 " Description:  Vim plugin wrapper for searchfile.pl
 "
@@ -23,7 +24,6 @@
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 009
 if exists("g:loaded_searchfile")
       \ && (g:loaded_searchfile >= s:k_version)
       \ && !exists('g:force_reload_searchfile')
@@ -41,9 +41,10 @@ command! -nargs=+
 
 nnoremap <expr> <silent> <F3>   (&diff ? "]c:call \<sid>NextDiff()\<cr>" : ":cn\<cr>")
 nnoremap <expr> <silent> <S-F3> (&diff ? "[c" : ":cN\<cr>")
-nnoremap <C-F3> :call <sid>Search(<sid>Extension(), escape(expand('<cword>'), '%#'))<cr>
-vnoremap <C-F3> :call <sid>Search(<sid>Extension(), escape(lh#visual#selection(), '%#'))<cr>
-nnoremap <C-S-F3> :call <sid>Search(<c-r>=string(<sid>Extension())<cr>, escape(<c-r>=string(expand('<cword>'))<cr>, '%#'))
+
+nnoremap <C-F3>   :<c-u>call <sid>Search(<sid>Extension(), escape(expand('<cword>'), '%#'))<cr>
+vnoremap <C-F3>   :call <sid>Search(<sid>Extension(), escape(lh#visual#selection(), '%#'))<cr>
+nnoremap <C-S-F3> :c<c-u>all <sid>Search(<c-r>=string(<sid>Extension())<cr>, escape(<c-r>=string(expand('<cword>'))<cr>, '%#'))
 vnoremap <C-S-F3> :call <sid>Search(<c-r>=string(<sid>Extension())<cr>, escape(<c-r>=string(lh#visual#selection())<cr>, escape('%#')))
 
 " Functions {{{1
@@ -149,15 +150,20 @@ endfunction
 " ## Searchfile functions {{{2
 
 " Function: s:Extension() {{{3
+runtime plugin/let.vim
+LetIfUndef g:searchfile.ext.c          = 'h,c'
+LetIfUndef g:searchfile.ext.cpp        = 'h,cpp,hpp'
+LetIfUndef g:searchfile.ext.python     = 'py'
+LetIfUndef g:searchfile.ext.markdown   = 'md'
+LetIfUndef g:searchfile.ext.vim        = 'vim,txt,template'
+LetIfUndef g:searchfile.ext.help       = 'vim,txt,template'
+LetIfUndef g:searchfile.ext.xslt       = 'xsl,js'
+LetIfUndef g:searchfile.ext.javascript = 'xsl,js'
 function! s:Extension()
   if exists('b:searchfile_ext')    | return b:searchfile_ext
   elseif !empty(&suffixesadd)      | return join(map(split(&suffixesadd, ','), 'v:val[1:]'), ',')
-  elseif &ft == 'c'                | return 'h,c'
-  elseif &ft == 'cpp'              | return 'h,cpp,hpp'
-  elseif &ft =~ 'python'           | return 'py'
-  elseif &ft =~ 'vim\|help'        | return 'vim,txt,template'
   elseif &ft =~ 'xslt\|javascript' | return 'xsl,js'
-  else                             | return &ft
+  else                             | return get(g:searchfile.ext, &ft, &ft)
   endif
 endfunction
 
