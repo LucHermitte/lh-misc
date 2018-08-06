@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 17th May 2018
+" Last update   : 06th Aug 2018
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -473,7 +473,7 @@ command! -nargs=0                LCD    lcd %:p:h
 " http://vim.wikia.com/wiki/Reverse_selected_text
 command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
 
-command! WTF call lh#exception#say_what()
+command! -nargs=? WTF call lh#exception#say_what(<f-args>)
 " }}}
 " -------------------------------------------------------------------
 " }}}1
