@@ -293,7 +293,7 @@ function! s:trim_ws_on_the_fly()
   endif
   return repeat("\<bs>", nb)."\<cr>".line
 endfunction
-inoremap <expr> <cr> lh#ft#option#get('trim_trailing_whitespace', &ft, 1)?<sid>trim_ws_on_the_fly():"<cr>"
+" inoremap <expr> <cr> lh#ft#option#get('trim_trailing_whitespace', &ft, 1)?<sid>trim_ws_on_the_fly():"<cr>"
 " inoremap <expr> <cr> lh#ft#option#get('trim_trailing_whitespace', &ft, 1)?repeat("<bs>", len(matchstr(getline('.')[: col('.')-2], '\S\zs\s*$')))."<cr>":"<cr>"
 " inoremap <expr> <cr> lh#ft#option#get('trim_trailing_whitespace', &ft, 1)?repeat("<bs>", len(matchstr(getline('.')[: col('.')-2], '\s*$')))."<cr>":"<cr>"
 
