@@ -5,7 +5,7 @@
 " Version:      0.0.2
 let s:k_version = 002
 " Created:      10th Jul 2017
-" Last Update:  10th Jul 2017
+" Last Update:  24th Apr 2018
 "------------------------------------------------------------------------
 " Description:
 "       Supports functions for ftplugin/markdown_githubtoc.vim
@@ -77,7 +77,7 @@ function! lh#markdown#toc#_generate() abort range
   " Extract depth
   call lh#list#map_on(titles, 0, 'substitute(v:val, "\\v.*", "\\=strlen(submatch(0))", "")' )
   let level_min = min(lh#list#get(titles, 0)) - 1
-  let t2 = lh#list#map_on(deepcopy(titles), 0, 'repeat("  ", v:val -'.level_min.') . "* "')
+  let t2 = lh#list#map_on(deepcopy(titles), 0, 'repeat("    ", v:val -'.level_min.') . "* "')
   let toc = map(copy(t2), 'v:val[0]."[".v:val[2]."](#".v:val[1].")"')
   put=toc
 endfunction
