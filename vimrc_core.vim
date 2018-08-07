@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 06th Aug 2018
+" Last update   : 07th Aug 2018
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -474,6 +474,15 @@ command! -nargs=0                LCD    lcd %:p:h
 command! -bar -range=% Reverse <line1>,<line2>g/^/m<line1>-1
 
 command! -nargs=? WTF call lh#exception#say_what(<f-args>)
+
+
+" Recreate tmp directory used by vim
+" Sometimes there is cron job that remove old entries in /tmp, when it happens
+" on vim sessions that have been running for several days, it becomes
+" impossible to run any external command.
+" Contribution from Ben Schmidt on vim_use list.
+" see also https://vi.stackexchange.com/a/17021/626
+command! Mktmpdir call mkdir(fnamemodify(tempname(),":p:h"),"",0700)
 " }}}
 " -------------------------------------------------------------------
 " }}}1
