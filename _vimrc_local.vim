@@ -4,7 +4,7 @@
 "		<URL:http://github.com/LucHermitte/lh-misc/>
 " Version:	2.0.0
 " Created:	22nd Apr 2010
-" Last Update:	14th Apr 2017
+" Last Update:	30th Jul 2018
 "------------------------------------------------------------------------
 " Description:
 "   My local vimrc for vim script edition
@@ -16,7 +16,7 @@
 " }}}1
 "=============================================================================
 
-let s:k_version = 190
+let s:k_version = 191
 " Always loaded {{{1
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
@@ -46,7 +46,8 @@ if expand('%:p:h') !~ 'tests/lh'
   LetIfUndef p:tags_options.no_auto 0
   " Declare the indexed filetypes
   call lh#tags#add_indexed_ft('vim')
-  LetTo p:tags_options.flags ' --exclude="flavors/*" --exclude="bundle/*" --exclude="lh-template" --exclude="lh-UT" --exclude="vim-UT" --exclude="lh-BTW"'
+  " LetTo p:tags_options.flags ' --exclude="flavors/*" --exclude="bundle/*" --exclude="lh-template" --exclude="lh-UT" --exclude="vim-UT" --exclude="lh-BTW"'
+  LetTo p:tags_options.excludes = ['flavors/*', 'bundle/*', 'lh-template', 'lh-UT', 'vim-UT', 'lh-BTW']
 
   " Project --define subproject_{name}
   let name = lh#path#strip_start(expand('%:p'), [lh#path#vimfiles().'/.addons', lh#path#vimfiles()])
