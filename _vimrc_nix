@@ -256,7 +256,6 @@ if
   endif
 
   " -- Enhance Commentify
-  let mapleader = '£'
   let g:EnhCommentifyUseAltKeys = 'no'
 
   " -- BTW
