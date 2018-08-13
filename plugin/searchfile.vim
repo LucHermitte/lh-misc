@@ -3,10 +3,10 @@
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
 " License:      GPLv3
-" Version:      0.2.0
-let s:k_version = 020
+" Version:      0.2.1
+let s:k_version = 021
 " Created:      01st Feb 2006
-" Last Update:  29th Jun 2018
+" Last Update:  13th Aug 2018
 "------------------------------------------------------------------------
 " Description:  Vim plugin wrapper for searchfile.pl
 "
@@ -42,10 +42,14 @@ command! -nargs=+
 nnoremap <expr> <silent> <F3>   (&diff ? "]c:call \<sid>NextDiff()\<cr>" : ":cn\<cr>")
 nnoremap <expr> <silent> <S-F3> (&diff ? "[c" : ":cN\<cr>")
 
-nnoremap <C-F3>   :<c-u>call <sid>Search(<sid>Extension(), escape(expand('<cword>'), '%#'))<cr>
-vnoremap <C-F3>   :call <sid>Search(<sid>Extension(), escape(lh#visual#selection(), '%#'))<cr>
-nnoremap <C-S-F3> :c<c-u>all <sid>Search(<c-r>=string(<sid>Extension())<cr>, escape(<c-r>=string(expand('<cword>'))<cr>, '%#'))
-vnoremap <C-S-F3> :call <sid>Search(<c-r>=string(<sid>Extension())<cr>, escape(<c-r>=string(lh#visual#selection())<cr>, escape('%#')))
+nnoremap <Plug>(search-word)             :<c-u>call <sid>Search(<sid>Extension(),          escape(expand('<cword>'),     '%#\\'))<cr>
+xnoremap <Plug>(search-word)             :<c-u>call <sid>Search(<sid>Extension(),          escape(lh#visual#selection(), '%#\\'))<cr>
+nnoremap <Plug>(search-word-interactive) :<c-u>Searchfile <c-r>=<sid>Extension()<cr> <c-r>=escape(expand('<cword>'),     '%#\\')<cr>
+xnoremap <Plug>(search-word-interactive) :<c-u>Searchfile <c-r>=<sid>Extension()<cr> <c-r>=escape(lh#visual#selection(), '%#\\')<cr>
+
+call lh#mapping#plug('<C-F3>',   '<Plug>(search-word)',             'nx')
+call lh#mapping#plug('<C-S-F3>', '<Plug>(search-word-interactive)', 'nx')
+
 
 " Functions {{{1
 
