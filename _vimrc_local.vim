@@ -4,7 +4,7 @@
 "		<URL:http://github.com/LucHermitte/lh-misc/>
 " Version:	2.0.0
 " Created:	22nd Apr 2010
-" Last Update:	30th Jul 2018
+" Last Update:	29th Aug 2018
 "------------------------------------------------------------------------
 " Description:
 "   My local vimrc for vim script edition
@@ -16,7 +16,7 @@
 " }}}1
 "=============================================================================
 
-let s:k_version = 191
+let s:k_version = 192
 " Always loaded {{{1
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
@@ -41,28 +41,29 @@ if expand('%:p:h') !~ 'tests/lh'
   if lh#option#is_unset(lh#project#define(s:, { 'name': 'Vim Scripts', 'auto_discover_root':0 }))
     finish
   endif
-  call lh#let#to('p:tags_dirname', s:script_dir)
+  call lh#let#to('p:paths.tags.src_dir', s:script_dir)
   " Be sure tags are automatically updated on the current file
   LetIfUndef p:tags_options.no_auto 0
   " Declare the indexed filetypes
   call lh#tags#add_indexed_ft('vim')
   " LetTo p:tags_options.flags ' --exclude="flavors/*" --exclude="bundle/*" --exclude="lh-template" --exclude="lh-UT" --exclude="vim-UT" --exclude="lh-BTW"'
-  LetTo p:tags_options.excludes = ['flavors/*', 'bundle/*', 'lh-template', 'lh-UT', 'vim-UT', 'lh-BTW']
+  let s:excludes = lh#let#to('p:tags_options.excludes', [])
+  let s:excludes += ['"flavors/*"', '"bundle/*"', 'lh-template', 'lh-UT', 'vim-UT', 'lh-BTW']
 
   " Project --define subproject_{name}
-  let name = lh#path#strip_start(expand('%:p'), [lh#path#vimfiles().'/.addons', lh#path#vimfiles()])
-  let name = substitute(name, '\v^.{-}[/\\](.{-})[/\\].*', '\1', '')
-  let name = substitute(name, '[^A-Za-z0-9_]', '_', 'g')
-  let opt = {'name': name}
+  let s:name = lh#path#strip_start(expand('%:p'), [lh#path#vimfiles().'/.addons', lh#path#vimfiles()])
+  let s:name = substitute(s:name, '\v^.{-}[/\\](.{-})[/\\].*', '\1', '')
+  let s:name = substitute(s:name, '[^A-Za-z0-9_]', '_', 'g')
+  let s:opt = {'name': s:name}
   if expand('%:p') == expand('<sfile>:p')
     " This _vimrc_local.vim file!
-    let opt.auto_discover_root = {'value': expand('%:p:h')}
+    let s:opt.auto_discover_root = {'value': expand('%:p:h')}
   endif
 
   " Update Vim &tags option w/ the tag file produced for the current project
   call lh#tags#update_tagfiles() " uses p:tags_dirname
 
-  if lh#option#is_unset(lh#project#define(s:, opt, 'subproject_'.name))
+  if lh#option#is_unset(lh#project#define(s:, s:opt, 'subproject_'.s:name))
     finish
   endif
 else
