@@ -52,7 +52,11 @@ endfunction
 "------------------------------------------------------------------------
 " ## Exported functions {{{1
 " Function: lh#pkgconfig#cmd(command, ...) {{{3
-let s:exec = 'pkg-config'
+let s:k_executable = 'pkg-config'
+
+let s:loaded_pkgs = get(s:, 'loaded_mkgs', {})
+let s:pkg_infos   = get(s:, 'pkg_infos', {})
+
 function! lh#pkgconfig#cmd(command, ...) abort
   if a:0 == 0
     return
@@ -60,24 +64,26 @@ function! lh#pkgconfig#cmd(command, ...) abort
     let cmd = []
     call s:Verbose('lib: %1', a:000)
     for lib in a:000
-      if a:command == '--set-vars'
-        let cmd += [s:exec, '--cflags', lib, ';']
-              \ +  [s:exec, '--libs-only-L', lib, ';']
-              \ +  [s:exec, '--libs-only-l', lib, ';']
-              \ +  [s:exec, '--libs-only-other', lib, ';']
+      if a:command == 'load'
+        let cmd += [s:k_executable, '--cflags', lib, ';']
+              \ +  [s:k_executable, '--libs-only-L', lib, ';']
+              \ +  [s:k_executable, '--libs-only-l', lib, ';']
+              \ +  [s:k_executable, '--libs-only-other', lib, ';']
       endif
     endfor
     let info = lh#os#system(join(cmd, ' '))
     if v:shell_error
-      throw "pkg-config: ".string(info)
+      throw "pkg-config: ".info
     endif
     let cflags = []
     let ldflags = []
     let ldlibs = []
+    let info_list = split(info, "\n", 1)
+    call s:Verbose("Information: %1", info_list)
     for i in range(len(a:000))
-      let cflags += [info[4*i]]
-      let ldflags += [info[4*i+1]] + [info[4*i+3]]
-      let ldlibs += [info[4*i+2]]
+      let cflags += [info_list[4*i]]
+      let ldflags += [info_list[4*i+1]] + [info_list[4*i+3]]
+      let ldlibs += [info_list[4*i+2]]
     endfor
   endif
   echomsg "$CFLAGS = ".join(cflags, ' ')
@@ -93,25 +99,35 @@ function! lh#pkgconfig#_complete(ArgLead, CmdLine, CursorPos) abort
   let [pos, tokens; dummy] = lh#command#analyse_args(a:ArgLead, a:CmdLine, a:CursorPos)
 
   if 1 == pos
-    let res = [ '--version', '--modversion',
-          \ '--atleast-pkgconfig-version=VERSION', '--libs', '--static',
-          \ '--short-errors', '--libs-only-l', '--libs-only-other',
-          \ '--libs-only-L', '--cflags', '--cflags-only-I',
-          \ '--cflags-only-other', '--variable=NAME',
-          \ '--define-variable=NAME=VALUE', '--exists', '--print-variables',
-          \ '--uninstalled', '--atleast-version=VERSION',
-          \ '--exact-version=VERSION', '--max-version=VERSION', '--list-all',
-          \ '--debug', '--print-errors', '--silence-errors',
-          \ '--errors-to-stdout', '--print-provides', '--print-requires',
-          \ '--print-requires-private', '--validate', '--define-prefix',
-          \ '--dont-define-prefix', '--prefix-variable=PREFIX',
-          \ '--set-vars'
-          \ ]
+    let res = ['load', 'unload']
+    " there is non need to support all options of pkg-config. Indeed,
+    " they can be called from the command line.
+    " What interrests us, is to be able to set $C(XX)FLAGS, $LDFLAGS and
+    " $LDLIBS from Vim before running |:make|
+    "" let res = [ '--version', '--modversion',
+    ""       \ '--atleast-pkgconfig-version=VERSION', '--libs', '--static',
+    ""       \ '--short-errors', '--libs-only-l', '--libs-only-other',
+    ""       \ '--libs-only-L', '--cflags', '--cflags-only-I',
+    ""       \ '--cflags-only-other', '--variable=NAME',
+    ""       \ '--define-variable=NAME=VALUE', '--exists', '--print-variables',
+    ""       \ '--uninstalled', '--atleast-version=VERSION',
+    ""       \ '--exact-version=VERSION', '--max-version=VERSION', '--list-all',
+    ""       \ '--debug', '--print-errors', '--silence-errors',
+    ""       \ '--errors-to-stdout', '--print-provides', '--print-requires',
+    ""       \ '--print-requires-private', '--validate', '--define-prefix',
+    ""       \ '--dont-define-prefix', '--prefix-variable=PREFIX',
+    ""       \ ]
   else
     " TODO: find where _completion_loader is installed..
     " Or glob into $PKG_CONFIG_PATH + /usr/lib/pkgconfig...
-    let res = lh#command#matching_bash_completion('pkg-config', a:ArgLead)
+    if lh#command#can_use_bash_completion()
+      let res = lh#command#matching_bash_completion('pkg-config', a:ArgLead)
+    else
+      let res = split(lh#os#system(s:k_executable. ' --list-all'), "\n")
+      call map(res, 'matchstr(v:val, "\\v^\\S+")')
+    endif
   endif
+  call filter(res, 'v:val =~ "^".a:ArgLead')
   return res
 endfunction
 

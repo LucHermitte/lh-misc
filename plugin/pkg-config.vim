@@ -7,7 +7,7 @@
 " Version:      0.0.1.
 let s:k_version = 001
 " Created:      12th Sep 2018
-" Last Update:  12th Sep 2018
+" Last Update:  13th Sep 2018
 "------------------------------------------------------------------------
 " Description:
 "       Wrapper to execute pkg-config and fill some environment
@@ -34,7 +34,7 @@ set cpo&vim
 command! -nargs=+
       \ -complete=customlist,lh#pkgconfig#_complete
       \ PkgConfig
-      \ echo lh#pkgconfig#cmd(<f-args>)
+      \ call lh#pkgconfig#cmd(<f-args>)
 " Commands and Mappings }}}1
 "------------------------------------------------------------------------
 let &cpo=s:cpo_save
