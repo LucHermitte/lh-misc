@@ -14,7 +14,10 @@ let s:k_version = 001
 "
 "------------------------------------------------------------------------
 " History:      «history»
-" TODO:         «missing features»
+" TODO:
+" * Support lhv#project variable, e.g. p:$CXXFLAGS
+" * Support Fortran...
+" * Check if we can use CPPFLAGS for `-I` ?
 " }}}1
 "=============================================================================
 
@@ -54,45 +57,102 @@ endfunction
 " Function: lh#pkgconfig#cmd(command, ...) {{{3
 let s:k_executable = 'pkg-config'
 
-let s:loaded_pkgs = get(s:, 'loaded_mkgs', {})
+if 1
+  let s:loaded_pkgs = {}
+  let s:pkg_infos   = {}
+  let $CFLAGS = ''
+  let $CXXFLAGS = ''
+  let $LDFLAGS = ''
+  let $LDLIBS = ''
+endif
+let s:loaded_pkgs = get(s:, 'loaded_pkgs', {})
 let s:pkg_infos   = get(s:, 'pkg_infos', {})
 
 function! lh#pkgconfig#cmd(command, ...) abort
+  call lh#assert#value(lh#os#system_detected()).eq('unix')
   if a:0 == 0
     return
+  elseif a:command == 'load'
+    call lh#pkgconfig#_load(a:000)
+  elseif a:command == 'unload'
+    call lh#pkgconfig#_unload(a:000)
   else
-    let cmd = []
-    call s:Verbose('lib: %1', a:000)
-    for lib in a:000
-      if a:command == 'load'
-        let cmd += [s:k_executable, '--cflags', lib, ';']
-              \ +  [s:k_executable, '--libs-only-L', lib, ';']
-              \ +  [s:k_executable, '--libs-only-l', lib, ';']
-              \ +  [s:k_executable, '--libs-only-other', lib, ';']
-      endif
-    endfor
-    let info = lh#os#system(join(cmd, ' '))
-    if v:shell_error
-      throw "pkg-config: ".info
-    endif
-    let cflags = []
-    let ldflags = []
-    let ldlibs = []
-    let info_list = split(info, "\n", 1)
-    call s:Verbose("Information: %1", info_list)
-    for i in range(len(a:000))
-      let cflags += [info_list[4*i]]
-      let ldflags += [info_list[4*i+1]] + [info_list[4*i+3]]
-      let ldlibs += [info_list[4*i+2]]
-    endfor
+    throw "pkg-config: Unexpected command: ".a:command
   endif
-  echomsg "$CFLAGS = ".join(cflags, ' ')
-  echomsg "$LDFLAGS = ".join(ldflags, ' ')
-  echomsg "$LDLIBS = ".join(ldlibs, ' ')
 endfunction
 
 "------------------------------------------------------------------------
 " ## Internal functions {{{1
+
+function! s:add_to_var(var, value) abort
+  exe 'let '.a:var.' .= " ".a:value'
+  call s:Verbose('%1 = %2', a:var, eval(a:var))
+endfunction
+
+function! s:remove_from_var(var, value) abort
+  if empty(a:value) | return | endif
+  exe 'let old_value = '.a:var
+  let where = stridx(old_value, a:value)
+  call lh#assert#value(where).is_ge(0)
+  let offset =  where > 0 && old_value[where-1] == ' '
+  let value = strpart(old_value, 0, where-offset)
+        \   . strpart(old_value, where+strlen(a:value))
+  exe 'let '.a:var.' = value'
+  call s:Verbose('%1 = %2', a:var, value)
+endfunction
+
+" Function: lh#pkgconfig#_load(libs) {{{3
+function! lh#pkgconfig#_load(libs) abort
+  call s:Verbose('Load pkg-config info for: %1', a:libs)
+  for lib in a:libs
+    " Register the lib
+    if has_key(s:loaded_pkgs, lib)
+      let s:loaded_pkgs[lib] += 1
+    else
+      let cmd = [s:k_executable, '--cflags',          lib, ';']
+            \ + [s:k_executable, '--libs-only-L',     lib, ';']
+            \ + [s:k_executable, '--libs-only-l',     lib, ';']
+            \ + [s:k_executable, '--libs-only-other', lib, ';']
+      let info = lh#os#system('('.join(cmd, ' ').')')
+      if v:shell_error
+        throw "pkg-config: ".info
+      endif
+      let info_list = split(info, "\n", 1)
+      call s:Verbose("Information: %1", info_list)
+
+      let s:pkg_infos[lib] = {
+            \ 'cflags' : info_list[0],
+            \ 'ldlibs' : info_list[2],
+            \ 'ldflags': lh#string#trim(info_list[1].' '.info_list[3])
+            \ }
+      call s:add_to_var('$CFLAGS',   s:pkg_infos[lib].cflags)
+      call s:add_to_var('$CXXFLAGS', s:pkg_infos[lib].cflags)
+      call s:add_to_var('$LDFLAGS',  s:pkg_infos[lib].ldflags)
+      call s:add_to_var('$LDLIBS',   s:pkg_infos[lib].ldlibs)
+      let s:loaded_pkgs[lib]  = 1
+    endif
+    call s:Verbose('%1(%3) -> %2', lib, s:pkg_infos[lib], s:loaded_pkgs[lib])
+  endfor
+endfunction
+
+" Function: lh#pkgconfig#_unload(libs) {{{3
+function! lh#pkgconfig#_unload(libs) abort
+  call s:Verbose('Unload pkg-config info for: %1', a:libs)
+  for lib in a:libs
+    if get(s:loaded_pkgs, lib, 0) == 0
+      call lh#common#warning_msg('No pkg-config variables loaded for '.lib)
+    elseif s:loaded_pkgs[lib] == 1
+      call s:Verbose("Do unload pkg-config variables for %1", lib)
+      call s:remove_from_var('$CFLAGS',   s:pkg_infos[lib].cflags)
+      call s:remove_from_var('$CXXFLAGS', s:pkg_infos[lib].cflags)
+      call s:remove_from_var('$LDFLAGS',  s:pkg_infos[lib].ldflags)
+      call s:remove_from_var('$LDLIBS',   s:pkg_infos[lib].ldlibs)
+      unlet s:loaded_pkgs[lib]
+    else
+      let s:loaded_pkgs[lib] -= 1
+    endif
+  endfor
+endfunction
 
 " Function: lh#pkgconfig#_complete(ArgLead, CmdLine, CursorPos) {{{2
 function! lh#pkgconfig#_complete(ArgLead, CmdLine, CursorPos) abort
