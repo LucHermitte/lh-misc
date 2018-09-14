@@ -7,7 +7,7 @@
 " Version:      0.0.1.
 let s:k_version = 001
 " Created:      12th Sep 2018
-" Last Update:  13th Sep 2018
+" Last Update:  14th Sep 2018
 "------------------------------------------------------------------------
 " Description:
 "       Support functions for plugin/pkgconfig
@@ -104,35 +104,46 @@ endfunction
 " Function: lh#pkgconfig#_load(libs) {{{3
 function! lh#pkgconfig#_load(libs) abort
   call s:Verbose('Load pkg-config info for: %1', a:libs)
-  for lib in a:libs
-    " Register the lib
-    if has_key(s:loaded_pkgs, lib)
-      let s:loaded_pkgs[lib] += 1
-    else
-      let cmd = [s:k_executable, '--cflags',          lib, ';']
-            \ + [s:k_executable, '--libs-only-L',     lib, ';']
-            \ + [s:k_executable, '--libs-only-l',     lib, ';']
-            \ + [s:k_executable, '--libs-only-other', lib, ';']
-      let info = lh#os#system('('.join(cmd, ' ').')')
-      if v:shell_error
-        throw "pkg-config: ".info
-      endif
-      let info_list = split(info, "\n", 1)
-      call s:Verbose("Information: %1", info_list)
+  if lh#os#is_a_cygwin_shell()
+    let cleanup = lh#on#exit()
+          \.restore('shellxquote')
+    set shellxquote=(
+  endif
+  try
+    for lib in a:libs
+      " Register the lib
+      if has_key(s:loaded_pkgs, lib)
+        let s:loaded_pkgs[lib] += 1
+      else
+        let cmd = [s:k_executable, '--cflags',          lib, ';']
+              \ + [s:k_executable, '--libs-only-L',     lib, ';']
+              \ + [s:k_executable, '--libs-only-l',     lib, ';']
+              \ + [s:k_executable, '--libs-only-other', lib, ';']
+        let info = lh#os#system(join(cmd, ' '))
+        if v:shell_error
+          throw "pkg-config: ".info
+        endif
+        let info_list = split(info, "\n", 1)
+        call s:Verbose("Information: %1", info_list)
 
-      let s:pkg_infos[lib] = {
-            \ 'cflags' : info_list[0],
-            \ 'ldlibs' : info_list[2],
-            \ 'ldflags': lh#string#trim(info_list[1].' '.info_list[3])
-            \ }
-      call s:add_to_var('$CFLAGS',   s:pkg_infos[lib].cflags)
-      call s:add_to_var('$CXXFLAGS', s:pkg_infos[lib].cflags)
-      call s:add_to_var('$LDFLAGS',  s:pkg_infos[lib].ldflags)
-      call s:add_to_var('$LDLIBS',   s:pkg_infos[lib].ldlibs)
-      let s:loaded_pkgs[lib]  = 1
+        let s:pkg_infos[lib] = {
+              \ 'cflags' : info_list[0],
+              \ 'ldlibs' : info_list[2],
+              \ 'ldflags': lh#string#trim(info_list[1].' '.info_list[3])
+              \ }
+        call s:add_to_var('$CFLAGS',   s:pkg_infos[lib].cflags)
+        call s:add_to_var('$CXXFLAGS', s:pkg_infos[lib].cflags)
+        call s:add_to_var('$LDFLAGS',  s:pkg_infos[lib].ldflags)
+        call s:add_to_var('$LDLIBS',   s:pkg_infos[lib].ldlibs)
+        let s:loaded_pkgs[lib]  = 1
+      endif
+      call s:Verbose('%1(%3) -> %2', lib, s:pkg_infos[lib], s:loaded_pkgs[lib])
+    endfor
+  finally
+    if exists('cleanup')
+      call cleanup.finalize()
     endif
-    call s:Verbose('%1(%3) -> %2', lib, s:pkg_infos[lib], s:loaded_pkgs[lib])
-  endfor
+  endtry
 endfunction
 
 " Function: lh#pkgconfig#_unload(libs) {{{3
