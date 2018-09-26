@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 07th Aug 2018
+" Last update   : 27th Sep 2018
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -946,7 +946,7 @@ let s:my_plugins = [
       \ 'dirdiff-svn'        ,
       \]
 
-if has('python')
+if has('pythonx') && !empty(get(g:, 'clang_library_path', ''))
   let s:my_plugins += ['vim-clang@lh']
 endif
 
@@ -1065,7 +1065,7 @@ function! s:ActivateAddons()
   call vam#ActivateAddons(['Mark%2666']) " Ingo Karkat's fork of mark.vim
   call vam#ActivateAddons(['editorconfig-vim']) " used to test my plugins
   call vam#ActivateAddons(['undotree'])
-  if has('python')
+  if has('pythonx')
     call vam#ActivateAddons(['vim-jira-complete'])
   endif
   let g:airline_powerline_fonts = 1
@@ -1080,7 +1080,7 @@ function! s:ActivateAddons()
   " endtry
   "
   " YouCompleteMe
-  if ((version == 704 && has("patch72")) || version > 704) && has('python')
+  if ((version == 704 && has("patch72")) || version > 704) && has('pythonx')
         \ && isdirectory(fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe/third_party/ycmd')
         \ && executable(fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe/third_party/ycmd/libclang.so')
     " exe 'set rtp+='.fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe'
