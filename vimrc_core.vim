@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 27th Sep 2018
+" Last update   : 01st Oct 2018
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -329,7 +329,10 @@ vmap <S-end> <end>
 " -------------------------------------------------------------------
 " Customizing the command line {{{
 " -------------------------------------------------------------------
-" Moved into plugin/cmdline-motions.vim
+" See also plugin/cmdline-motions.vim
+
+" Insert the path of the current file
+cnoremap <expr> <c-r>< expand('%:h').'/'
 
 " Searching while something is selected will restrict the search to the
 " current selection
