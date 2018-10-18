@@ -4,7 +4,7 @@
 " Version:      0.0.1.
 let s:k_version = 001
 " Created:      16th Oct 2018
-" Last Update:  16th Oct 2018
+" Last Update:  18th Oct 2018
 "------------------------------------------------------------------------
 " Description:
 "       Toggle terminal windows
@@ -17,7 +17,7 @@ let s:k_version = 001
 "=============================================================================
 
 " Avoid global reinclusion {{{1
-if &cp || (exists("g:loaded_guake")
+if &cp || !exists(':term') || (exists("g:loaded_guake")
       \ && (g:loaded_guake >= s:k_version)
       \ && !exists('g:force_reload_guake'))
   finish
