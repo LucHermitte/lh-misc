@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 01st Oct 2018
+" Last update   : 24th Oct 2018
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -778,6 +778,9 @@ let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">"
 " \ '"'. "\<tab>\<tab><URL:http://github.com/LucHermitte>"
 imap <c-space>  <Plug>MuT_ckword
 vmap <c-space>  <Plug>MuT_Surround
+
+" -- lh-tags {{{3
+let g:tag_options = { 'no_auto': 0}
 
 " -- latex-suite {{{3
 let g:Tex_SmartKeyQuote = 0
