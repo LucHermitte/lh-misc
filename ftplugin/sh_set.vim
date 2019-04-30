@@ -4,14 +4,14 @@
 "		<URL:http://github.com/LucHermitte/lh-misc>
 " Version:	1.0.0
 " Created:	16th Nov 2007
-" Last Update:	21st Jan 2016
+" Last Update:	30th Apr 2019
 "
 " Purpose:	ftplugin for Unix shell (-like) programming
 "
 "------------------------------------------------------------------------
 " Installation:	{rtp}/ftplugin/
 " Dependancies:	lh-map-tools (misc_map.vim, common_brackets.vim)
-" 
+"
 " }}}1
 "=============================================================================
 
@@ -27,29 +27,24 @@ if exists('b:loaded_ftplugin_sh_set') && !exists('g:force_reload_ftplugin_sh_set
   finish
 endif
 let b:loaded_ftplugin_sh_set = 1
- 
+
 " }}}2
 "------------------------------------------------------------------------
-" Options to set {{{2
-if !exists('maplocalleader')
-  let maplocalleader = ','
-endif
-
 " Mappings {{{2
 " if {{{3
 Inoreabbr <buffer> <silent> if <C-R>=InsertSeq('if ',
       \ "\\<c-f\\>if [ !cursorhere! ] ; then\n!mark!\nfi!mark!")<cr>
 
-vnoremap <buffer> <silent> <localleader>if 
+vnoremap <buffer> <silent> <localleader>if
       \ <c-\><c-n>@=Surround('if [ !cursorhere! ] ; then', 'fi!mark!',
       \ 1, 1, '', 1, 'if ')<cr>
-vnoremap <buffer> <silent> <LocalLeader><localleader>if 
+vnoremap <buffer> <silent> <LocalLeader><localleader>if
       \ <c-\><c-n>@=Surround('if [ ', '!cursorhere! ] ; then\n!mark!\nfi!mark!',
       \ 0, 1, '', 1, 'if ')<cr>
 nmap <buffer> <LocalLeader>if V<LocalLeader>if
 nmap <buffer> <LocalLeader><LocalLeader>if
       \ <Plug>SH_SelectExpr4Surrounding<LocalLeader><LocalLeader>if
- 
+
 " }}}1
 " ========================================================================
 " Global definitions {{{1
@@ -57,7 +52,7 @@ nmap <buffer> <LocalLeader><LocalLeader>if
 " Avoid global reinclusion {{{2
 if exists("g:loaded_sh_set") && !exists('g:force_reload_ftplugin_sh_set')
   let &cpo=s:cpo_save
-  finish 
+  finish
 endif
 let g:loaded_sh_set = 1
 " Avoid global reinclusion }}}2

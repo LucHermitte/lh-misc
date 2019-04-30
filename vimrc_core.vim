@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 24th Oct 2018
+" Last update   : 30th Apr 2019
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -95,6 +95,7 @@ set runtimepath+=$HOME/vimfiles/latexSuite
                         " Even for only one buffer.
   set lazyredraw        " [VIM5];  do not update screen while executing macros
   let g:mapleader=' '   " Let's go spacemacs/vim's way!
+  let g:maplocalleader=','
   set magic             " Use some magic in search patterns?  Certainly!
   set modeline          " Allow the last line to be a modeline - useful when
                         " the last line in sig gives the preferred textwidth

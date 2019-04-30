@@ -2,7 +2,7 @@
 " File:         ftplugin/vim_set.vim
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Last Update:  26th Jun 2018
+" Last Update:  30th Apr 2019
 " Requirements: lh-vim-lib
 "
 " ========================================================================
@@ -22,7 +22,7 @@ if exists("b:loaded_vim_set") && !exists('g:force_reload_vim_set')
   let &cpo = s:cpo_save
   finish
 endif
-let b:loaded_vim_set = 202
+let b:loaded_vim_set = 203
 
 " ------------------------------------------------------------------------
 " Options to be set {{{2
@@ -36,10 +36,6 @@ setlocal smarttab
 setlocal sw=2
 if &modifiable
   setlocal ff=unix
-endif
-
-if !exists('maplocalleader')
-  let maplocalleader = ','
 endif
 
 " setlocal def=^function!\\=\\s*\\(s:\\)\\=
