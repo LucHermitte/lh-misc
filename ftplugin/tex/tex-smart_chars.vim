@@ -5,7 +5,7 @@
 " Version:      2.0.0
 let s:k_version = 200
 " Created:      2004
-" Last Update:  18th Apr 2015
+" Last Update:  20th Jan 2019
 "------------------------------------------------------------------------
 " Description:
 " VIM Macros for editing LaTeX documents
@@ -103,7 +103,7 @@ function! s:SubSuper ()
   if syn =~ "^texMath"
     if left == '_'
       if exists("b:usemarks") && b:usemarks
-        return BuildMapSeq('{}^{!mark!}!mark!\<ESC>2F{a')
+        return lh#map#build_map_seq('{}^{!mark!}!mark!\<ESC>2F{a')
       else
         return "{}^{}\<Esc>F}i"
       endif
