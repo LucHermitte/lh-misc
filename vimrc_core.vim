@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 30th Apr 2019
+" Last update   : 23rd May 2019
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -379,11 +379,11 @@ endif
 :VimrcHelp " <F4>    : run grep                                                [N]
 :VimrcHelp " <F5>    : toggle winaltkeys option                                [N]
    set winaltkeys=no
-   "TODO: use lh#menu#def_toggle
-       map <F5> ]!wakyes!
-   noremap ]!wakyes! :map <F5> ]!wakmenu!<CR>:set winaltkeys=yes<CR>
-   noremap ]!wakmenu! :map <F5> ]!wakno!<CR>:set winaltkeys=menu<CR>
-   noremap ]!wakno! :map <F5> ]!wakyes!<CR>:set winaltkeys=no<CR>
+   """TODO: use lh#menu#def_toggle
+   ""    map <F5> ]!wakyes!
+   ""noremap ]!wakyes! :map <F5> ]!wakmenu!<CR>:set winaltkeys=yes<CR>
+   ""noremap ]!wakmenu! :map <F5> ]!wakno!<CR>:set winaltkeys=menu<CR>
+   ""noremap ]!wakno! :map <F5> ]!wakyes!<CR>:set winaltkeys=no<CR>
 "
 :VimrcHelp " <F6>    : capitalize the previous/current word                    [I+N]
  inoremap <F6> <c-o>gUiw
@@ -1094,6 +1094,10 @@ function! s:ActivateAddons()
   endif
   " Unite stuff
   call vam#ActivateAddons(['unite', 'unite-locate', 'unite-outline', 'vimproc'])
+  " COC
+  if executable('node')
+    call vam#ActivateAddons(['github:neoclide/coc.nvim'])
+  endif
 
   " Impossible to make it work! :(
   " let g:vim_addon_manager['plugin_sources']['BreakPts@albfan'] = { 'type': 'git', 'url': 'git@github.com:albfan/BreakPts.git',
@@ -1118,6 +1122,194 @@ runtime machine-specifics.vim
 
 " -- BTW {{{3
 LetIfUndef g:BTW.make_in_background = 1
+
+" -- COC                {{{3
+" Smaller updatetime for CursorHold & CursorHoldI
+set updatetime=300
+
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
+
+" always show signcolumns
+set signcolumn=yes
+
+if !empty(globpath(&rtp, 'autoload/coc.vim'))
+  " Use tab for trigger completion with characters ahead and navigate.
+  " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+  inoremap <silent><expr> <TAB>
+        \ pumvisible() ? "\<C-n>" :
+        \ <SID>check_back_space() ? "\<TAB>" :
+        \ coc#refresh()
+  inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+  function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
+  endfunction
+
+  " Use <C-S-Space> to trigger completion.
+  " <c-space> is used by mu-template
+  inoremap <silent><expr> <C-S-space> coc#refresh()
+
+  """ Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+  """ Coc only does snippet and additional edit on confirm.
+  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+  " TODO: check how it's would interact with lh-brackets (add newline
+  " between brackets)... it seems OK
+
+  "" " Use `[c` and `]c` to navigate diagnostics
+  "" nmap <silent> [c <Plug>(coc-diagnostic-prev)
+  "" nmap <silent> ]c <Plug>(coc-diagnostic-next)
+  " TODO: find something that doesn't conflict with vanilla [c, ]c
+
+  let s:coc_prio = '500.120.'
+  let s:coc_menu = '&Plugin.&COC.'
+
+  " Remap keys for gotos
+  call lh#menu#make('n', s:coc_prio.'10', s:coc_menu.'&Goto Definition',     'gd',  '<Plug>(coc-definition)')
+  call lh#menu#make('n', s:coc_prio.'20', s:coc_menu.'T&ype Definition',     '<leader>gt',  '<Plug>(coc-type-definition)')
+  call lh#menu#make('n', s:coc_prio.'30', s:coc_menu.'Goto &Implementation', '<leader>gi',  '<Plug>(coc-implementation)')
+  call lh#menu#make('n', s:coc_prio.'40', s:coc_menu.'Goto &References',     '<leader>gr',  '<Plug>(coc-references)')
+  amenu 50.120.99 &Plugin.&COC.--<sep>-- <Nop>
+
+  " Use K to show documentation in preview window
+  nnoremap <silent> <leader>K :call <SID>show_documentation()<CR>
+
+  function! s:show_documentation()
+    if (index(['vim','help'], &filetype) >= 0)
+      execute 'h '.expand('<cword>')
+    else
+      call CocAction('doHover')
+    endif
+  endfunction
+
+  " Highlight symbol under cursor on CursorHold
+  autocmd CursorHold * silent call CocActionAsync('highlight')
+
+  " Remap for rename current word
+  call lh#menu#make('n', s:coc_prio.'100', s:coc_menu.'Re&Name',            '<leader>xr',  '<Plug>(coc-rename)')
+
+  " Remap for format selected region
+  call lh#menu#make('xn', s:coc_prio.'110', s:coc_menu.'&Format selection', '<leader>f',  '<Plug>(coc-format-selected)')
+
+  let g:coc_start_at_startup = 0
+  augroup COCGroup
+    autocmd!
+    " Required to permit gvim to fork on launch
+    " https://github.com/neoclide/coc.nvim/issues/659
+    autocmd VimEnter * :CocStart
+    " Setup formatexpr specified filetype(s).
+    autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+    " Update signature help on jump placeholder
+    autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+
+    au CursorHold * sil call CocActionAsync('highlight')
+    au CursorHoldI * sil call CocActionAsync('showSignatureHelp')
+  augroup end
+
+  " Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
+  call lh#menu#make('xn', s:coc_prio.'120', s:coc_menu.'Code &Action on selection',   '<leader>xa',  '<Plug>(coc-codeaction-selected)')
+
+  " Remap for do codeAction of current line
+  call lh#menu#make('n', s:coc_prio.'130', s:coc_menu.'Code &Action on current line', '<leader>xal',  '<Plug>(coc-codeaction)')
+  " Fix autofix problem of current line
+  call lh#menu#make('n', s:coc_prio.'140', s:coc_menu.'Auto Fi&x current line',       '<leader>xqf',  '<Plug>(coc-fix-current)')
+
+  amenu 50.120.199 &Plugin.&COC.---<sep>--- <Nop>
+  " Use `:Format` to format current buffer
+  command! -nargs=0 Format :call CocAction('format')
+
+  " Use `:Fold` to fold current buffer
+  command! -nargs=? Fold   :call CocAction('fold', <f-args>)
+
+  " Add diagnostic info for https://github.com/itchyny/lightline.vim
+  let g:lightline = {
+        \ 'colorscheme': 'wombat',
+        \ 'active': {
+        \   'left': [ [ 'mode', 'paste' ],
+        \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
+        \ },
+        \ 'component_function': {
+        \   'cocstatus': 'coc#status'
+        \ },
+        \ }
+
+  let g:markdown_fenced_languages = [
+      \ 'vim',
+      \ 'help'
+      \]
+
+  " Using CocList
+  " Show all diagnostics
+  call lh#menu#make('n', s:coc_prio.'200', s:coc_menu.'Show all &Diagnostic',                '<leader>ca',  ':<C-u>CocList diagnostics<cr>')
+  " Manage extensions
+  call lh#menu#make('n', s:coc_prio.'210', s:coc_menu.'&Manage extensions',                  '<leader>ce',  ':<C-u>CocList extensions<cr>')
+  " Show commands
+  call lh#menu#make('n', s:coc_prio.'220', s:coc_menu.'Show Commands',                       '<leader>cc',  ':<C-u>CocList commands<cr>')
+  " Find symbol of current document
+  call lh#menu#make('n', s:coc_prio.'230', s:coc_menu.'Show &Outline',                       '<leader>cO',  ':<C-u>CocList outline<cr>')
+  " Search workspace symbols
+  call lh#menu#make('n', s:coc_prio.'240', s:coc_menu.'Search Workspace &Symbols',           '<leader>cs',  ':<C-u>CocList -I symbols<cr>')
+  " Do default action for next item.
+  call lh#menu#make('n', s:coc_prio.'250', s:coc_menu.'Do default action for next item',     '<leader>cdn',  ':<C-u>CocNext<cr>')
+  " Do default action for previous item.
+  call lh#menu#make('n', s:coc_prio.'260', s:coc_menu.'Do default action for previous item', '<leader>cdp',  ':<C-u>CocPrev<CR>')
+  " Resume latest coc list
+  call lh#menu#make('n', s:coc_prio.'270', s:coc_menu.'Resume latest coc list',              '<leader>cr',  ':<C-u>CocListResume<CR>')
+
+  if executable('ccls')
+    " # $ccls/navigate
+    "   Semantic navigation. Roughly,
+    "   D" => first child declaration "L" => previous declaration "R" => next declaration "U" => parent declaration
+    "   TODO: move to ftplugin
+    " nn <silent><buffer> <C-l> :call CocLocations('ccls','$ccls/navigate',{'direction':'D'})<cr>
+    " nn <silent><buffer> <C-k> :call CocLocations('ccls','$ccls/navigate',{'direction':'L'})<cr>
+    " nn <silent><buffer> <C-j> :call CocLocations('ccls','$ccls/navigate',{'direction':'R'})<cr>
+    " nn <silent><buffer> <C-h> :call CocLocations('ccls','$ccls/navigate',{'direction':'U'})<cr>
+    "
+    " # Cross reference extensions
+    function! s:coc_bind_colocate(key, prio, text, what, ...) abort
+      let arg = join(['$ccls/'.a:what] + a:000, ', ')
+      call lh#menu#make('n', s:coc_prio.a:prio, s:coc_menu.a:text, a:key, ':call CocLocations("ccls", '.string(arg).')<cr>')
+    endfunction
+
+    " ccls/vars ccls/base ccls/derived ccls/members have a parameter while others are interactive.
+    " (ccls/base 1) direct bases
+    " (ccls/derived 1) direct derived
+    " (ccls/member 2) => 2 (Type) => nested classes / types in a namespace
+    " (ccls/member 3) => 3 (Func) => member functions / functions in a namespace
+    " (ccls/member 0) => member variables / variables in a namespace
+    " (ccls/vars 1) => field
+    " (ccls/vars 2) => local variable
+    " (ccls/vars 3) => field or local variable. 3 = 1 | 2
+    " (ccls/vars 4) => parameter
+    "
+    " Bases & Children
+    amenu 50.120.299 &Plugin.&COC.----<sep>---- <Nop>
+    call s:coc_bind_colocate('<leader>gb', '300', 'Direct base class',              'inheritance')
+    call s:coc_bind_colocate('<leader>gB', '310', 'Base classes up to 3 levels',    'inheritance', {'levels': 3})
+    call s:coc_bind_colocate('<leader>gd', '320', 'Derived class',                  'inheritance', {'derived': v:true})
+    call s:coc_bind_colocate('<leader>gD', '330', 'Derived classes ut to 3 levels', 'inheritance', {'derived': v:true, 'levels': 3})
+
+    " caller/callee
+    call s:coc_bind_colocate('<leader>gc', '340', 'Caller', 'call')
+    call s:coc_bind_colocate('<leader>gC', '350', 'Callee', 'call', {'callee': v:true})
+
+    " $ccls/member
+    " member variables / variables in a namespace
+    call s:coc_bind_colocate('<leader>gm', '350', 'Variables (member/namespace)',  'member')
+    call s:coc_bind_colocate('<leader>gf', '360', 'Functions (member/namespace)',  'member', {'kind': 3})
+    call s:coc_bind_colocate('<leader>gs', '370', 'Nested classes (/types in ns)', 'member', {'kind': 2})
+
+    call s:coc_bind_colocate('<leader>gv', '380', 'Variables',  'vars')
+    call s:coc_bind_colocate('<leader>gV', '390', 'Variables (fields)',  'vars', {'kind': 1})
+    call s:coc_bind_colocate('<leader>gP', '400', 'Parameters',  'vars', {'kind': 4})
+
+    " TODO: inject in coc/ccls settings:
+    " - clangs system paths (dynamic)
+    " - SplitIfNotOpen4COC
+  endif
+endif
 
 " }}}1
 " ===================================================================
