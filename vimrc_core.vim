@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 23rd May 2019
+" Last update   : 24th May 2019
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -1086,12 +1086,6 @@ function! s:ActivateAddons()
   " echoe v:exception
   " endtry
   "
-  " YouCompleteMe
-  if ((version == 704 && has("patch72")) || version > 704) && has('pythonx')
-        \ && isdirectory(fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe/third_party/ycmd')
-        \ && executable(fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe/third_party/ycmd/libclang.so')
-    " exe 'set rtp+='.fnameescape(vimfiles).'/addons/clang/ycm/YouCompleteMe'
-  endif
   " Unite stuff
   call vam#ActivateAddons(['unite', 'unite-locate', 'unite-outline', 'vimproc'])
   " COC
@@ -1134,6 +1128,8 @@ set shortmess+=c
 set signcolumn=yes
 
 if !empty(globpath(&rtp, 'autoload/coc.vim'))
+  call coc#config('coc.preferences', {'jumpCommand': ':SplitIfNotOpen4COC'})
+
   " Use tab for trigger completion with characters ahead and navigate.
   " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
   inoremap <silent><expr> <TAB>
@@ -1257,7 +1253,7 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
   " Resume latest coc list
   call lh#menu#make('n', s:coc_prio.'270', s:coc_menu.'Resume latest coc list',              '<leader>cr',  ':<C-u>CocListResume<CR>')
 
-  if executable('ccls')
+  if executable('ccls') && executable('clang++')
     " # $ccls/navigate
     "   Semantic navigation. Roughly,
     "   D" => first child declaration "L" => previous declaration "R" => next declaration "U" => parent declaration
@@ -1305,17 +1301,25 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
     call s:coc_bind_colocate('<leader>gV', '390', 'Variables (fields)',  'vars', {'kind': 1})
     call s:coc_bind_colocate('<leader>gP', '400', 'Parameters',  'vars', {'kind': 4})
 
-    " TODO: inject in coc/ccls settings:
+    " Inject in coc/ccls settings:
     " - clangs system paths (dynamic)
-    " - SplitIfNotOpen4COC
+    " - SplitIfNotOpen4COC (done earlier)
+    call coc#config('coc.preferences.languageserver', {
+          \ 'ccls': {
+          \     'command': 'ccls',
+          \     'filetypes': ['c', 'cpp', 'objc', 'objcpp'],
+          \     'rootPatterns': ['.ccls', 'compile_commands.json', '.vim/'] + g:local_vimrc + g:lh#project.root_patterns,
+          \     'initializationOptions': {
+          \         'cache': {'directory': lh#option#get('lh.tmpir', lh#string#or($TMPDIR, '/tmp'))},
+          \         'index': {'threads': 2},
+          \         'clang': {'extraArgs': map(copy(lh#cpp#tags#compiler_includes('clang++')), '"-isystem".v:val')}
+          \         }
+          \     }
+          \ }
+          \ )
   endif
 endif
 
 " }}}1
-" ===================================================================
-
-" Pr?dac
-xnoremap <silent> µ <esc>:echo strftime('%c', lh#visual#selection())<cr>
-nnoremap <silent> µ :<c-u>echo strftime('%c', matchstr(getline('.'), 'FRAME \zs\d\+\ze\d\{3}'))<cr>
 " ===================================================================
 " vim600: set fdm=marker:
