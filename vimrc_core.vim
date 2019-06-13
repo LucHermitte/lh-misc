@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 24th May 2019
+" Last update   : 13th Jun 2019
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -1128,7 +1128,46 @@ set shortmess+=c
 set signcolumn=yes
 
 if !empty(globpath(&rtp, 'autoload/coc.vim'))
-  call coc#config('coc.preferences', {'jumpCommand': ':SplitIfNotOpen4COC'})
+  function! s:coc_configure_and_start() abort
+    " As &shellredir isn't set yet in the .vimrc (see :h starting), we need to
+    " dely the execution of |system()| till after these options has been set.
+    " That's where |VimEnter| autocommand helps.
+    " Here, system() is called by lh#cpp#tags#compiler_includes()
+    let g:coc_user_config = {}
+    let g:coc_user_config['coc.preferences.jumpCommand'] = ':SplitIfNotOpen4COC'
+    let g:coc_user_config['languageserver'] = {
+          \ 'ccls': {
+          \     'command': 'ccls',
+          \     'filetypes': ['c', 'cpp', 'objc', 'objcpp'],
+          \     'rootPatterns': ['.ccls', 'compile_commands.json', '.vim/'] + g:local_vimrc + g:lh#project.root_patterns,
+          \     'initializationOptions': {
+          \         'cache': {'directory': lh#option#get('lh.tmpdir', lh#string#or($TMPDIR, '/tmp'))},
+          \         'index': {'threads': 2},
+          \         'clang': {'extraArgs': map(copy(lh#cpp#tags#compiler_includes('clang++')), '"-isystem".v:val')}
+          \         }
+          \     }
+          \ }
+    " Workaround bug 659 to launch gvim forked
+    "   Required to permit gvim to fork on launch
+    "   https://github.com/neoclide/coc.nvim/issues/659
+    CocStart
+  endfunction
+
+  let g:coc_start_at_startup = 0
+  augroup COCGroup
+    autocmd!
+    " Required to permit gvim to fork on launch
+    " https://github.com/neoclide/coc.nvim/issues/659
+    autocmd VimEnter * call s:coc_configure_and_start()
+    " Setup formatexpr specified filetype(s).
+    autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+    " Update signature help on jump placeholder
+    autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+
+    au CursorHold * sil call CocActionAsync('highlight')
+    au CursorHoldI * sil call CocActionAsync('showSignatureHelp')
+  augroup end
+
 
   " Use tab for trigger completion with characters ahead and navigate.
   " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
@@ -1187,21 +1226,6 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
 
   " Remap for format selected region
   call lh#menu#make('xn', s:coc_prio.'110', s:coc_menu.'&Format selection', '<leader>f',  '<Plug>(coc-format-selected)')
-
-  let g:coc_start_at_startup = 0
-  augroup COCGroup
-    autocmd!
-    " Required to permit gvim to fork on launch
-    " https://github.com/neoclide/coc.nvim/issues/659
-    autocmd VimEnter * :CocStart
-    " Setup formatexpr specified filetype(s).
-    autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-    " Update signature help on jump placeholder
-    autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-
-    au CursorHold * sil call CocActionAsync('highlight')
-    au CursorHoldI * sil call CocActionAsync('showSignatureHelp')
-  augroup end
 
   " Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
   call lh#menu#make('xn', s:coc_prio.'120', s:coc_menu.'Code &Action on selection',   '<leader>xa',  '<Plug>(coc-codeaction-selected)')
@@ -1304,19 +1328,6 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
     " Inject in coc/ccls settings:
     " - clangs system paths (dynamic)
     " - SplitIfNotOpen4COC (done earlier)
-    call coc#config('coc.preferences.languageserver', {
-          \ 'ccls': {
-          \     'command': 'ccls',
-          \     'filetypes': ['c', 'cpp', 'objc', 'objcpp'],
-          \     'rootPatterns': ['.ccls', 'compile_commands.json', '.vim/'] + g:local_vimrc + g:lh#project.root_patterns,
-          \     'initializationOptions': {
-          \         'cache': {'directory': lh#option#get('lh.tmpir', lh#string#or($TMPDIR, '/tmp'))},
-          \         'index': {'threads': 2},
-          \         'clang': {'extraArgs': map(copy(lh#cpp#tags#compiler_includes('clang++')), '"-isystem".v:val')}
-          \         }
-          \     }
-          \ }
-          \ )
   endif
 endif
 
