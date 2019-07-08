@@ -2,10 +2,10 @@
 " File:         autoload/lh/let_modeline.vim                      {{{1
 " Author:       Luc Hermitte <EMAIL:luc {dot} hermitte {at} gmail {dot} com>
 "		<URL:http://github.com/LucHermitte/lh-misc>
-" Version:      2.0
-let s:k_version = '200'
+" Version:      2.0.1
+let s:k_version = '201'
 " Created:      15th Feb 2017
-" Last Update:  15th Feb 2017
+" Last Update:  08th Jul 2019
 "------------------------------------------------------------------------
 " Description:
 "       Support functions for plugin/let-modeline.vim
@@ -52,11 +52,11 @@ endfunction
 " ## API functions {{{1
 
 " Constants {{{2
-let s:re_var   = '\s\+\([[:alnum:]:_$]\+\)'
+let s:re_var   = '\s+([[:alnum:]:_$]+)'
 " beware the comments ending characters
-let s:re_val   = '\(\%(' . "'[^']*'" . '\|"[^"]*"\|[-a-zA-Z0-9:_.&$]\+\)\)$'
-let s:re_other = '^\(.\{-}\)'
-let s:re_sub   = s:re_other . s:re_var . '\s*=\s*' . s:re_val
+let s:re_val   = '(%(' . "'[^']*'" . '|"[^"]*"|[-a-zA-Z0-9:_.&$]+))$'
+let s:re_other = '^(.{-})'
+let s:re_sub   = '\v'.s:re_other . s:re_var . '\s*\=\s*' . s:re_val
 
 " Function: lh#let_modeline#_parse_line(mtch) {{{2
 function! lh#let_modeline#_parse_line(mtch) abort
@@ -70,8 +70,11 @@ function! lh#let_modeline#_parse_line(mtch) abort
     call s:Verbose("match: `%1`", mtch)
     call s:Verbose("vari : `%1`", vari)
     call s:Verbose("valu : `%1`", valu)
-    if (vari !~ '^[[:alnum:]:_$]\+$') || (valu !~ s:re_val)
-      call s:Verbose('Invalid var=value format: %1=%2', vari, valu)
+    if (vari !~ '^[[:alnum:]:_$]\+$')
+      call s:Verbose('Invalid variable format: %1', vari)
+      return
+    elseif (valu !~ '\v'.s:re_val)
+      call s:Verbose('Invalid value format: %1', valu)
       return
     endif
     " Check : no function !
