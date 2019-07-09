@@ -128,33 +128,15 @@ command! -nargs=+ VSDefaultValue :call s:Set_if_null(<f-args>)
 " Otherwise, try to use `which' in a *nix shell ; or else suppose aspell.
 "
 if !exists('g:VS_spell_prog')
-  if exists(':SearchInPATH')   " {{{4 searchInRuntime installed
-    " Best and 100% portable way -- if searchInRuntime.vim is installed
-    command! -nargs=1 VSSetProg :let g:VS_spell_prog=<q-args>
-    :SearchInPATH VSSetProg aspell.exe ispell.exe aspell ispell
-    delcommand VSSetProg
-  elseif &shell =~ 'sh'        " {{{4 Unix
-    " `which' may exists on *nix systems
-    let g:VS_spell_prog = matchstr(system('which aspell'), ".*\\ze\n")
-    if g:VS_spell_prog !~ '.*aspell$'   " ?aspell: Command not found?
-      let g:VS_spell_prog = matchstr(system('which ispell'), ".*\\ze\n")
-      if g:VS_spell_prog !~ '.*ispell$' " ?ispell: Command not found?
-        unlet g:VS_spell_prog
-      endif
-    endif
-  else                         " {{{4 Assume aspell
-    " Assuming `aspell', but ... `aspell' may be invisible from the $PATH.
-    let g:VS_spell_prog = 'aspell'
-  endif
-  " }}}4
-
-  if exists('g:VS_spell_prog') " {{{4 found
+  let spell_prgs = filter(['ispell.exe', 'aspell', 'ispell'], 'executable(v:val)')
+  if !empty(spell_prgs)
+    let g:VS_spell_prog = spell_prgs[0]
     " As the exact path has been found, we split it.
     let s:ProgramPath   = fnamemodify(g:VS_spell_prog, ':p:h')
     let g:VS_spell_prog = fnamemodify(g:VS_spell_prog, ':t')
   else                         " {{{4 not found!!!
-    call s:ErrorMsg('Please check your installation.'.
-          \ "\n".'lhVimSpell has not been able to find ispell or aspell.'.
+    call lh#common#warning_msg('Please check your installation.'.
+          \ ' lhVimSpell has not been able to find ispell nor aspell.'.
           \ "\n".'Update your $PATH or add into your .vimrc:'.
           \ "\n".'      :let g:VS_spell_prog = "path/to/aspell_or_ispell/aspell"')
     let g:VS_spell_prog = 'aspell'
@@ -449,7 +431,7 @@ endfunction " }}}3
 " Part:         lhVimSpell/options}}}1
 "=============================================================================
 " Part:         lhVimSpell/corrected buffer functions {{{1
-" Last Update:  26th Sep 2003
+" Last Update:  09th Jul 2019
 "------------------------------------------------------------------------
 " Description:  Defines the mappings and menus for the spell-checked buffer.
 "------------------------------------------------------------------------
