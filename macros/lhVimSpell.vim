@@ -2,9 +2,9 @@
 " File:         lhVimSpell.vim {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://hermitte.free.fr/vim>
-" Version:      0.6g
+" Version:      0.6h
 " Created:      One day in 2001
-" Last Update:  14th Jul 2005
+" Last Update:  09th Jul 2019
 " Licence:      This is free software; see the GNU General Public Licence
 "               version 2 or later for copying conditions.
 "               There is NO warranty.
@@ -20,7 +20,6 @@
 " end user version (otherwise, run make!) that contains:
 "   - lhVimSpell.vim    : the main file of the plugin
 "   - VS_gui-map.vim    : mappings for the corrector mode buffer
-"   - a.vim             : an old version of Michael Sharpe's plugin
 "   - ChangeLog         : changes history
 "   - VS_help.txt       : the documentation of the plugin in VIM help format
 "   - VS_help.html      : the same documentation but in HTML.
@@ -60,7 +59,7 @@ let g:loaded_lhVimSpell = 1
 
 "=============================================================================
 " Part:         lhVimSpell/dependencies {{{
-" Last Update:  02nd Jul 2003
+" Last Update:  09th Jul 2019
 "------------------------------------------------------------------------
 " Description:  Check for other non essential VIM plugins.
 "------------------------------------------------------------------------
@@ -96,28 +95,13 @@ else " silent comment
   command! -nargs=* IfTriggers silent :"<args>
 endif
 " }}}
-"------------------------------------------------------------------------
-if !exists("*FindOrCreateBuffer")      " {{{
-  let ff = expand('<sfile>:p:h'). '/a-old.vim'
-  let msg=''
-  if filereadable(ff) | exe 'source '.ff
-  else
-    runtime macros/a-old.vim plugin/a-old.vim
-  endif
-  let msg = '<a-old.vim> is not visible from '.expand('<sfile>:p:h')."/\n"
-
-  if !exists("*FindOrCreateBuffer")
-    call s:ErrorMsg(msg.'Make sure <a-old.vim> correctly exports the function '.
-          \ 'FindOrCreateBuffer()')
-  endif
-endif
 " }}}
 "------------------------------------------------------------------------
 
 " Part:         lhVimSpell/dependencies }}}
 "=============================================================================
 " Part:         lhVimSpell/options {{{1
-" Last Update:  05th Jul 2004
+" Last Update:  09th Jul 2019
 "------------------------------------------------------------------------
 " Description:  Options for lhVimSpell
 "------------------------------------------------------------------------
@@ -1684,7 +1668,7 @@ function! s:CheckNewErrors(path,errors)
       return -1
     endif
   " 1.3- Add them to elf
-    call FindOrCreateBuffer(elf,1)      " from a.vim
+    call lh#buffer#jump(elf, 'sp')
     silent exe "$r ".tmp
     silent g/^$/d _
     " Keep only one the header line produced by aspell.
@@ -1704,7 +1688,7 @@ endfunction
 " Function: s:F_compare(elf,misspellings)                {{{
 " Compare new errors to errors-list
 function! s:F_compare(elf,errors)
-    call FindOrCreateBuffer(a:elf,1)    " from a.vim
+    call lh#buffer#jump(a:elf, 'sp')
     let new="" | let er=a:errors
     while "" != er
       let word = matchstr(er, "[^\n]*")
@@ -2107,7 +2091,7 @@ endfunction
 function! s:G_Open_Corrector()
   " open the corrector gui (split window)
   let gui = s:F_corrector_file(expand('%:p:h'))
-  call FindOrCreateBuffer(gui,1)        " from a.vim
+  call lh#buffer#jump(gui, 'sp')
   setlocal noswapfile
   setlocal buftype=nofile
   setlocal bufhidden=wipe
@@ -2378,7 +2362,7 @@ function! s:SA_return(line)
       let word = b:word
       "swap windows
       let this = expand('%:p')
-      call FindOrCreateBuffer(b:mainfile,1)
+      call lh#buffer#jump(b:mainfile, 'sp')
       let go = s:Current_Word() == word
       if !go
         VSgErrorMsg "<".word."> lost! Use <M-n> to go to next occurrence\n"
@@ -2391,7 +2375,7 @@ function! s:SA_return(line)
         unmap =}=
       endif
       "swap windows
-      call FindOrCreateBuffer(this,1)
+      call lh#buffer#jump(this, 'sp')
       if go
         VSEchoMsg '<'.word.'> has been replaced with <'.alt.'>'
         VSgNextError
@@ -2464,20 +2448,20 @@ endfunction
 " Move to errors {{{3
 function! s:G_NextError()
   let this = expand('%:p')
-  call FindOrCreateBuffer(b:mainfile,1)
+  call lh#buffer#jump(b:mainfile, 'sp')
   let res = s:SpchkNext(1)
   let word = s:Current_Word()
-  call FindOrCreateBuffer(this,1)
+  call lh#buffer#jump(this, 'sp')
   call s:G_MakeAlternatives(word)
   return res
 endfunction
 
 function! s:G_PrevError()
   let this = expand('%:p')
-  call FindOrCreateBuffer(b:mainfile,1)
+  call lh#buffer#jump(b:mainfile, 'sp')
   let res = s:SpchkPrev(1)
   let word = s:Current_Word()
-  call FindOrCreateBuffer(this,1)
+  call lh#buffer#jump(this, 'sp')
   call s:G_MakeAlternatives(word)
   return res
 endfunction
@@ -2492,12 +2476,12 @@ command! -nargs=0 VSgNextError
 " Undo {{{3
 function! s:G_UndoCorrection(isUndo)
   let this = expand('%:p')
-  call FindOrCreateBuffer(b:mainfile,1)
+  call lh#buffer#jump(b:mainfile, 'sp')
   if a:isUndo == 1 | undo
   else             | redo
   endif
   let word = s:Current_Word()
-  call FindOrCreateBuffer(this,1)
+  call lh#buffer#jump(this, 'sp')
   call s:G_MakeAlternatives(word)
 endfunction
 " }}}3
@@ -2519,9 +2503,9 @@ endfunction
 function! s:G_IgnoreWord()
   let this = expand('%:p')
   let word = b:word
-  call FindOrCreateBuffer(b:mainfile,1)
+  call lh#buffer#jump(b:mainfile, 'sp')
   let res = s:F_add_word_to_ignore_file(word)
-  call FindOrCreateBuffer(this,1)
+  call lh#buffer#jump(this, 'sp')
   redraw
   if res
     VSEchoMsg '<'.word.'> will be ignored for the files in this directory'
@@ -2531,9 +2515,9 @@ endfunction
 
 function! s:G_ReShowErrors()
   let this = expand('%:p')
-  call FindOrCreateBuffer(b:mainfile,1)
+  call lh#buffer#jump(b:mainfile, 'sp')
   call s:Show_errors()
-  call FindOrCreateBuffer(this,1)
+  call lh#buffer#jump(this, 'sp')
 endfunction
 " }}}3
 " }}}2
