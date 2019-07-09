@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 13th Jun 2019
+" Last update   : 09th Jul 2019
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -1135,6 +1135,7 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
     " Here, system() is called by lh#cpp#tags#compiler_includes()
     let g:coc_user_config = {}
     let g:coc_user_config['coc.preferences.jumpCommand'] = ':SplitIfNotOpen4COC'
+    " let g:coc_user_config['tsserver.trace.server'] = 'verbose'
     let g:coc_user_config['languageserver'] = {
           \ 'ccls': {
           \     'command': 'ccls',
@@ -1147,6 +1148,8 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
           \         }
           \     }
           \ }
+          " \     'args' : ['-log-file='.lh#option#get('lh.tmpdir', lh#string#or($TMPDIR, '/tmp')).'/ccls.log','-v=1'],
+          " \     'trace.server': 'verbose',
     " Workaround bug 659 to launch gvim forked
     "   Required to permit gvim to fork on launch
     "   https://github.com/neoclide/coc.nvim/issues/659
@@ -1164,7 +1167,9 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
     " Update signature help on jump placeholder
     autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
-    au CursorHold * sil call CocActionAsync('highlight')
+    " Highlight action triggers requests for a feature I'm not interreted in.
+    " Moreover, it messes mark.vim
+    " au CursorHold * sil call CocActionAsync('highlight')
     au CursorHoldI * sil call CocActionAsync('showSignatureHelp')
   augroup end
 
@@ -1219,7 +1224,7 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
   endfunction
 
   " Highlight symbol under cursor on CursorHold
-  autocmd CursorHold * silent call CocActionAsync('highlight')
+  " autocmd CursorHold * silent call CocActionAsync('highlight')
 
   " Remap for rename current word
   call lh#menu#make('n', s:coc_prio.'100', s:coc_menu.'Re&Name',            '<leader>xr',  '<Plug>(coc-rename)')
@@ -1278,6 +1283,27 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
   call lh#menu#make('n', s:coc_prio.'270', s:coc_menu.'Resume latest coc list',              '<leader>cr',  ':<C-u>CocListResume<CR>')
 
   if executable('ccls') && executable('clang++')
+    " # Playing with the API...
+    " :let cclsid = filter(lh#list#get(CocAction('services'), 'id'), 'v:val =~ "ccls"')[0]
+    " :let symbols = CocRequest(cclsid, 'workspace/symbol', {'query': 'apattern'})
+    " -> returns a list of definitions and declarations mathing the pattern
+    " see https://microsoft.github.io/language-server-protocol/specification#workspace_symbol
+    " and for symbol kinds: https://microsoft.github.io/language-server-protocol/specification#textDocument_documentSymbol
+    "
+    " :echo CocRequest(cclsid, 'textDocument/documentSymbol', {'textDocument': {'uri': 'file://'.expand('%:p')} })
+    " -> lists all symbols defined in the current document
+    " --> Alas it doesn't permit to extract scopes/contexts (classes, namespaces, functions...)
+    " see https://microsoft.github.io/language-server-protocol/specification#textDocument_documentSymbol
+    "
+    " :echo CocRequest(cclsid, 'textDocument/definition', {'textDocument': {'uri': 'file://'.expand('%:p')}, 'posision':{'line':line('.')-1,'character': col('.')-1}})
+    " -> should return where the symbol under the cursor is defined.
+    "    But I cannot make it work!!!
+    " see https://microsoft.github.io/language-server-protocol/specification#textDocument_definition
+    "
+    " However if :Check is a command that stores its `<f-args>` the following
+    " permits to extract where the symbol is defined
+    " :call CocAction('jumpDefinition', 'Check')
+    "
     " # $ccls/navigate
     "   Semantic navigation. Roughly,
     "   D" => first child declaration "L" => previous declaration "R" => next declaration "U" => parent declaration
