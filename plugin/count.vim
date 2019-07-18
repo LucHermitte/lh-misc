@@ -56,9 +56,11 @@ endfunction
 " Function: s:Count2(param) {{{3
 " Not using the usual :function-range to avoid moving the cursor
 function! s:Count2(param, firstl, lastl) abort
-  let s:c = []
-  call map(getline(a:firstl, a:lastl), { k,v -> substitute(v, 'line', '\=add(s:c, v)[-1]', 'g')})
-  echo len(s:c)
+  let c = []
+  " The new syntax requires a more global variable
+  " call map(getline(a:firstl, a:lastl), { k,v -> substitute(v, 'line', '\=add(l:c, v)[-1]', 'g')})
+  call map(getline(a:firstl, a:lastl), "substitute(v:val, 'line', '\\=add(c, v:val)[-1]', 'g')")
+  echo len(c)
 endfunction
 " Functions }}}1
 "------------------------------------------------------------------------
