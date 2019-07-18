@@ -2,9 +2,9 @@
 " File:         plugin/vim_maintain.vim{{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Version:      0.1.0
+" Version:      0.1.1
 " Created:      16th Sep 2014
-" Last Update:  05th Oct 2017
+" Last Update:  18th Jul 2019
 "------------------------------------------------------------------------
 " Description:
 "       Commands and mapping to help maintaining VimL scripts
@@ -15,6 +15,8 @@
 "       Drop this file into {rtp}/plugin
 "       Requires Vim7+
 " History:
+"       v0.1.1: Apply `:Verbose` without argument on the current
+"               autoload plugin.
 "       v0.1.0: Support scripts using the single
 "               `:let loaded_{pluginname} = 1`  scheme
 "       v0.0.6: Verbose rewritten to support lh#*#verbose() only, and auto
@@ -39,7 +41,7 @@ set cpo&vim
 " ## Commands and Mappings             {{{1
 command! -nargs=* -complete=custom,ReloadComplete Reload  call s:Reload(<f-args>)
 " call lh#{arg}#verbose(not_bang)
-command! -nargs=+ -bang -complete=customlist,lh#vim#maintain#_go_verbose_complete
+command! -nargs=* -bang -complete=customlist,lh#vim#maintain#_go_verbose_complete
       \ Verbose call lh#vim#maintain#_go_verbose("<bang>", <f-args>)
 " Commands and Mappings }}}1
 "------------------------------------------------------------------------

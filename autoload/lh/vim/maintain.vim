@@ -2,16 +2,18 @@
 " File:         autoload/lh/vim/maintain.vim                      {{{1
 " Author:       Luc Hermitte <EMAIL:luc {dot} hermitte {at} gmail {dot} com>
 "		<URL:http://github.com/LucHermitte/lh-misc>
-" Version:      0.0.8.
-let s:k_version = 008
+" Version:      0.1.1.
+let s:k_version = 011
 " Created:      05th Sep 2016
-" Last Update:  20th Sep 2017
+" Last Update:  18th Jul 2019
 "------------------------------------------------------------------------
 " Description:
 "       Support functions for ftplugin/vim/vim_maintain.vim
 "
 "------------------------------------------------------------------------
 " History:
+"       v0.1.1: Apply `:Verbose` without argument on the current
+"               autoload plugin.
 "       v0.0.8: Less (undo-)intrusive timestamp insertion
 "       v0.0.7: Auto-remove trailing whitespaces and update "Last Update" on
 "               saving
@@ -80,7 +82,16 @@ endfunction
 " Function: lh#vim#maintain#_go_verbose(onoff, ...) {{{3
 function! lh#vim#maintain#_go_verbose(onoff, ...) abort
   let onoff = a:onoff != '!'
-  for f in a:000
+  let list = a:000
+  if empty(list)
+    " Let's suppose we are within an autoload plugin
+    let p = matchstr(expand('%:p'), '.*/autoload/lh/\zs.*\ze\.vim$')
+    if empty(p)
+      throw "The current file isn't a autoload/lh plugin"
+    endif
+    let list = [substitute(p, '/', '#', 'g')]
+  endif
+  for f in list
     try
       if f =~ '-\+h\%[elp]'
         call lh#common#warning_msg(':Verbose will call `lh#{arg}#verbose(no_bang)`')
