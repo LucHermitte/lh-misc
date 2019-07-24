@@ -1318,8 +1318,21 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
     "
     " # Cross reference extensions
     function! s:coc_bind_colocate(key, prio, text, what, ...) abort
-      let arg = join(['$ccls/'.a:what] + a:000, ', ')
-      call lh#menu#make('n', s:coc_prio.a:prio, s:coc_menu.a:text, a:key, ':call CocLocations("ccls", '.string(arg).')<cr>')
+      " Evaluate all functions now
+      " let a000 = map(deepcopy(a:000), {k0,v0 -> string(map(v0, { k, v -> type(v)==2 ? v() : v}))})
+      " let arg = join([string('$ccls/'.a:what)] + a000, ', ')
+      let arg = string('$ccls/'.a:what)
+      for a in a:000
+        call lh#assert#type(a).is({})
+        let arg .= ', {'
+        for [k,l:V] in items(a)
+          " Little trick to inject v:count that shall not be evaluated
+          " yet -> It's passed through a lambda
+          let arg .= string(k).': '.(type(l:V)==type(function('has')) ? l:V() : string(l:V))
+        endfor
+        let arg .= '}'
+      endfor
+      call lh#menu#make('n', s:coc_prio.a:prio, s:coc_menu.a:text, a:key, ':<c-u>call CocLocations("ccls", '.arg.')<cr>')
     endfunction
 
     " ccls/vars ccls/base ccls/derived ccls/members have a parameter while others are interactive.
@@ -1335,10 +1348,10 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
     "
     " Bases & Children
     amenu 50.120.299 &Plugin.&COC.----<sep>---- <Nop>
-    call s:coc_bind_colocate('<leader>gb', '300', 'Direct base class',              'inheritance')
-    call s:coc_bind_colocate('<leader>gB', '310', 'Base classes up to 3 levels',    'inheritance', {'levels': 3})
-    call s:coc_bind_colocate('<leader>gd', '320', 'Derived class',                  'inheritance', {'derived': v:true})
-    call s:coc_bind_colocate('<leader>gD', '330', 'Derived classes ut to 3 levels', 'inheritance', {'derived': v:true, 'levels': 3})
+    call s:coc_bind_colocate('<leader>gb', '300', 'Direct base class (count=1 level)', 'inheritance', {'levels': {-> 'v:count1'}})
+    call s:coc_bind_colocate('<leader>gB', '310', 'Base classes up to 3 levels',       'inheritance', {'levels': 3})
+    call s:coc_bind_colocate('<leader>gd', '320', 'Derived class (count=1 level)',     'inheritance', {'derived': v:true, 'levels': {-> 'v:count1'}})
+    call s:coc_bind_colocate('<leader>gD', '330', 'Derived classes ut to 3 levels',    'inheritance', {'derived': v:true, 'levels': 3})
 
     " caller/callee
     call s:coc_bind_colocate('<leader>gc', '340', 'Caller', 'call')
