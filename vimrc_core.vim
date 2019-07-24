@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 09th Jul 2019
+" Last update   : 24th Jul 2019
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -1129,27 +1129,30 @@ set signcolumn=yes
 
 if !empty(globpath(&rtp, 'autoload/coc.vim'))
   function! s:coc_configure_and_start() abort
-    " As &shellredir isn't set yet in the .vimrc (see :h starting), we need to
-    " dely the execution of |system()| till after these options has been set.
-    " That's where |VimEnter| autocommand helps.
-    " Here, system() is called by lh#cpp#tags#compiler_includes()
     let g:coc_user_config = {}
     let g:coc_user_config['coc.preferences.jumpCommand'] = ':SplitIfNotOpen4COC'
     " let g:coc_user_config['tsserver.trace.server'] = 'verbose'
-    let g:coc_user_config['languageserver'] = {
-          \ 'ccls': {
-          \     'command': 'ccls',
-          \     'filetypes': ['c', 'cpp', 'objc', 'objcpp'],
-          \     'rootPatterns': ['.ccls', 'compile_commands.json', '.vim/'] + g:local_vimrc + g:lh#project.root_patterns,
-          \     'initializationOptions': {
-          \         'cache': {'directory': lh#option#get('lh.tmpdir', lh#string#or($TMPDIR, '/tmp'))},
-          \         'index': {'threads': 2},
-          \         'clang': {'extraArgs': map(copy(lh#cpp#tags#compiler_includes('clang++')), '"-isystem".v:val')}
-          \         }
-          \     }
-          \ }
-          " \     'args' : ['-log-file='.lh#option#get('lh.tmpdir', lh#string#or($TMPDIR, '/tmp')).'/ccls.log','-v=1'],
-          " \     'trace.server': 'verbose',
+
+    " As &shellredir isn't set yet in the .vimrc (see :h starting), we need to
+    " delay the execution of |system()| till after these options has been set.
+    " That's where |VimEnter| autocommand helps.
+    " Here, system() is indirectly called through lh#cpp#tags#compiler_includes()
+    if executable('ccls') && executable('clang++')
+      let g:coc_user_config['languageserver'] = {
+            \ 'ccls': {
+            \     'command': 'ccls',
+            \     'filetypes': ['c', 'cpp', 'objc', 'objcpp'],
+            \     'rootPatterns': ['.ccls', 'compile_commands.json', '.vim/'] + g:local_vimrc + g:lh#project.root_patterns,
+            \     'initializationOptions': {
+            \         'cache': {'directory': lh#option#get('lh.tmpdir', lh#string#or($TMPDIR, '/tmp'))},
+            \         'index': {'threads': 2},
+            \         'clang': {'extraArgs': map(copy(lh#cpp#tags#compiler_includes('clang++')), '"-isystem".v:val')}
+            \         }
+            \     }
+            \ }
+      " \     'args' : ['-log-file='.lh#option#get('lh.tmpdir', lh#string#or($TMPDIR, '/tmp')).'/ccls.log','-v=1'],
+      " \     'trace.server': 'verbose',
+    endif
     " Workaround bug 659 to launch gvim forked
     "   Required to permit gvim to fork on launch
     "   https://github.com/neoclide/coc.nvim/issues/659
