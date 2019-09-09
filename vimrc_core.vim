@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 24th Jul 2019
+" Last update   : 09th Sep 2019
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -214,7 +214,11 @@ endif
 
 " Diff mode {{{2
 " always
-  set diffopt=filler,context:3,iwhite
+  set diffopt=filler,context:3,iwhite,hiddenoff
+  if has('nvim-0.3.2') || has("patch-8.1.0360")
+    " https://old.reddit.com/r/vim/comments/cn20tv/tip_histogrambased_diffs_using_modern_vim/
+    set diffopt+=internal,algorithm:histogram,indent-heuristic
+  endif
   " if $OSTYPE != 'solaris' " some flavour of diff do not support -x flag
     " let g:DirDiffExcludes='CVS,*.o,*.so,*.a,svn,.*.swp'
   " endif
@@ -1325,12 +1329,13 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
       for a in a:000
         call lh#assert#type(a).is({})
         let arg .= ', {'
+        let args = []
         for [k,l:V] in items(a)
           " Little trick to inject v:count that shall not be evaluated
           " yet -> It's passed through a lambda
-          let arg .= string(k).': '.(type(l:V)==type(function('has')) ? l:V() : string(l:V))
+          let args += [string(k).': '.(type(l:V)==type(function('has')) ? l:V() : string(l:V))]
         endfor
-        let arg .= '}'
+        let arg .= join(args, ', ') . '}'
       endfor
       call lh#menu#make('n', s:coc_prio.a:prio, s:coc_menu.a:text, a:key, ':<c-u>call CocLocations("ccls", '.arg.')<cr>')
     endfunction
