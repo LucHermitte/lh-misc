@@ -4,7 +4,7 @@
 "		<URL:http://github.com/LucHermitte/lh-misc/>
 " Version:	2.0.0
 " Created:	22nd Apr 2010
-" Last Update:	29th Aug 2018
+" Last Update:	15th Nov 2019
 "------------------------------------------------------------------------
 " Description:
 "   My local vimrc for vim script edition
@@ -16,7 +16,7 @@
 " }}}1
 "=============================================================================
 
-let s:k_version = 192
+let s:k_version = 200
 " Always loaded {{{1
 " Buffer-local Definitions {{{1
 " Avoid local reinclusion {{{2
@@ -35,7 +35,7 @@ set cpo&vim
 let s:script_dir = expand('<sfile>:p:h')
 let s:script     = expand('<sfile>:p')
 
-silent! unlet b:crt_project
+Unlet b:crt_project
 if expand('%:p:h') !~ 'tests/lh'
   " Project --define Vim\ Scripts
   if lh#option#is_unset(lh#project#define(s:, { 'name': 'Vim Scripts', 'auto_discover_root':0 }))
@@ -77,16 +77,23 @@ else
   call lh#tags#update_tagfiles() " uses p:tags_dirname
 endif
 
-" TODO: only compute this once -> for parent project
-if lh#has#patch('patch-7.3.465')
-  let s:tags = glob( $HOME. '/.vim/**/tags', 1, 1)
-else
-  let s:tags = split(glob( $HOME. '/.vim/**/tags'), "\n")
-endif
-" Filter out non VAM managed plugins, doc, tests
-call filter(s:tags, 'v:val !~ "\\v\\.vim[/\\\\](flavors|bundle|(.*[/\\\\])=(doc|tests))>"')
+" Note: As I have only one tags file now at ~/.vim/ root directory, I
+" don't need to look for other tag files.
+if 0
+  " Only compute this once -> for parent project
+  " or when we force reloading the local vimrc
+  if !exists('s:tags') || get(g:, 'force_reload__vim_vimrc_local', 0)
+    if lh#has#patch('patch-7.3.465')
+      let s:tags = glob( $HOME. '/.vim/addons/**/tags', 1, 1)
+    else
+      let s:tags = split(glob( $HOME. '/.vim/addons/**/tags'), "\n")
+    endif
+    " Filter out non VAM managed plugins, doc, tests
+    call filter(s:tags, 'v:val !~ "\\v\\.vim[/\\\\](flavors|bundle|(.*[/\\\\])=(doc|tests))>"')
 
-call lh#option#add('l:tags', s:tags)
+    call lh#option#add('l:tags', s:tags)
+  endif
+endif
 
 "=============================================================================
 " }}}1
