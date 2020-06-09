@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 09th Sep 2019
+" Last update   : 09th Jun 2020
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -302,6 +302,17 @@ endfunction
 " inoremap <expr> <cr> lh#ft#option#get('trim_trailing_whitespace', &ft, 1)?repeat("<bs>", len(matchstr(getline('.')[: col('.')-2], '\S\zs\s*$')))."<cr>":"<cr>"
 " inoremap <expr> <cr> lh#ft#option#get('trim_trailing_whitespace', &ft, 1)?repeat("<bs>", len(matchstr(getline('.')[: col('.')-2], '\s*$')))."<cr>":"<cr>"
 
+" "Fix" search direction
+" 1. ";" is always forward, and "," always backward
+if exists('*getcharsearch')
+  nnoremap <expr> ; ',;'[getcharsearch().forward]
+  nnoremap <expr> , ';,'[getcharsearch().forward]
+endif
+" 2. "n" is always forward, and "N" always backward
+if exists('v:searchforward')
+  nnoremap <expr> n 'Nn'[v:searchforward]
+  nnoremap <expr> N 'nN'[v:searchforward]
+endif
 
 nnoremap <S-right> v<right>
 inoremap <S-right> <c-o>v
@@ -876,32 +887,7 @@ let clang_key_subclases    = '<c-x>S'
 
 " -- clang_complete {{{3
 let g:clang_complete_auto = 0
-function! s:FindLibClang()
-  " 1- check $LD_LIBRARY_PATH
-  if has('unix')
-    let libpaths = split($PATH, has('unix') ? ':' : ',')
-    for libpath in libpaths
-      if ! empty(glob(libpath.'/libclang*', 1))
-        let g:clang_library_path = libpath
-        " no need to search for other occurrences later in $PATH
-        return
-      endif
-    endfor
-  endif
-  " 2- check $PATH if nothing was found yet
-  let binpaths = split($PATH, has('unix') ? ':' : ',')
-  for p in binpaths
-    if p =~ '\<bin\>$'
-      let libpath = p[0:-4].'lib'
-      if ! empty(glob(libpath.'/libclang*', 1))
-        let g:clang_library_path = libpath
-        " no need to search for other occurrences later in $PATH
-        return
-      endif
-    endif
-  endfor
-endfunction
-call s:FindLibClang()
+" g:clang_library_path can be filled with `:call clang#libpath()`
 
 set completeopt-=menu,preview
 set completeopt+=menuone
@@ -957,7 +943,7 @@ let s:my_plugins = [
       \ 'dirdiff-svn'        ,
       \]
 
-if has('pythonx') && !empty(get(g:, 'clang_library_path', ''))
+if has('pythonx')
   let s:my_plugins += ['vim-clang@lh']
 endif
 
@@ -1073,10 +1059,11 @@ function! s:ActivateAddons()
   call vam#ActivateAddons(['vim-airline'])
   call vam#ActivateAddons(['xmledit'])
   call vam#ActivateAddons(['github:rickhowe/diffchar.vim'])
+  call vam#ActivateAddons(['github:5long/pytest-vim-compiler'])
   call vam#ActivateAddons(['Mark%2666']) " Ingo Karkat's fork of mark.vim
   call vam#ActivateAddons(['editorconfig-vim']) " used to test my plugins
   call vam#ActivateAddons(['undotree'])
-  if has('pythonx')
+  if 0 && has('pythonx')
     call vam#ActivateAddons(['vim-jira-complete'])
   endif
   let g:airline_powerline_fonts = 1
@@ -1117,6 +1104,9 @@ let g:xml_jump_string = lh#marker#txt()
 "       whitelists
 runtime plugin/let.vim
 runtime machine-specifics.vim
+
+" -- VimFold4C {{{3
+LetTo g:fold_options.fallback_method.line_threshold = 500
 
 " -- BTW {{{3
 LetIfUndef g:BTW.make_in_background = 1
