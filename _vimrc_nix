@@ -259,7 +259,7 @@ if
   let g:EnhCommentifyUseAltKeys = 'no'
 
   " -- BTW
-  let g:BTW_key_config = '<C-F7>'
+  let g:BTW = {'key' : {'config': '<C-F7>'}}
 
   " --
 endif
