@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 09th Jun 2020
+" Last update   : 20th Jun 2020
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -1190,14 +1190,17 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
 
   """ Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
   """ Coc only does snippet and additional edit on confirm.
-  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+  if exists('*complete_info')
+    inoremap <silent><expr> <cr> complete_info()['selected'] != -1 ? coc#_select_confirm() : "\<C-g>u\<CR>"
+  else
+    inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
+  endif
   " TODO: check how it's would interact with lh-brackets (add newline
   " between brackets)... it seems OK
 
-  "" " Use `[c` and `]c` to navigate diagnostics
-  "" nmap <silent> [c <Plug>(coc-diagnostic-prev)
-  "" nmap <silent> ]c <Plug>(coc-diagnostic-next)
-  " TODO: find something that doesn't conflict with vanilla [c, ]c
+  " Use `[g` and `]g` to navigate diagnostics
+  nmap <silent> [g <Plug>(coc-diagnostic-prev)
+  nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
   let s:coc_prio = '500.120.'
   let s:coc_menu = '&Plugin.&COC.'
