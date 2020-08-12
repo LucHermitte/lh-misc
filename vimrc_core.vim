@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 20th Jun 2020
+" Last update   : 12th Aug 2020
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -282,6 +282,12 @@ endif
    noremap <C-S-Del> dW
   inoremap <C-Del> <space><esc>ce
   inoremap <C-S-Del> <esc>lcW
+
+:VimrcHelp " <leader><up>/<down> Move line up and down [N+X]
+  nnoremap <leader><up>   :<c-u>move-2<cr>==
+  nnoremap <leader><down> :<c-u>move+<cr>==
+  xnoremap <leader><up>   :move-2<cr>='[gv
+  xnoremap <leader><down> :move'>+<cr>='[gv
 
 " By default, <CR> will delete spaces before the cursor when hit => to keep
 " trailling whitespaces to a minimum
