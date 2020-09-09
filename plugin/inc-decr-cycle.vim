@@ -7,7 +7,7 @@
 " Version:      0.0.1.
 let s:k_version = 001
 " Created:      27th Jun 2020
-" Last Update:  27th Jun 2020
+" Last Update:  09th Sep 2020
 "------------------------------------------------------------------------
 " Description:
 "       The plugin extends n_CTRL-X and n_CTRL-A to boolean values, and
@@ -43,6 +43,7 @@ nnoremap <silent> <c-a> :<c-u>call <sid>cycle('inc', v:count1)<cr>
 " Keep here only the functions are are required when the plugin is loaded,
 " like functions that help building a vim-menu for this plugin.
 let s:k_on_off     = ['on', 'off']
+let s:k_yes_no     = ['yes', 'no']
 let s:k_true_false = ['true', 'false']
 
 function! s:KeepCase(ref, new) abort
@@ -70,6 +71,7 @@ endfunction
 
 let s:repls = {}
 call s:build_dict(s:repls, s:k_on_off)
+call s:build_dict(s:repls, s:k_yes_no)
 call s:build_dict(s:repls, s:k_true_false)
 
 function! s:replace(match, nb) abort
@@ -84,18 +86,26 @@ function! s:replace(match, nb) abort
 endfunction
 
 function! s:cycle(dir, nb) abort
-  let lists = s:k_on_off + s:k_true_false
-  let pats = '\v\c%('.join(map(lists, '"<".v:val.">"'), '|').'|\d+)'
+  let lists = s:k_on_off + s:k_yes_no + s:k_true_false
+  let patterns = '%(<%('.join(map(lists, '"<".v:val.">"'), '|').'|\d+)>)'
+  let within_re = '\v\c(.*%#)@='.patterns.'@>(%#.*)@<='
+  let before_re = '\v\c'.patterns
 
+  let [ln, col] = searchpos(within_re, 'cz')
+  if ln == 0 " Cursor not within a searched pattern
+    let ln = line('.')
+    let [ln2, col] = searchpos(before_re, 'czn')
+    if ln2 != ln " cursor not before a searched pattern
+      return
+    endif
+  endif
   let line1 = getline('.')
   let nb = a:dir == 'inc' ? a:nb : - a:nb
-  let line11 = col('.') > 1 ? line1[:col('.')-2] : ''
-  let line12 = line1[col('.')-1:]
-  let line22 = substitute(line12, pats, '\=s:replace(submatch(0), nb)', '')
-  if line12 != line22
-    call search(pats, 'c')
-    call setline('.', line11.line22)
-  endif
+  let line11 = col > 1 ? line1[:col-2] : ''
+  let line12 = line1[col-1:]
+  let line22 = substitute(line12, before_re, '\=s:replace(submatch(0), nb)', '')
+  call setline('.', line11.line22)
+  call cursor(ln, col)
 endfunction
 
 " Functions }}}1
