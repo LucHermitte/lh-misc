@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 12th Aug 2020
+" Last update   : 29th Sep 2020
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -1065,7 +1065,9 @@ function! s:ActivateAddons()
   call vam#ActivateAddons(['vim-airline'])
   call vam#ActivateAddons(['xmledit'])
   call vam#ActivateAddons(['github:rickhowe/diffchar.vim'])
-  call vam#ActivateAddons(['github:5long/pytest-vim-compiler'])
+  if has('pythonx')
+    call vam#ActivateAddons(['github:5long/pytest-vim-compiler'])
+  endif
   call vam#ActivateAddons(['Mark%2666']) " Ingo Karkat's fork of mark.vim
   call vam#ActivateAddons(['editorconfig-vim']) " used to test my plugins
   call vam#ActivateAddons(['undotree'])
