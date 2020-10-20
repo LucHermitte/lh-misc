@@ -5,7 +5,7 @@
 " Version:      0.0.1.
 let s:k_version = 001
 " Created:      29th Sep 2017
-" Last Update:  29th Sep 2017
+" Last Update:  20th Oct 2020
 "------------------------------------------------------------------------
 " Description:
 "       Support functions for plugin/lmod
@@ -52,7 +52,11 @@ endfunction
 " Function: lh#lmod#module(command, [options]) {{{2
 function! lh#lmod#module(command, ...) abort
   let env = {}
-  let env.__shebang  = '/bin/env bash'
+  let env.__shebang  = executable('/bin/env') ? '/bin/env bash'
+        \            : executable('/usr/bin/env') ? '/usr/bin/env bash'
+        \            : executable('/bin/bash') ? '/bin/bash'
+        \            : executable('/usr/bin/bash') ? '/usr/bin/bash'
+        \            : 'bash'
   let commands = [ join([$LMOD_CMD, 'bash', a:command]+a:000, ' ')]
   let script = lh#os#new_runner_script(commands, env)
   let s_outputs = script.run()
@@ -75,6 +79,9 @@ function! lh#lmod#module(command, ...) abort
       " TODO: fix the day vim supports unsetting
       let env = instr[6:].'=""'
     else
+      if instr[-1] !~ '[^"'']'
+        let instr = substitute(instr, '^[^=]\+=\zs.*', '\=string(submatch(0))', '')
+      endif
       let env = instr
     endif
     call s:Verbose('let $'.env)
