@@ -3,10 +3,10 @@
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
 " License:      GPLv3
-" Version:      0.2.1
-let s:k_version = 021
+" Version:      0.2.2
+let s:k_version = 022
 " Created:      01st Feb 2006
-" Last Update:  13th Aug 2018
+" Last Update:  28th Oct 2020
 "------------------------------------------------------------------------
 " Description:  Vim plugin wrapper for searchfile.pl
 "
@@ -57,7 +57,7 @@ call lh#mapping#plug('<C-S-F3>', '<Plug>(search-word-interactive)', 'nx')
 " Better ]c, [c jump
 
 " Function: s:GotoWinline() {{{3
-function! s:GotoWinline(w_l)
+function! s:GotoWinline(w_l) abort
   normal! H
   while winline() < a:w_l
     normal! j
@@ -66,7 +66,7 @@ function! s:GotoWinline(w_l)
 endfunction
 
 " Function: s:NextDiff() {{{3
-function! s:NextDiff()
+function! s:NextDiff() abort
   if ! &diffopt =~ 'filler' | return | endif
 
   let ignore_blanks = &diffopt =~ 'iwhite'
@@ -156,14 +156,15 @@ endfunction
 " Function: s:Extension() {{{3
 runtime plugin/let.vim
 LetIfUndef g:searchfile.ext.c          = 'h,c'
-LetIfUndef g:searchfile.ext.cpp        = 'h,cpp,hpp'
+LetIfUndef g:searchfile.ext.cpp        = 'h,cpp,hpp,cxx,hxx'
 LetIfUndef g:searchfile.ext.python     = 'py'
 LetIfUndef g:searchfile.ext.markdown   = 'md'
 LetIfUndef g:searchfile.ext.vim        = 'vim,txt,template'
 LetIfUndef g:searchfile.ext.help       = 'vim,txt,template'
 LetIfUndef g:searchfile.ext.xslt       = 'xsl,js'
 LetIfUndef g:searchfile.ext.javascript = 'xsl,js'
-function! s:Extension()
+
+function! s:Extension() abort
   if exists('b:searchfile_ext')    | return b:searchfile_ext
   elseif !empty(&suffixesadd)      | return join(map(split(&suffixesadd, ','), 'v:val[1:]'), ',')
   elseif &ft =~ 'xslt\|javascript' | return 'xsl,js'
@@ -172,7 +173,7 @@ function! s:Extension()
 endfunction
 
 " Function: s:DoSearch() {{{3
-function! s:DoSearch(fileext, pattern, opt)
+function! s:DoSearch(fileext, pattern, opt) abort
   let save_grepprg=&grepprg
   try
     let &grepprg = 'searchfile.pl -n -e '.a:fileext.a:opt
@@ -241,7 +242,7 @@ endfunction
 
 " Function: SFComplete(ArgLead, CmdLine, CursorPos) {{{3
 let s:commands = 'Se\%[archfile]\>'
-function! SFComplete(ArgLead, CmdLine, CursorPos)
+function! SFComplete(ArgLead, CmdLine, CursorPos) abort
   let cmd = matchstr(a:CmdLine, s:commands)
   let cmdpat = '^'.cmd
 
