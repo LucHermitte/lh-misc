@@ -7,7 +7,7 @@
 " Version:      0.0.1.
 let s:k_version = 001
 " Created:      12th Sep 2018
-" Last Update:  14th Sep 2018
+" Last Update:  10th Nov 2020
 "------------------------------------------------------------------------
 " Description:
 "       Support functions for plugin/pkgconfig
@@ -192,7 +192,7 @@ function! lh#pkgconfig#_complete(ArgLead, CmdLine, CursorPos) abort
     " TODO: find where _completion_loader is installed..
     " Or glob into $PKG_CONFIG_PATH + /usr/lib/pkgconfig...
     if lh#command#can_use_bash_completion()
-      let res = lh#command#matching_bash_completion('pkg-config', a:ArgLead)
+      let res = lh#command#matching_bash_completion('pkg-config',  tokens[2:] + (pos==len(tokens) ? [''] : []))
     else
       let res = split(lh#os#system(s:k_executable. ' --list-all'), "\n")
       call map(res, 'matchstr(v:val, "\\v^\\S+")')

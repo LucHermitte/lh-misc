@@ -5,7 +5,7 @@
 " Version:      0.0.1.
 let s:k_version = 001
 " Created:      29th Sep 2017
-" Last Update:  20th Oct 2020
+" Last Update:  10th Nov 2020
 "------------------------------------------------------------------------
 " Description:
 "       Support functions for plugin/lmod
@@ -99,11 +99,12 @@ function! lh#lmod#_complete(ArgLead, CmdLine, CursorPos) abort
   let [pos, tokens; dummy] = lh#command#analyse_args(a:ArgLead, a:CmdLine, a:CursorPos)
 
   if 1 == pos
-    let res = ['load', 'unload', 'purge', 'list', 'av', 'show']
+    let res = ['load', 'unload', 'purge', 'list', 'avail', 'show']
   else
     " TODO: find where _completion_loader is installed..
-    let res = lh#command#matching_bash_completion('module', a:ArgLead)
+    let res = lh#command#matching_bash_completion('module', tokens[1:] + (pos==len(tokens) ? [''] : []))
   endif
+  call filter(res, 'v:val =~ "^".a:ArgLead')
   return res
 endfunction
 
