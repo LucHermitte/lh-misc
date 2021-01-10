@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 29th Sep 2020
+" Last update   : 09th Jan 2021
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -59,7 +59,7 @@ set runtimepath+=$HOME/vimfiles/latexSuite
   set nodigraph         " use i_CTRL-K instead!
   set noequalalways     " don't resize windows after splitting or closing a window
   set noerrorbells      " damn this beep!  ;-)
-  set esckeys           " allow usage of curs keys within isrt mode
+  " set esckeys           " allow usage of curs keys within isrt mode
   set fileformats=unix,dos " Give the priority to UNIX, always.
   set formatoptions=cqrt
                         " Options for the "txt format" cmd ("gq")
@@ -138,13 +138,12 @@ set runtimepath+=$HOME/vimfiles/latexSuite
                         " contains the specified buffer
   set tabstop=8         " tabstop
 " set term=rxvt
-  set notextmode        " no - I am using Vim on UNIX!
   set textwidth=72      " textwidth
   set title             " Permet de voir le tit. du doc. crt. ds les XTERM
-  set nottyfast         " are we using a fast terminal?
+  " set nottyfast         " are we using a fast terminal?
                         " seting depends on where I use Vim...
-  set nottybuiltin      "
-  set ttyscroll=0       " turn off scrolling -> faster!
+  " set nottybuiltin      "
+  " set ttyscroll=0       " turn off scrolling -> faster!
 " set ttytype=rxvt
 
   if has("persistent_undo")
@@ -798,7 +797,7 @@ let g:author      = "Luc Hermitte <EMAIL:".g:author_email.">"
 " let g:author_short="Luc Hermitte <hermitte at free.fr>"
 " let g:author      ="Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>\<c-m>" .
 " \ '"'. "\<tab>\<tab><URL:http://github.com/LucHermitte>"
-imap <c-space>  <Plug>MuT_ckword
+imap <c-s-space>  <Plug>MuT_ckword
 vmap <c-space>  <Plug>MuT_Surround
 
 " -- lh-tags {{{3
@@ -811,6 +810,8 @@ let g:Tex_SmartKeyDot   = 1
 
 " -- lhVimSpell {{{3
 let g:VS_aspell_add_directly_to_dict = 1
+let g:loaded_lhVimSpell = 'no'
+
 
 " -- local vimrc {{{3
 let g:local_vimrc = ['.config', '_vimrc_local.vim']
@@ -1183,26 +1184,34 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
   " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
   inoremap <silent><expr> <TAB>
         \ pumvisible() ? "\<C-n>" :
+        \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
         \ <SID>check_back_space() ? "\<TAB>" :
         \ coc#refresh()
-  inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+  " \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+  inoremap <expr> <S-TAB> pumvisible() ? "\<C-p>" : "\<C-n>"
+  inoremap <expr> <C-N>   pumvisible() ? "\<C-p>" : "\<C-n>"
+  inoremap <expr> <C-P>   pumvisible() ? "\<C-n>" : "\<C-p>"
 
   function! s:check_back_space() abort
     let col = col('.') - 1
     return !col || getline('.')[col - 1]  =~ '\s'
   endfunction
 
-  " Use <C-S-Space> to trigger completion.
-  " <c-space> is used by mu-template
-  inoremap <silent><expr> <C-S-space> coc#refresh()
+  " Use <C-Space> to trigger completion.
+  " <c-s-space> is used by mu-template
+  inoremap <silent><expr> <C-space> coc#refresh()
 
   """ Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
   """ Coc only does snippet and additional edit on confirm.
   if exists('*complete_info')
-    inoremap <silent><expr> <cr> complete_info()['selected'] != -1 ? coc#_select_confirm() : "\<C-g>u\<CR>"
+    " inoremap <silent><expr> <cr> complete_info()['selected'] != -1 ? coc#_select_confirm() : "\<C-g>u\<CR>"
+    inoremap <silent><expr> <Plug>VimrcCR complete_info()['selected'] != -1 ? coc#_select_confirm() : "\<C-g>u\<CR>"
   else
-    inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
+    " inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
+    inoremap <silent><expr> <Plug>VimrcCR pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
   endif
+  " imap <silent><expr> <cr> '<Plug>VimrcCR'
+  imap <silent> <cr> <Plug>VimrcCR
   " TODO: check how it's would interact with lh-brackets (add newline
   " between brackets)... it seems OK
 
