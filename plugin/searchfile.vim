@@ -3,10 +3,10 @@
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
 " License:      GPLv3
-" Version:      0.2.2
-let s:k_version = 022
+" Version:      0.2.3
+let s:k_version = 23
 " Created:      01st Feb 2006
-" Last Update:  28th Oct 2020
+" Last Update:  07th Apr 2021
 "------------------------------------------------------------------------
 " Description:  Vim plugin wrapper for searchfile.pl
 "
@@ -48,7 +48,7 @@ nnoremap <Plug>(search-word-interactive) :<c-u>Searchfile <c-r>=<sid>Extension()
 xnoremap <Plug>(search-word-interactive) :<c-u>Searchfile <c-r>=<sid>Extension()<cr> <c-r>=escape(lh#visual#selection(), '%#\\')<cr>
 
 call lh#mapping#plug('<C-F3>',   '<Plug>(search-word)',             'nx')
-call lh#mapping#plug('<C-S-F3>', '<Plug>(search-word-interactive)', 'nx')
+call lh#mapping#plug('<C-S-F3>', '<Plug>(search-word-interactive)', 'nx', {'silent': 0})
 
 
 " Functions {{{1
