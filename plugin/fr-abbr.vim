@@ -1,7 +1,7 @@
 " File:		fr-abbr.vim
 " Author:	Luc Hermitte <hermitte at free.fr>
 " 		<URL:http://hermitte.free.fr/vim>
-" Last Update:	28th Jun 2017
+" Last Update:	08th Jun 2021
 " Purpose:	Abbréviations et corrections automatiques pour documents en
 " 		francais.
 " Dependencies: words_tools.vim & Triggers.vim
@@ -16,31 +16,17 @@ if !exists('g:force_reload_fr_abbr') && get(g:, "FRupdateLoaded", 0) | finish | 
 
 let g:FRupdateLoaded = 1
 
-" let s:this = $VIM . '/plugin/fr-abbr.vim'
-if !exists('*Trigger_RebuildFile')
-  if exists(':runtime')
-    runtime macros/Triggers.vim plugin/Triggers.vim
-  elseif exists(':Runtime')
-    Runtime macros/Triggers.vim plugin/Triggers.vim
-  elseif filereadable(expand('<sfile>:p:h').'/Triggers.vim')
-    so <sfile>:p:h/Triggers.vim
-  endif
-endif
-if exists('*Trigger_RebuildFile')
-  let s:s_this = expand("%:p")
-  function! FRupdate()
-    unlet g:FRupdateLoaded
-    exe "so " . s:s_this
-    call Trigger_RebuildFile( 'FRabbrInit', s:s_this )
-  endfunction
-else
-  command! -nargs=+ TRIGGER :echo "<args>"
-endif
+let s:s_this = expand("%:p")
+function! FRupdate() abort
+  unlet g:FRupdateLoaded
+  exe "so " . s:s_this
+  call lh#Triggers#rebuild_file( 'FRabbrInit', s:s_this )
+endfunction
 
 
 "===========================================================================
 " complete/expand some words/abbreviation that end with 't'
-function! WordIn_ment()
+function! WordIn_ment() abort
   let prev = GetPreviousWord()
   ""echo '-'.prev . "-\n"
   ""let i = input('1')
@@ -68,7 +54,7 @@ function! WordIn_ment()
 endfunction
 
 "===========================================================================
-function! FRisk()
+function! FRisk() abort
   " set isk += àâçéèêëîïôöüûù
   set isk+=à
   set isk+=â
@@ -86,7 +72,7 @@ function! FRisk()
   set isk+=ù
 endfunction
 
-function! FRabbrInit()
+function! FRabbrInit() abort
   let s_isk = &isk
   call FRisk()
   " Liaisons
@@ -210,6 +196,12 @@ function! FRabbrInit()
   iab plsu plus
   iab Plsu Plus
 
+  iab meme même
+  iab Meme Même
+  iab plutot plutôt
+  iab etre être
+  iab Etre Être
+
   iab classifieur classificateur
   iab Classifieur Classificateur
 
@@ -220,8 +212,7 @@ function! FRabbrInit()
 endfunction
 
 "===========================================================================
-if exists('*Trigger_Function')
-  call Trigger_Function('<Plug>(do-toggle-fr-abbreviations)', 'FRabbrInit', expand('<sfile>:p'), 0, 0 )
+if lh#Triggers#function('<Plug>(do-toggle-fr-abbreviations)', 'FRabbrInit', expand('<sfile>:p'), 0, 0 )
 
   nmap <Plug>(toggle-fr-abbreviations) <Plug>(do-toggle-fr-abbreviations)
   if !hasmapto('<Plug>(toggle-fr-abbreviations)', 'n')
