@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 09th Jan 2021
+" Last update   : 27th Jul 2021
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -843,6 +843,7 @@ nmap <leader>sm6 <Plug>MarkSearchGroup6Next
 nmap <leader>sm7 <Plug>MarkSearchGroup7Next
 nmap <leader>sm8 <Plug>MarkSearchGroup8Next
 nmap <leader>sm9 <Plug>MarkSearchGroup9Next
+let g:mwDefaultHighlightingPalette = 'maximum'
 
 " -- Johannes Zellner's Man <http://www.zellner.org/> {{{3
 let g:man_vim_only = 1
@@ -1024,7 +1025,7 @@ function! VAM_git_proxy_checkout(repository, targetDir) abort
         " When accessing through a proxy with corkcrew
         let url = substitute(url, 'git://\(github.com\)/\(.*\)', 'ssh://ssh.\1/\2', '')
         let url = substitute(url, 'git@\(bitbucket.org\)[/:]\(.*\)', 'ssh://git@\1/\2', '')
-    elseif exists('$https_proxy') && !empty('$https_proxy')
+    elseif (exists('$https_proxy') && !empty('$https_proxy')) || get(g:, 'VAM_force_https', 0)
         let url = substitute(url, 'git://\(github.com\)/\(.*\)', 'https://\1/\2', '')
         let url = substitute(url, 'git@\(bitbucket.org\)[/:]\(.*\)', 'https://git@\1/\2', '')
     else
@@ -1069,7 +1070,8 @@ function! s:ActivateAddons()
   if has('pythonx')
     call vam#ActivateAddons(['github:5long/pytest-vim-compiler'])
   endif
-  call vam#ActivateAddons(['Mark%2666']) " Ingo Karkat's fork of mark.vim
+  call vam#ActivateAddons(['github:inkarkat/vim-mark']) " Ingo Karkat's fork of mark.vim
+  call vam#ActivateAddons(['github:inkarkat/vim-ingo-library']) " Ingo Karkat's dependency for mark.vim
   call vam#ActivateAddons(['editorconfig-vim']) " used to test my plugins
   call vam#ActivateAddons(['undotree'])
   if 0 && has('pythonx')
