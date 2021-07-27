@@ -1206,8 +1206,25 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
   """ Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
   """ Coc only does snippet and additional edit on confirm.
   if exists('*complete_info')
+    function! s:coc_cr() abort
+        let g:debug_selected = deepcopy(complete_info())
+      if  complete_info()['selected'] == -1
+        let g:debug_last_cr = '! selected'
+        return "\<C-g>u\<CR>"
+      elseif !exists('##TextChangedP')
+        let g:debug_last_cr = '! ##TextChangedP'
+        return "\<C-y>"
+      elseif coc#rpc#request('hasSelected', [])
+        let g:debug_last_cr = 'rpc hasSelected'
+        return "\<C-y>"
+      else
+        let g:debug_last_cr = 'else case'
+        return "\<down>\<C-y>"
+      endif
+    endfunction
     " inoremap <silent><expr> <cr> complete_info()['selected'] != -1 ? coc#_select_confirm() : "\<C-g>u\<CR>"
-    inoremap <silent><expr> <Plug>VimrcCR complete_info()['selected'] != -1 ? coc#_select_confirm() : "\<C-g>u\<CR>"
+    " inoremap <silent><expr> <Plug>VimrcCR complete_info()['selected'] != -1 ? coc#_select_confirm() : "\<C-g>u\<CR>"
+    inoremap <silent><expr> <Plug>VimrcCR <sid>coc_cr()
   else
     " inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
     inoremap <silent><expr> <Plug>VimrcCR pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
