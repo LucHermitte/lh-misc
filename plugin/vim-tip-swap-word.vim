@@ -63,10 +63,10 @@ nnoremap <silent> gc    xph
 xnoremap <silent> g" <esc>:call <sid>SwapVisualWithCut()<cr>
 xnoremap <silent> g' <esc>:call <sid>SwapVisualWithCut2()<cr>
 
-function! s:SwapVisualWithCut()
+function! s:SwapVisualWithCut() abort
   normal! `.``
   if line(".")==line("'.") && col(".") < col("'.")
-    let c = col('.')
+    let c = col("'>")
     normal! gvp```]
     let c = col('.') - c
     normal! ``
@@ -77,7 +77,7 @@ function! s:SwapVisualWithCut()
   endif
 endfunction
 
-function! s:SwapVisualWithCut2()
+function! s:SwapVisualWithCut2() abort
   let v_s = col("'<")
   let v_e = col("'>")
   if line("'<")==line("'.") && v_s < col("'.")
