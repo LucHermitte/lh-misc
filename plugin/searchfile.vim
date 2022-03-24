@@ -3,10 +3,10 @@
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
 " License:      GPLv3
-" Version:      0.2.3
-let s:k_version = 23
+" Version:      0.2.4
+let s:k_version = 024
 " Created:      01st Feb 2006
-" Last Update:  07th Apr 2021
+" Last Update:  24th Mar 2022
 "------------------------------------------------------------------------
 " Description:  Vim plugin wrapper for searchfile.pl
 "
@@ -176,7 +176,8 @@ endfunction
 function! s:DoSearch(fileext, pattern, opt) abort
   let save_grepprg=&grepprg
   try
-    let &grepprg = 'searchfile.pl -n -e '.a:fileext.a:opt
+    let extra_opts = lh#option#get('searchfile.opts', '')
+    let &grepprg = 'searchfile.pl -n -e '.a:fileext.a:opt.' '.extra_opts
     " <=> find {path} \( -name '*.h' -o -name '*.cpp' {-o prune CVS....} \)
     "       | xargs grep -n
     echo 'grep! '.a:pattern
