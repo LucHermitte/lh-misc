@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 27th Jul 2021
+" Last update   : 07th Jul 2022
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -449,6 +449,11 @@ endif
    nnoremap <silent> <M-PageUp> <c-w>W<c-w>_
    nnoremap <silent> <M-PageDown> <c-w>w<c-w>_
 
+:VimrcHelp " <T-PageUp> and <T-PageDown> Go to the next/previous tab
+" And leave <C-PageUp> to do the default tab next and prev
+   nnoremap <silent> <T-PageUp> gT
+   nnoremap <silent> <T-PageDown> gt
+
 
    nnoremap <silent> <Plug>ShowSyntax
          \ :echo synIDattr(synID(line("."), col("."), 1), "name")<cr>
@@ -772,11 +777,12 @@ let g:tex_flavor = 'tex'
 " -- Mail_Re_set {{{3
 let g:mail_tag_placement = "tag_second"
 " -- EnhCommentify {{{3
-let g:EnhCommentifyUseAltKeys    = "yes"
-let g:EnhCommentifyRespectIndent = "yes"
+let g:EnhCommentifyUseAltKeys     = "yes"
+let g:EnhCommentifyRespectIndent  = "yes"
 "let g:EnhCommentifyFirstLineMode = "yes"
-let g:EnhCommentifyPretty        = "yes"
-let g:EnhCommentifyUseSyntax     = 'yes'
+let g:EnhCommentifyPretty         = "yes"
+let g:EnhCommentifyUseSyntax      = 'yes'
+let g:EnhCommentifyUseBlockIndent = 'yes'
 
 " -- Michael Geddes's Buffer Menu <http://vim.sf.net/>  {{{3
 let g:buffermenu_use_disable     = 1
