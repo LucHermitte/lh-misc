@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 07th Jul 2022
+" Last update   : 11th Apr 2023
 " ===================================================================
 
 if !empty($LUCHOME) && $LUCHOME != $HOME
@@ -1121,6 +1121,8 @@ let g:xml_jump_string = lh#marker#txt()
 "       whitelists
 runtime plugin/let.vim
 runtime machine-specifics.vim
+let g:guifontsize = 10
+call lh#menu#def_toggle_item({'variable': 'guifontsize', 'values': [10, 26], 'hook': ':let &guifont="DejaVu Sans Mono for Powerline ".g:guifontsize', 'menu': {'priority': '500.2700.10', 'name': '&Plugin.&LH.&font'}})
 
 " -- VimFold4C {{{3
 LetTo g:fold_options.fallback_method.line_threshold = 500
