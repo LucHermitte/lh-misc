@@ -4,9 +4,8 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 11th Apr 2023
+" Last update   : 08th Sep 2023
 " ===================================================================
-
 if !empty($LUCHOME) && $LUCHOME != $HOME
   let paths = split(&rtp, ',')
   let paths0=paths
@@ -1143,6 +1142,8 @@ set signcolumn=yes
 if !empty(globpath(&rtp, 'autoload/coc.vim'))
   function! s:coc_configure_and_start() abort
     let g:coc_user_config = {}
+    let g:coc_user_config['suggest.noselect'] = v:true
+    " let g:coc_user_config['suggest.enablePreselect'] = v:false
     let g:coc_user_config['coc.preferences.jumpCommand'] = ':SplitIfNotOpen4COC'
     " let g:coc_user_config['tsserver.trace.server'] = 'verbose'
 
@@ -1193,18 +1194,18 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
   " Use tab for trigger completion with characters ahead and navigate.
   " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
   inoremap <silent><expr> <TAB>
-        \ pumvisible() ? "\<C-n>" :
+        \ coc#pum#visible() ? coc#pum#next(1) :
         \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
         \ <SID>check_back_space() ? "\<TAB>" :
         \ coc#refresh()
-  " \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+        " \ coc#pum#visible() ? coc#_select_confirm() :
   inoremap <expr> <S-TAB> pumvisible() ? "\<C-p>" : "\<C-n>"
   inoremap <expr> <C-N>   pumvisible() ? "\<C-p>" : "\<C-n>"
   inoremap <expr> <C-P>   pumvisible() ? "\<C-n>" : "\<C-p>"
 
   function! s:check_back_space() abort
     let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~ '\s'
+    return !col || getline('.')[col - 1] =~ '\s'
   endfunction
 
   " Use <C-Space> to trigger completion.
@@ -1213,31 +1214,27 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
 
   """ Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
   """ Coc only does snippet and additional edit on confirm.
-  if exists('*complete_info')
-    function! s:coc_cr() abort
-        let g:debug_selected = deepcopy(complete_info())
-      if  complete_info()['selected'] == -1
-        let g:debug_last_cr = '! selected'
-        return "\<C-g>u\<CR>"
-      elseif !exists('##TextChangedP')
-        let g:debug_last_cr = '! ##TextChangedP'
-        return "\<C-y>"
-      elseif coc#rpc#request('hasSelected', [])
-        let g:debug_last_cr = 'rpc hasSelected'
-        return "\<C-y>"
+  function! s:coc_cr() abort
+    " Option 1: condensed
+    return coc#pum#visible() && coc#pum#info().index >= 0 ? coc#_select_confirm()
+          \ : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+    " Option 2: to debug
+    let g:debug_last_cr = {}
+    if coc#pum#visible()
+      let info = coc#pum#info()
+      let has_selected = info.index >= 0
+      let g:debug_last_cr["info"] = info
+      let g:debug_last_cr["has_selected"] = has_selected
+      if !has_selected
+        return "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
       else
-        let g:debug_last_cr = 'else case'
-        return "\<down>\<C-y>"
+        return coc#_select_confirm()
       endif
-    endfunction
-    " inoremap <silent><expr> <cr> complete_info()['selected'] != -1 ? coc#_select_confirm() : "\<C-g>u\<CR>"
-    " inoremap <silent><expr> <Plug>VimrcCR complete_info()['selected'] != -1 ? coc#_select_confirm() : "\<C-g>u\<CR>"
-    inoremap <silent><expr> <Plug>VimrcCR <sid>coc_cr()
-  else
-    " inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
-    inoremap <silent><expr> <Plug>VimrcCR pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
-  endif
-  " imap <silent><expr> <cr> '<Plug>VimrcCR'
+    else
+      return "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+    endif
+  endfunction
+  inoremap <silent><expr> <Plug>VimrcCR <sid>coc_cr()
   imap <silent> <cr> <Plug>VimrcCR
   " TODO: check how it's would interact with lh-brackets (add newline
   " between brackets)... it seems OK
