@@ -1,11 +1,10 @@
 "=============================================================================
-" $Id$
 " File:         plugin/count.vim                                  {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"		<URL:http://code.google.com/p/lh-vim/>
-" Version:      «0.0.1»
+"		<URL:http://github.com/LucHermitte/lh-misc>
+" Version:      0.0.2
 " Created:      28th Sep 2010
-" Last Update:  18th Jul 2019
+" Last Update:  03rd Oct 2023
 "------------------------------------------------------------------------
 " Description:
 "       «description»
@@ -59,7 +58,8 @@ function! s:Count2(param, firstl, lastl) abort
   let c = []
   " The new syntax requires a more global variable
   " call map(getline(a:firstl, a:lastl), { k,v -> substitute(v, 'line', '\=add(l:c, v)[-1]', 'g')})
-  call map(getline(a:firstl, a:lastl), "substitute(v:val, 'line', '\\=add(c, v:val)[-1]', 'g')")
+  call map(getline(a:firstl, a:lastl), "substitute(v:val, a:param, '\\=add(c, v:val)[-1]', 'g')")
+  " let g:c = c
   echo len(c)
 endfunction
 " Functions }}}1
