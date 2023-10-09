@@ -4,10 +4,10 @@
 "		<URL:http://github.com/LucHermitte/lh-misc>
 " License:
 "               <URL:http://github.com/LucHermitte/lh-misc/blob/master/License.md>
-" Version:      0.0.1.
-let s:k_version = 001
+" Version:      0.0.2.
+let s:k_version = 002
 " Created:      27th Jun 2020
-" Last Update:  09th Sep 2020
+" Last Update:  09th Oct 2023
 "------------------------------------------------------------------------
 " Description:
 "       The plugin extends n_CTRL-X and n_CTRL-A to boolean values, and
@@ -87,10 +87,11 @@ endfunction
 
 function! s:cycle(dir, nb) abort
   let lists = s:k_on_off + s:k_yes_no + s:k_true_false
-  let patterns = '%(<%('.join(map(lists, '"<".v:val.">"'), '|').'|\d+)>)'
+  let patterns = '%(%('.join(map(lists, '"<".v:val.">"'), '|').'|-?\d+))'
   let within_re = '\v\c(.*%#)@='.patterns.'@>(%#.*)@<='
   let before_re = '\v\c'.patterns
 
+  " TODO: fiw within pattern for numbers...
   let [ln, col] = searchpos(within_re, 'cz')
   if ln == 0 " Cursor not within a searched pattern
     let ln = line('.')
