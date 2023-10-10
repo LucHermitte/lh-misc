@@ -2,9 +2,9 @@
 " File:         plugin/rotate_substitute.vim                      {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Version:      1.0.3
+" Version:      1.0.4
 " Created:      27th Nov 2009
-" Last Update:  13th Mar 2018
+" Last Update:  10th Oct 2023
 "------------------------------------------------------------------------
 " Description:
 "   CycleSubstitute: <http://stackoverflow.com/questions/1809571/how-do-i-substitute-from-a-list-of-strings-in-vim>
@@ -15,6 +15,8 @@
 " Installation:
 " Drop the file into {rtp}/plugin
 " History:
+"       v1.0.4:
+"       * Add 'g' flag to RotateSubstitute
 "       v1.0.3:
 "       * +:Translate
 "       v1.0.2:
@@ -42,7 +44,7 @@ set cpo&vim
 
 " ~ swap, see togle stuff
 " no back ref supported; makes no sense
-function! s:CycleSubstitute(bang, repl_arg) range
+function! s:CycleSubstitute(bang, repl_arg) range abort
   let do_loop = a:bang != "!"
   let sep = a:repl_arg[0]
   let fields = split(a:repl_arg, sep)
@@ -60,12 +62,12 @@ function! s:CycleSubstitute(bang, repl_arg) range
   exe cmd
 endfunction
 
-function! s:DoCycleSubst(do_loop, fields, what)
+function! s:DoCycleSubst(do_loop, fields, what) abort
   let idx = (match(a:fields, a:what) + 1) % len(a:fields)
   return a:fields[idx]
 endfunction
 
-function! s:RotateSubstitute(bang, repl_arg) range
+function! s:RotateSubstitute(bang, repl_arg) range abort
   let do_loop = a:bang != "!"
   " echom "do_loop=".do_loop." -> ".a:bang
   " reset internal state
@@ -101,13 +103,13 @@ function! s:RotateSubstitute(bang, repl_arg) range
   let action = '\=s:DoRotateSubst('.do_loop.',' . string(replacements) . sm .')'
   " prepare the :substitute command
   let args = [fields[0], action ]
-  let cmd = a:firstline . ',' . a:lastline . 's' . sep . join(args, sep)
+  let cmd = a:firstline . ',' . a:lastline . 's' . sep . join(args, sep) . sep . 'g'
   " echom cmd
   " and run it
   exe cmd
 endfunction
 
-function! s:DoRotateSubst(do_loop, list, replaced, ...)
+function! s:DoRotateSubst(do_loop, list, replaced, ...) abort
   " echom string(a:000)
   if ! a:do_loop && s:rs_idx == len(a:list)
     return a:replaced
