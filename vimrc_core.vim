@@ -1128,6 +1128,12 @@ call lh#menu#def_toggle_item({'variable': 'guifontsize', 'values': [10, 26], 'ho
 " -- VimFold4C {{{3
 LetTo g:fold_options.fallback_method.line_threshold = 500
 
+" -- Python indent {{{3
+" :h ft-python-indent
+" What black usually enforces
+LetTo g:python_indent.closed_paren_align_last_line = v:false
+LetTo g:python_indent.continue = 'shiftwidth() * 2'
+
 " -- BTW {{{3
 LetIfUndef g:BTW.make_in_background = 1
 
