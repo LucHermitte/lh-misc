@@ -1155,6 +1155,7 @@ if !empty(globpath(&rtp, 'autoload/coc.vim'))
     let g:coc_user_config['coc.preferences.jumpCommand'] = ':SplitIfNotOpen4COC'
     " let g:coc_user_config['tsserver.trace.server'] = 'verbose'
 
+    let g:coc_user_config['pyright.inlayHints.variableTypes'] = v:false
     " As &shellredir isn't set yet in the .vimrc (see :h starting), we need to
     " delay the execution of |system()| till after these options has been set.
     " That's where |VimEnter| autocommand helps.
