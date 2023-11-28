@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 08th Sep 2023
+" Last update   : 28th Nov 2023
 " ===================================================================
 if !empty($LUCHOME) && $LUCHOME != $HOME
   let paths = split(&rtp, ',')
@@ -52,6 +52,8 @@ set runtimepath+=$HOME/vimfiles/latexSuite
   set cmdheight=2
   set comments=b:#,:%,fb:-,n:>,n:)
                          "cmts df: sr:/*,mb:*,el:*/,://,b:#,:%,:XCOMM,n:>,fb:-
+  set cursorline
+  set cursorlineopt=number
 " set dictionary=/usr/dict/words,/local/lib/german.words
                         " english words first
   set expandtab
@@ -70,7 +72,7 @@ set runtimepath+=$HOME/vimfiles/latexSuite
                         " is required to set as the default installation
                         " does not find it  :-(
   set hidden            "
-  set highlight=8r,db,es,hs,mb,Mr,nu,rs,sr,tb,vr,ws
+  set highlight=8r,db,es,hs,mb,Mr,n:CursorLineSign,rs,sr,tb,vr,ws
                         "  highlight=8b,db,es,hs,mb,Mn,nu,rs,sr,tb,vr,ws
   set nohlsearch
                         " highlight search - show the current search pattern
