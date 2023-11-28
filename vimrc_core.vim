@@ -53,7 +53,9 @@ set runtimepath+=$HOME/vimfiles/latexSuite
   set comments=b:#,:%,fb:-,n:>,n:)
                          "cmts df: sr:/*,mb:*,el:*/,://,b:#,:%,:XCOMM,n:>,fb:-
   set cursorline
-  set cursorlineopt=number
+  if exists('&cursorlineopt') " <=> has patch 8.1.2019
+    set cursorlineopt=number
+  endif
 " set dictionary=/usr/dict/words,/local/lib/german.words
                         " english words first
   set expandtab
@@ -1098,7 +1100,8 @@ function! s:ActivateAddons()
   " Unite stuff
   call vam#ActivateAddons(['unite', 'unite-locate', 'unite-outline', 'vimproc'])
   " COC
-  if executable('node')
+  if executable('node') && has("patch-8.0.1630")
+    " Because CoC requires trim(), defined in Vim 8.0.1630
     call vam#ActivateAddons(['github:neoclide/coc.nvim'])
   endif
 
