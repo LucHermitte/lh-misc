@@ -4,7 +4,7 @@
 "               <URL:http://github.com/LucHermitte/lh-misc>
 " Version:      0.1.1
 " Created:      16th Sep 2014
-" Last Update:  18th Jul 2019
+" Last Update:  22nd Feb 2024
 "------------------------------------------------------------------------
 " Description:
 "       Commands and mapping to help maintaining VimL scripts
@@ -53,7 +53,7 @@ command! -nargs=* -bang -complete=customlist,lh#vim#maintain#_go_verbose_complet
 "
 " # Reloading          {{{2
 " Function: s:ReloadOneScript(crt)                      {{{3
-function! s:ReloadOneScript(crt)
+function! s:ReloadOneScript(crt) abort
   if a:crt =~ '\<autoload\>'
     " a- For plugins and ftplugins, search for a force_reload variable
     echomsg "Reloading ".a:crt
@@ -85,7 +85,7 @@ function! s:ReloadOneScript(crt)
           echomsg "Reloading ".a:crt." (with unlet ".loaded.")"
           exe 'so '.a:crt
         else
-          throw "Sorry, there is no ".re_reload.' variable to set in order to reload this plugin'
+          call lh#warning#emit("Sorry, there is no ".re_reload.' variable to set in order to reload this plugin: '.a:crt)
           " todo: find the other pattern like did_ftplugin, etc
         endif
       endif
@@ -96,7 +96,7 @@ function! s:ReloadOneScript(crt)
 endfunction
 
 " Function: s:Reload(...)                               {{{3
-function! s:Reload(...)
+function! s:Reload(...) abort
   try
     let s_isk = &isk
     set isk&vim
@@ -117,7 +117,7 @@ endfunction
 
 " Function: ReloadComplete(ArgLead, CmdLine, CursorPos) {{{3
 let s:commands='^Rel\%[oad]'
-function! ReloadComplete(ArgLead, CmdLine, CursorPos)
+function! ReloadComplete(ArgLead, CmdLine, CursorPos) abort
   let cmd = matchstr(a:CmdLine, s:commands)
   let cmdpat = '^'.cmd
 
@@ -132,7 +132,7 @@ endfunction
 
 " Function: s:FindMatchingFiles(path,ArgLead)           {{{3
 " function from SearchInRuntime
-function! s:FindMatchingFiles(pathsList, ArgLead)
+function! s:FindMatchingFiles(pathsList, ArgLead) abort
   " Convert the paths list to be compatible with globpath()
   let ArgLead = a:ArgLead
   " If there is no '*' in the ArgLead, append it
