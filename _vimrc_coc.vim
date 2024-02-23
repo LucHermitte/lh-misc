@@ -225,7 +225,7 @@ set cpo&vim
     elseif act =~? '\vc%[lose]|h%[ide]'
       call CocAction('hideOutline')
     elseif act =~? '\vt%[oggle]|!' || a:bang =='!'
-      let winid coc#window#find('cocViewId', 'OUTLINE')
+      let winid = coc#window#find('cocViewId', 'OUTLINE')
       if  winid >= 0
         call coc#window#close(winid)
       else
