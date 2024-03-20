@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 23rd Feb 2024
+" Last update   : 20th Mar 2024
 " ===================================================================
 if !empty($LUCHOME) && $LUCHOME != $HOME
   let paths = split(&rtp, ',')
@@ -460,6 +460,9 @@ endif
 
    nnoremap <silent> <Plug>ShowSyntax
          \ :echo synIDattr(synID(line("."), col("."), 1), "name")<cr>
+
+:VimrcHelp " <c-x>sl Sort list
+   xnoremap <silent> <c-x>sl s<c-r>=getreg('"')->split(',\s*')->sort()->join(', ')<cr>
 " }}}
 " -------------------------------------------------------------------
 " Tags Browsing macros {{{
@@ -1083,6 +1086,7 @@ function! s:ActivateAddons()
   call vam#ActivateAddons(['github:inkarkat/vim-ingo-library']) " Ingo Karkat's dependency for mark.vim
   call vam#ActivateAddons(['editorconfig-vim']) " used to test my plugins
   call vam#ActivateAddons(['undotree'])
+  call vam#ActivateAddons(['github:Yggdroot/IndentLine'])
   if 0 && has('pythonx')
     call vam#ActivateAddons(['vim-jira-complete'])
   endif
