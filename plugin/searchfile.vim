@@ -3,10 +3,10 @@
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
 " License:      GPLv3
-" Version:      0.2.4
-let s:k_version = 024
+" Version:      0.2.5
+let s:k_version = 025
 " Created:      01st Feb 2006
-" Last Update:  24th Mar 2022
+" Last Update:  16th Apr 2024
 "------------------------------------------------------------------------
 " Description:  Vim plugin wrapper for searchfile.pl
 "
@@ -35,9 +35,9 @@ set cpo&vim
 " Avoid global reinclusion }}}1
 "------------------------------------------------------------------------
 
-command! -nargs=+
+command! -nargs=1
       \ -complete=customlist,SFComplete
-      \ Searchfile :call s:Search(<f-args>)
+      \ Searchfile :call s:SearchCmd(<f-args>)
 
 nnoremap <expr> <silent> <F3>   (&diff ? "]c:call \<sid>NextDiff()\<cr>" : ":cn\<cr>")
 nnoremap <expr> <silent> <S-F3> (&diff ? "[c" : ":cN\<cr>")
@@ -173,11 +173,11 @@ function! s:Extension() abort
 endfunction
 
 " Function: s:DoSearch() {{{3
-function! s:DoSearch(fileext, pattern, opt) abort
+function! s:DoSearch(fileext, pattern, options) abort
   let save_grepprg=&grepprg
   try
     let extra_opts = lh#option#get('searchfile.opts', '')
-    let &grepprg = 'searchfile.pl -n -e '.a:fileext.a:opt.' '.extra_opts
+    let &grepprg = join(['searchfile.pl -n -e '.a:fileext] + a:options + [extra_opts], ' ')
     " <=> find {path} \( -name '*.h' -o -name '*.cpp' {-o prune CVS....} \)
     "       | xargs grep -n
     echo 'grep! '.a:pattern
@@ -192,49 +192,89 @@ function! s:DoSearch(fileext, pattern, opt) abort
   endtry
 endfunction
 
+" Function: s:SearchCmd() {{{3
+let s:k_match_quote    = '["' . "']"
+let s:k_match_no_quote = '[^"' . "']"
+
+function! s:SearchCmd(cmdline_param) abort
+  try
+    let [all, ft, tail;_] = matchlist(a:cmdline_param, '\v^(<\k+>)\s+(.*)')
+    if tail =~ s:k_match_quote
+      let [all, opt1, quote, pattern, opt2; _] = matchlist(tail,
+            \ '\v%((.{-})\s+)?('.s:k_match_quote.')(.*)\2%(\s+(.*))?'
+            \ )
+      let options = split(opt1) + split(opt2)
+    else
+      let options = []
+      let keep_next = 0
+      for param in split(tail)
+        if keep_next
+          let options += [param]
+          let keep_next = 0
+        elseif param =~ '-[vi]'
+          let options += [param]
+        elseif param =~ '-[xp]'
+          let options += [param]
+          let keep_next = 1
+        elseif param =~ '^-'
+          throw "Searchfile: Unsupported option: '".param."'"
+        else
+          let pattern = param
+        endif
+      endfor
+    endif
+    if ! exists('pattern')
+      echoerr "SearchFile: pattern not found in '".tail."'"
+    endif
+
+    if &ft =~ 'vim\|help'
+      let pattern = escape(pattern, '#')
+    endif
+    call s:DoSearch(ft, pattern, options)
+  catch /^SearchFile:/
+    echoerr v:exception
+  endtry
+endfunction
+
 " Function: s:Search() {{{3
+" Version to deprecate!
 function! s:Search(fileext, pattern, ...) abort
   let pattern = a:pattern
   if &ft =~ 'vim\|help'
     let pattern = escape(pattern, '#')
   endif
-  let opt     = ''
+  let opts = []
 
   try
     " Sometimes the string received is «"pat_begin pat_end"», which arrives as
     " two different parameters that need to be concatened.
     " @todo: take care of escaped quotes
     " @todo: rewrite the algorithm
-    if     pattern[0] =~ '["' . "']"
+    if     pattern[0] =~ s:k_match_quote
       let pattern_ready = (pattern[-1:] == pattern[0])
-    elseif pattern[-1:] =~ '["' . "']"
+    elseif pattern[-1:] =~ s:k_match_quote
       throw "SearchFile: Unbalanced quotes in ``".a:pattern.' '.join(a:000,'').'``'
     else
       let pattern_ready = 1
     endif
-
 
     let i = 1
     while i <= a:0
       if ! pattern_ready
         let pattern .= a:{i}
         let pattern_ready = (pattern[-1:] == pattern[0])
-      elseif a:{i} == '-v'
-        let opt .= ' -v'
-      elseif a:{i} == '-i'
-        let opt .= ' -i'
-      elseif a:{i} == '-x'
+      elseif a:{i} =~ '-[vi]'
+        let opts += [a:{i}]
+      elseif a:{i} =~ '-[xp]'
+        let opts += [a:{i}, a:{i+1}]
         let i += 1
-        let opt .= ' -x '.a:{i}
-      else
-        let opt .= ' -p '.a:{i}
       endif
       let i += 1
     endwhile
     if ! pattern_ready
       throw "SearchFile: Unbalanced quotes in ``".a:pattern.' '.join(a:000,'').'``'
     else
-      call s:DoSearch(a:fileext, pattern, opt)
+      call s:DoSearch(a:fileext, pattern, opts)
     endif
   catch /^SearchFile:/
     echoerr v:exception
