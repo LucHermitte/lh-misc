@@ -7,7 +7,7 @@
 " Version:      0.0.1.
 let s:k_version = 001
 " Created:      23rd Feb 2024
-" Last Update:  23rd Feb 2024
+" Last Update:  23rd Jun 2024
 "------------------------------------------------------------------------
 " Description:
 "       Where I store all my CoC related mappings, menus...
@@ -20,50 +20,55 @@ let s:k_version = 001
 
 let s:cpo_save=&cpo
 set cpo&vim
-"------------------------------------------------------------------------
-  function! s:coc_configure_and_start() abort
-    let g:coc_user_config = {}
-    let g:coc_user_config['suggest.noselect'] = v:true
-    " let g:coc_user_config['suggest.enablePreselect'] = v:false
-    let g:coc_user_config['coc.preferences.jumpCommand'] = ':SplitIfNotOpen4COC'
-    " let g:coc_user_config['tsserver.trace.server'] = 'verbose'
 
-    let g:coc_user_config['pyright.inlayHints.variableTypes'] = v:false
-    " As &shellredir isn't set yet in the .vimrc (see :h starting), we need to
-    " delay the execution of |system()| till after these options has been set.
-    " That's where |VimEnter| autocommand helps.
-    " Here, system() is indirectly called through lh#cpp#tags#compiler_includes()
-    if executable('clangd')
-        " coc-clangd takes care of everything!
-        " TODO: Enable tidy from vimrc...
-      " let g:coc_user_config['languageserver'] = {
-      "       \     'clangd': {
-      "       \         'command': 'clangd',
-      "       \         'filetypes': ['c', 'cpp', 'objc', 'objcpp'],
-      "       \         'rootPatterns': ['compile_flags.txt', 'compile_commands.json', '.vim/'] + g:local_vimrc + g:lh#project.root_patterns,
-      "       \     }
-      "       \ }
-    elseif executable('ccls') && executable('clang++')
-      let g:coc_user_config['languageserver'] = {
-            \ 'ccls': {
-            \     'command': 'ccls',
-            \     'filetypes': ['c', 'cpp', 'objc', 'objcpp'],
-            \     'rootPatterns': ['.ccls', 'compile_commands.json', '.vim/'] + g:local_vimrc + g:lh#project.root_patterns,
-            \     'initializationOptions': {
-            \         'cache': {'directory': lh#option#get('lh.tmpdir', lh#string#or($TMPDIR, '/tmp'))},
-            \         'index': {'threads': 2},
-            \         'clang': {'extraArgs': map(copy(lh#cpp#tags#compiler_includes('clang++')), '"-isystem".v:val') + ['-std=c++20']}
-            \         }
-            \     }
-            \ }
-      " \     'args' : ['-log-file='.lh#option#get('lh.tmpdir', lh#string#or($TMPDIR, '/tmp')).'/ccls.log','-v=1'],
-      " \     'trace.server': 'verbose',
-    endif
-    " Workaround bug 659 to launch gvim forked
-    "   Required to permit gvim to fork on launch
-    "   https://github.com/neoclide/coc.nvim/issues/659
-    CocStart
-  endfunction
+"------------------------------------------------------------------------
+function! s:coc_configure_and_start() abort
+  let g:coc_user_config = {}
+  let g:coc_user_config['suggest.noselect'] = v:true
+  " let g:coc_user_config['suggest.enablePreselect'] = v:false
+  let g:coc_user_config['coc.preferences.jumpCommand'] = ':SplitIfNotOpen4COC'
+  " let g:coc_user_config['tsserver.trace.server'] = 'verbose'
+
+  let g:coc_user_config['pyright.inlayHints.variableTypes'] = v:false
+  let g:coc_user_config['inlayHint.display']                = v:false
+  " let g:coc_user_config['pyright.inlayHints.variableTypes'] = v:true
+  " let g:coc_user_config['inlayHint.display']                = v:true
+  " As &shellredir isn't set yet in the .vimrc (see :h starting), we need to
+  " delay the execution of |system()| till after these options has been set.
+  " That's where |VimEnter| autocommand helps.
+  " Here, system() is indirectly called through lh#cpp#tags#compiler_includes()
+  if executable('clangd')
+  " coc-clangd takes care of everything!
+  " TODO: Enable tidy from vimrc...
+  " let g:coc_user_config['languageserver'] = {
+  "       \     'clangd': {
+  "       \         'command': 'clangd',
+  "       \         'filetypes': ['c', 'cpp', 'objc', 'objcpp'],
+  "       \         'rootPatterns': ['compile_flags.txt', 'compile_commands.json', '.vim/'] + g:local_vimrc + g:lh#project.root_patterns,
+  "       \     }
+  "       \ }
+  elseif 0 && executable('ccls') && executable('clang++')
+    let g:coc_user_config['languageserver'] = {
+          \ 'ccls': {
+          \     'command': 'ccls',
+          \     'filetypes': ['c', 'cpp', 'objc', 'objcpp'],
+          \     'rootPatterns': ['.ccls', 'compile_commands.json', '.vim/'] + g:local_vimrc + g:lh#project.root_patterns,
+          \     'initializationOptions': {
+          \         'cache': {'directory': lh#option#get('lh.tmpdir', lh#string#or($TMPDIR, '/tmp'))},
+          \         'index': {'threads': 2},
+          \         'clang': {'extraArgs': map(copy(lh#cpp#tags#compiler_includes('clang++')), '"-isystem".v:val') + ['-std=c++20']}
+          \         }
+          \     }
+          \ }
+    " \     'args' : ['-log-file='.lh#option#get('lh.tmpdir', lh#string#or($TMPDIR, '/tmp')).'/ccls.log','-v=1'],
+    " \     'trace.server': 'verbose',
+  endif
+
+  " Workaround bug 659 to launch gvim forked
+  "   Required to permit gvim to fork on launch
+  "   https://github.com/neoclide/coc.nvim/issues/659
+  CocStart
+endfunction
 
   let g:coc_start_at_startup = 0
   augroup COCGroup
@@ -166,7 +171,7 @@ set cpo&vim
 
   " Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
   call lh#menu#make('nx', s:coc_prio.'120', s:coc_menu.'Code &Action on selection',    '<c-x>a',  '<Plug>(coc-codeaction-selected)')
-  call lh#menu#make('n',  s:coc_prio.'121', s:coc_menu.'Code &Action on cursor',       '<c-x>a.', '<Plug>(coc-codeaction-selected)')
+  call lh#menu#make('n',  s:coc_prio.'121', s:coc_menu.'Code &Action on cursor',       '<c-x>a.', '<Plug>(coc-codeaction-cursor)')
   call lh#menu#make('n',  s:coc_prio.'130', s:coc_menu.'Code &Action on current line', '<c-x>aa', '<Plug>(coc-codeaction-line)')
   call lh#menu#make('n',  s:coc_prio.'131', s:coc_menu.'Code &Action',                 '<c-x>A',  '<Plug>(coc-codeaction)')
   call lh#menu#make('n',  s:coc_prio.'131', s:coc_menu.'Code &Action on whole buffer', '<c-x>%',  '<Plug>(coc-codeaction-source)')
@@ -208,6 +213,9 @@ set cpo&vim
   endif
 
   amenu 50.120.199 &Plugin.&COC.---<sep>--- <Nop>
+
+  command! -nargs=0 Diaggnostics CocList diagnostics
+
   " Use `:Format` to format current buffer
   command! -nargs=0 Format :call CocActionAsync('format')
 
@@ -221,10 +229,11 @@ set cpo&vim
   function! s:MyCocOutline(bang, ...) abort
     let act = get(a:, 1, '')
     if act =~? '\vs%[show]'
-      call CocAction('showOutline')
+      call CocAction('showOutline', 0)
     elseif act =~? '\vc%[lose]|h%[ide]'
       call CocAction('hideOutline')
     elseif act =~? '\vt%[oggle]|!' || a:bang =='!'
+      " It seems to survive hiding to come back everytime we change buffer...
       let winid = coc#window#find('cocViewId', 'OUTLINE')
       if  winid >= 0
         call coc#window#close(winid)
