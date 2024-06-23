@@ -53,7 +53,7 @@ nnoremap <silent> gS :call <sid>SwapWithPrev('follow', 'k')<cr>
 
 " While we're talking swapping, here's a map for swapping characters:
 
-nnoremap <silent> gc    xph
+" nnoremap <silent> gc    xph
 
 " This hint was formed in a collaboration between
 " Chip Campbell - Arun Easi - Benji Fisher
