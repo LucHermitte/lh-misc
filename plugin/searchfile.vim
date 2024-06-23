@@ -198,7 +198,7 @@ let s:k_match_no_quote = '[^"' . "']"
 
 function! s:SearchCmd(cmdline_param) abort
   try
-    let [all, ft, tail;_] = matchlist(a:cmdline_param, '\v^(<\k+>)\s+(.*)')
+    let [all, ft, tail;_] = matchlist(a:cmdline_param, '\v^(<\S+>)\s+(.*)')
     if tail =~ s:k_match_quote
       let [all, opt1, quote, pattern, opt2; _] = matchlist(tail,
             \ '\v%((.{-})\s+)?('.s:k_match_quote.')(.*)\2%(\s+(.*))?'
