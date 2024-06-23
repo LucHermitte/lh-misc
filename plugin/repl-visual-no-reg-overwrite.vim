@@ -55,7 +55,12 @@ if lh#has#patch('patch-8.2.4881')
       let reg = c =~ '^[0-9a-z:.%#/*+~?]$'
             \ ? '"'.c
             \ : ''
-      if reg == '"?' | registers | call getchar() | redraw!
+      if reg == '"?'
+        " :registers already displays non empty registers
+        let msg = lh#askvim#execute('registers')
+        let msg += ['-- which register? --']
+        echo join(msg, "\n")
+        redraw!
       else           | break
       endif
     endwhile
@@ -93,7 +98,12 @@ else
       let reg = c =~ '^[0-9a-z:.%#/*+~?]$'
             \ ? '"'.c
             \ : ''
-      if reg == '"?' | registers | call getchar() | redraw!
+      if reg == '"?'
+        " :registers already displays non empty registers
+        let msg = lh#askvim#execute('registers')
+        let msg += ['-- which register? --']
+        echo join(msg, "\n")
+        redraw!
       else           | break
       endif
     endwhile
