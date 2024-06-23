@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 20th Mar 2024
+" Last update   : 24th May 2024
 " ===================================================================
 if !empty($LUCHOME) && $LUCHOME != $HOME
   let paths = split(&rtp, ',')
@@ -1051,7 +1051,7 @@ function! VAM_git_proxy_checkout(repository, targetDir) abort
 endfunction
 
 " ===================================================================
-" Load plugins {{{2
+" Load plugins with VAM {{{2
 function! s:ActivateAddons()
   runtime addons/lh-vim-lib/autoload/lh/has.vim
   runtime addons/lh-vim-lib/autoload/lh/list.vim
@@ -1118,6 +1118,11 @@ call s:ActivateAddons()
 
 "" Optionally generate helptags:
 " UpdateAddon vim-addon-manager
+
+" Load packages {{{2
+packadd comment
+packadd cfilter
+packadd termdebug
 
 " Options for plugins that relies on autoloaded functions {{{2
 " -- xml edit {{{3
