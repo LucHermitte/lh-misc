@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 24th May 2024
+" Last update   : 26th Jul 2024
 " ===================================================================
 if !empty($LUCHOME) && $LUCHOME != $HOME
   let paths = split(&rtp, ',')
@@ -216,7 +216,7 @@ endif
 
 " Diff mode {{{2
 " always
-  set diffopt=filler,context:3,iwhite,hiddenoff
+  set diffopt=filler,context:3,iwhite,hiddenoff,vertical
   if has('nvim-0.3.2') || has("patch-8.1.0360")
     " https://old.reddit.com/r/vim/comments/cn20tv/tip_histogrambased_diffs_using_modern_vim/
     set diffopt+=internal,algorithm:histogram,indent-heuristic
@@ -799,6 +799,10 @@ let g:want_buffermenu_for_tex    = 2 " 0 : no, 1 : yes, 2 : global disable
 let g:marker_select_empty_marks    = 1
 let g:marker_center                = 0
 
+" -- lh-cpp {{{3
+" Use my prefered indenting style, hidden in lh-cpp
+let g:lhcpp_use_lh_style           = 1
+
 " -- muTemplate {{{3
 " To override in some ftplugins if required.
 let g:url         = 'http://github.com/LucHermitte/«»'
@@ -1136,6 +1140,10 @@ runtime plugin/let.vim
 runtime machine-specifics.vim
 let g:guifontsize = 10
 call lh#menu#def_toggle_item({'variable': 'guifontsize', 'values': [10, 26], 'hook': ':let &guifont="DejaVu Sans Mono for Powerline ".g:guifontsize', 'menu': {'priority': '500.2700.10', 'name': '&Plugin.&LH.&font'}})
+
+" -- Searchfile {{{3
+" Ignore build directory
+LetTo g:searchfile.opts = '-x build/'
 
 " -- VimFold4C {{{3
 LetTo g:fold_options.fallback_method.line_threshold = 500
