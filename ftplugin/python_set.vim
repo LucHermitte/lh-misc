@@ -4,10 +4,10 @@
 "		<URL:http://github.com/LucHermitte/lh-misc>
 " License:      GPLv3 with exceptions
 "               <URL:http://github.com/LucHermitte/lh-misc/blob/master/License.md>
-" Version:      0.0.1.
-let s:k_version = 001
+" Version:      0.0.2.
+let s:k_version = 002
 " Created:      08th Feb 2024
-" Last Update:  08th Feb 2024
+" Last Update:  26th Jul 2024
 "------------------------------------------------------------------------
 " Description:
 "       My settings for Python
@@ -41,6 +41,28 @@ let b:loaded_ftplug_python_set = s:k_version
 
 "------------------------------------------------------------------------
 " Local commands {{{2
+"
+" MakeWith is defined in BuildToolsWrappers
+if exists(':MakeWith')
+  " In the 3 following commands:
+  " - Any options in --whatever will override default options
+  " - otherwise, it will override the default path where it would have been
+  "   executed.
+  command! -buffer -nargs=*
+        \ -complete=dir
+        \ Pylint
+        \ :call s:check_with('pylint', <f-args>)
+
+  command! -buffer -nargs=*
+        \ -complete=dir
+        \ Mypy
+        \ :call s:check_with('mypy', <f-args>)
+
+  command! -buffer -nargs=*
+        \ -complete=dir
+        \ RuffCheck
+        \ :call s:check_with('ruff check', <f-args>)
+endif
 
 "=============================================================================
 " Global Definitions {{{1
@@ -60,8 +82,30 @@ let g:loaded_ftplug_python_set = s:k_version
 " Keep here only the functions are are required when the ftplugin is
 " loaded, like functions that help building a vim-menu for this
 " ftplugin.
+
+let s:k_tools_default_options = {
+      \ 'pylint': ['--disable=fixme']
+      \ }
+
+function! s:check_with(tool, ...) abort
+  let options = []
+  let where   = lh#option#get('paths.sources')
+  for o in a:000
+    if o[0] == '-'
+      call add(options, o)
+    else
+      let where = o
+    endif
+  endfor
+  if empty(options)
+    let options = lh#option#get(a:tool.'.options', get(s:k_tools_default_options, a:tool, []))
+  endif
+  let cmd = [ ':MakeWith', a:tool] + options + [where]
+  exe join(cmd, ' ')
+endfunction
 " Functions }}}2
 "------------------------------------------------------------------------
 let &cpo=s:cpo_save
+" }}}1
 "=============================================================================
 " vim600: set fdm=marker:
