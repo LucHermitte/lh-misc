@@ -7,7 +7,7 @@
 " Version:      0.0.2.
 let s:k_version = 002
 " Created:      08th Feb 2024
-" Last Update:  26th Jul 2024
+" Last Update:  14th Oct 2024
 "------------------------------------------------------------------------
 " Description:
 "       My settings for Python
@@ -51,17 +51,22 @@ if exists(':MakeWith')
   command! -buffer -nargs=*
         \ -complete=dir
         \ Pylint
-        \ :call s:check_with('pylint', <f-args>)
+        \ :call lh#python_set#_check_with('pylint', <f-args>)
 
   command! -buffer -nargs=*
         \ -complete=dir
         \ Mypy
-        \ :call s:check_with('mypy', <f-args>)
+        \ :call lh#python_set#_check_with('mypy', <f-args>)
 
   command! -buffer -nargs=*
         \ -complete=dir
         \ RuffCheck
-        \ :call s:check_with('ruff check', <f-args>)
+        \ :call lh#python_set#_check_with('ruff check', <f-args>)
+
+  command! -buffer -nargs=*
+        \ -complete=dir
+        \ RuffCmpFormat
+        \ :call lh#python_set#_test_reformat_ruff(<f-args>)
 endif
 
 "=============================================================================
@@ -83,26 +88,6 @@ let g:loaded_ftplug_python_set = s:k_version
 " loaded, like functions that help building a vim-menu for this
 " ftplugin.
 
-let s:k_tools_default_options = {
-      \ 'pylint': ['--disable=fixme']
-      \ }
-
-function! s:check_with(tool, ...) abort
-  let options = []
-  let where   = lh#option#get('paths.sources')
-  for o in a:000
-    if o[0] == '-'
-      call add(options, o)
-    else
-      let where = o
-    endif
-  endfor
-  if empty(options)
-    let options = lh#option#get(a:tool.'.options', get(s:k_tools_default_options, a:tool, []))
-  endif
-  let cmd = [ ':MakeWith', a:tool] + options + [where]
-  exe join(cmd, ' ')
-endfunction
 " Functions }}}2
 "------------------------------------------------------------------------
 let &cpo=s:cpo_save
