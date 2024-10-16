@@ -2,7 +2,7 @@
 " File:         ftplugin/vim_set.vim
 " Author:       Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "               <URL:http://github.com/LucHermitte/lh-misc>
-" Last Update:  30th Apr 2019
+" Last Update:  24th Aug 2024
 " Requirements: lh-vim-lib
 "
 " ========================================================================
@@ -140,7 +140,7 @@ inoreab  <buffer> <silent> if
 
 xmap  <buffer> <silent> <M-i> <localleader>if
 xnoremap <buffer> <silent> <localleader>if
-      \ <c-\><c-n>@=lh#map#surround('if !cursorhere!', 'endif!mark!',
+      \ <c-\><c-n>@=lh#map#surround('if !cursorhere!', 'endif',
       \ 1, 1, '', 1, 'if ')<cr>
 
 " Control statement: elif     {{{3
@@ -165,20 +165,20 @@ inoreab  <buffer> <silent> while
 " Control statement: for      {{{3
 xmap  <buffer> <silent> <M-w> <localleader>wh
 xnoremap <buffer> <silent> <localleader>wh
-      \ <c-\><c-n>@=lh#map#surround('while !cursorhere!', 'endwhile!mark!',
+      \ <c-\><c-n>@=lh#map#surround('while !cursorhere!', 'endwhile',
       \ 1, 1, '', 1, 'wh ')<cr>
 
 " vmap  <buffer> <silent> <M-f> <localleader>for
 inoreab  <buffer> <silent> for
       \ <C-R>=lh#map#insert_seq('for', "for!cursorhere! in!mark!\nendfor!mark!")<CR>
 xnoremap <buffer> <silent> <localleader>for
-      \ <c-\><c-n>@=lh#map#surround('for !cursorhere! in !mark!', 'endfor!mark!',
+      \ <c-\><c-n>@=lh#map#surround('for !cursorhere! in !mark!', 'endfor',
       \ 1, 1, '', 1, 'for ')<cr>
 
 " Control statement: try      {{{3
 nmap <buffer> <silent> <localleader>try V<localleader>try
 xnoremap <buffer> <silent> <localleader>try
-      \ <c-\><c-n>@=lh#map#surround('try!cursorhere!', "finally!mark!\nendtry!mark!",
+      \ <c-\><c-n>@=lh#map#surround('try!cursorhere!', "finally!mark!\nendtry",
       \ 1, 1, '', 1, 'try ')<cr>
 
 inoreab  <buffer> <silent> try
