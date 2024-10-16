@@ -7,7 +7,7 @@
 " Version:      0.0.2.
 let s:k_version = 002
 " Created:      27th Jun 2020
-" Last Update:  09th Oct 2023
+" Last Update:  18th Sep 2024
 "------------------------------------------------------------------------
 " Description:
 "       The plugin extends n_CTRL-X and n_CTRL-A to boolean values, and
@@ -46,6 +46,9 @@ let s:k_on_off     = ['on', 'off']
 let s:k_yes_no     = ['yes', 'no']
 let s:k_true_false = ['true', 'false']
 
+" TODO: support extensions
+let s:k_loglevels = ['debug', 'info', 'warning', 'error', 'critical']
+
 function! s:KeepCase(ref, new) abort
   if 1 && exists('*KeepCase')
     " Michael Geddes plugin
@@ -73,6 +76,7 @@ let s:repls = {}
 call s:build_dict(s:repls, s:k_on_off)
 call s:build_dict(s:repls, s:k_yes_no)
 call s:build_dict(s:repls, s:k_true_false)
+call s:build_dict(s:repls, s:k_loglevels)
 
 function! s:replace(match, nb) abort
   let low_match = tolower(a:match)
@@ -86,7 +90,7 @@ function! s:replace(match, nb) abort
 endfunction
 
 function! s:cycle(dir, nb) abort
-  let lists = s:k_on_off + s:k_yes_no + s:k_true_false
+  let lists = s:k_on_off + s:k_yes_no + s:k_true_false + s:k_loglevels
   let patterns = '%(%('.join(map(lists, '"<".v:val.">"'), '|').'|-?\d+))'
   let within_re = '\v\c(.*%#)@='.patterns.'@>(%#.*)@<='
   let before_re = '\v\c'.patterns
