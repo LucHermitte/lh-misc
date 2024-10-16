@@ -4,7 +4,7 @@
 " File          : vimrc_core.vim
 " Initial Author: Sven Guckes
 " Maintainer    : Luc Hermitte
-" Last update   : 26th Jul 2024
+" Last update   : 11th Oct 2024
 " ===================================================================
 if !empty($LUCHOME) && $LUCHOME != $HOME
   let paths = split(&rtp, ',')
@@ -1153,6 +1153,7 @@ LetTo g:fold_options.fallback_method.line_threshold = 500
 " What black usually enforces
 LetTo g:python_indent.closed_paren_align_last_line = v:false
 LetTo g:python_indent.continue = 'shiftwidth() * 2'
+LetTo g:python_indent.open_paren = 'shiftwidth()'
 
 " -- BTW {{{3
 LetIfUndef g:BTW.make_in_background = 1
