@@ -6,10 +6,10 @@ vim9script
 #		<URL:http://github.com/LucHermitte/lh-misc>
 # License:      GPLv3 with exceptions
 #               <URL:http://github.com/LucHermitte/lh-misc/blob/master/License.md>
-# Version:      0.0.1.
-const k_version = 001
+# Version:      0.0.3.
+const k_version = 003
 # Created:      16th Oct 2024
-# Last Update:  16th Oct 2024
+# Last Update:  22nd Oct 2024
 #------------------------------------------------------------------------
 # Description:
 #       Adapt &tw to comments and docstring
@@ -23,10 +23,14 @@ const k_version = 001
 #------------------------------------------------------------------------
 # History:
 # v0.0.1: First version
-#         (*) Works w/ `Q` only, compatible vim & nvim
-#         (*) Automatically updated tw is too slow
+#       (*) Works w/ `Q` only, compatible vim & nvim
+#       (*) Automatically updated tw is too slow
 # v0.0.2: Vim9 version
-#         (*) Use fast adaptative version rewritten in vimscript9
+#       (*) Use fast adaptative version rewritten in vimscript9
+# v 0.0.3:
+#       (*) Auto plugin extracted
+#       (*) Fix handling of col('.')==col('$') in insert mode
+#       (*) Update &tw only when it changes
 # Todo:
 #         (*) Find a way to fill (bpg):style.textwidth.default from
 #             p:&tw/b:&tw...
@@ -35,13 +39,9 @@ const k_version = 001
 
 # Buffer-local Definitions {{{1
 # Avoid local reinclusion {{{2
-var cpo_save = &cpo
-set cpo&vim
-
-if &cp || (exists("b:loaded_ftplug_python_adaptative_tw")
+if exists("b:loaded_ftplug_python_adaptative_tw")
       \ && (b:loaded_ftplug_python_adaptative_tw >= k_version)
-      \ && !exists('g:force_reload_ftplug_python_adaptative_tw'))
-  &cpo = cpo_save
+      \ && !exists('g:force_reload_ftplug_python_adaptative_tw')
   finish
 endif
 b:loaded_ftplug_python_adaptative_tw = k_version
@@ -59,6 +59,14 @@ setlocal fo-=t
 # xnoremap <buffer> <silent> Q :call <sid>Reformat_visual()<cr>
 # nnoremap <buffer> <silent> <expr> Q <sid>Reformat_normal()
 
+# # Attempt 2 {{{3
+import autoload 'lh/adaptative_tw.vim'
+# autocommand registration {{{4
+augroup WatchSyntax
+  au! * <buffer>
+  autocmd! CursorMoved,CursorMovedI,BufEnter <buffer> call lh#adaptative_tw#Update_tw(&ft)
+augroup END
+
 
 ### Options {{{2
 # Default values             {{{4
@@ -69,10 +77,9 @@ LetIfUndef g:style.textwidth.default   = &tw
 #=============================================================================
 # Global Definitions {{{1
 # Avoid global reinclusion {{{2
-if &cp || (exists("g:loaded_ftplug_python_adaptative_tw")
+if (exists("g:loaded_ftplug_python_adaptative_tw")
       \ && (g:loaded_ftplug_python_adaptative_tw >= k_version)
       \ && !exists('g:force_reload_ftplug_python_adaptative_tw'))
-  &cpo = cpo_save
   finish
 endif
 g:loaded_ftplug_python_adaptative_tw = k_version
@@ -85,35 +92,6 @@ const k_SNR: string = printf('<SNR>%d_', k_SID)
 
 def GetSNR(funcname: string = ""): string
   return k_SNR .. funcname
-enddef
-
-## Function: SynID(l, c)     {{{3
-def SynID(l: number, c: number): string
-  return synIDattr(synID(l, c, 0), "name")
-enddef
-
-## Function: Compute_tw(ft)  {{{3
-def Compute_tw(ft: string): number
-  var lin = line('.')
-
-  final syn = SynID(lin, col('.'))
-  if syn =~? 'comment'
-    return lh#ft#option#get('style.textwidth.comment', ft, &tw)
-  elseif ft == 'python' && syn =~? '\vstring|^$' # Special case for docstrings
-    while lin >= 1
-      final line = getline(lin)
-      if line =~ '\v^\s*$' | lin -= 1 | continue | endif
-      if SynID(lin, col([lin, "$"]) - 1) !~? '\vString|pythonTripleQuotes'
-        break
-      endif
-      if match(line, "\\('''\\|\"\"\"\\)") > -1
-        # Assume that any longstring is a docstring
-        return lh#ft#option#get('style.textwidth.docstring', ft, &tw)
-      endif
-      lin -= 1
-    endwhile
-  endif
-  return lh#ft#option#get('style.textwidth.default', ft, &tw)
 enddef
 
 ### Attempts {{{2
@@ -148,26 +126,8 @@ def Reformat_normal(): string
   return 'gq'
 enddef
 
-## Attempt 2: Update tw on syntax change when the cursor is moved {{{3
-# Inspiration: https://stackoverflow.com/a/4028423/15934
-# See Also:
-#       The more generic https://github.com/inkarkat/vim-OnSyntaxChange
-#       and https://fjcasas.es/posts/smart-textwidth-on-vim-when-writing-comments
-#       But I need to detect docstrings as well...
-
-def Update_tw(ft: string)
-  call setbufvar('%', '&tw', Compute_tw(ft))
-enddef
-
-# autocommand registration {{{4
-augroup WatchSyntax
-  au!
-  autocmd! CursorMoved,CursorMovedI,BufEnter <buffer> call Update_tw(&ft)
-augroup END
-
 # }}}2
 #------------------------------------------------------------------------
-&cpo = cpo_save
 # }}}1
 #=============================================================================
 # vim600: set fdm=marker:
