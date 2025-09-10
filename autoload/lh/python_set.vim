@@ -4,10 +4,10 @@
 "		<URL:http://github.com/LucHermitte/lh-misc>
 " License:      GPLv3 with exceptions
 "               <URL:http://github.com/LucHermitte/lh-misc/blob/master/License.md>
-" Version:      0.0.1.
-let s:k_version = 001
+" Version:      0.0.2.
+let s:k_version = 002
 " Created:      14th Oct 2024
-" Last Update:  14th Oct 2024
+" Last Update:  10th Sep 2025
 "------------------------------------------------------------------------
 " Description:
 "       Support functions for lh-misc/ftplugin/python_set.vim
@@ -59,6 +59,28 @@ endfunction
 let s:k_tools_default_options = {
       \ 'pylint': ['--disable=fixme']
       \ }
+let s:k_tools_remove_options = {
+      \ 'mypy': ['--strict']
+      \ }
+
+function! s:load_compiler_options(tool) abort
+  let tool = matchstr(a:tool, '^\S\+')
+  if empty(globpath(&rtp, 'compiler/'.tool.'.vim'))
+    return ['', '']
+  endif
+  let cleanup = lh#on#exit()
+        \.restore('&:makeprg')
+        \.restore('&:errorformat')
+  try
+    exe 'compiler '.tool
+    let options = substitute(&l:makeprg, printf('^%s ', a:tool), '', '')
+    let re_noway = get(s:k_tools_remove_options, tool, [])->join('\|')
+    let options = substitute(options, re_noway, '', 'g')
+    return [options, &l:errorformat]
+  finally
+    call cleanup.finalize()
+  endtry
+endfunction
 
 function! lh#python_set#_check_with(tool, ...) abort
   let options = []
@@ -73,8 +95,10 @@ function! lh#python_set#_check_with(tool, ...) abort
   if empty(options)
     let options = lh#option#get(a:tool.'.options', get(s:k_tools_default_options, a:tool, []))
   endif
-  let cmd = [ ':MakeWith', a:tool] + options + [where]
-  exe join(cmd, ' ')
+  let [standard_options, efm] = s:load_compiler_options(a:tool)
+  call extend(options, lh#command#split_quote_wise(standard_options))
+  let cmd = [ a:tool] + options + [where]
+  call lh#btw#build#_compile_with(join(cmd, ' '))
 endfunction
 
 " Function: lh#python_set#_test_reformat_ruff(...) {{{3
